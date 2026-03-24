@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="栄真丸">
+<title>栄真丸 | 遊漁船予約</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600;700&family=Shippori+Mincho:wght@400;600;800&family=Kaisei+Decol:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0a1628;
+    --deep: #0d1f3c;
+    --ocean: #1a3a5c;
+    --wave: #1e5f8a;
+    --sky: #2e8bc0;
+    --foam: #b8d9ed;
+    --gold: #c9a84c;
+    --gold-light: #e8c96a;
+    --cream: #f5f0e8;
+    --white: #ffffff;
+    --text-muted: #8aabb8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'Noto Serif JP', serif;
+    background: var(--navy);
+    color: var(--white);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ===== WAVES BACKGROUND ===== */
+  .ocean-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background: linear-gradient(180deg, #04101f 0%, #0a1e38 40%, #0d2a4a 100%);
+    overflow: hidden;
+  }
+  .ocean-bg::before {
+    content: '';
+    position: absolute;
+    bottom: -40px;
+    left: -10%;
+    width: 120%;
+    height: 200px;
+    background: radial-gradient(ellipse 60% 80px at 50% 100%, rgba(30,95,138,0.35) 0%, transparent 70%);
+    animation: swell 8s ease-in-out infinite;
+  }
+  .ocean-bg::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background:
+      radial-gradient(ellipse 80% 40% at 20% 110%, rgba(46,139,192,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 30% at 80% 105%, rgba(10,40,80,0.4) 0%, transparent 50%);
+  }
+  @keyframes swell {
+    0%, 100% { transform: translateY(0) scaleX(1); }
+    50% { transform: translateY(-12px) scaleX(1.02); }
+  }
+  .stars {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 50%;
+    background-image:
+      radial-gradient(1px 1px at 15% 20%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 40% 10%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 65% 25%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 85% 15%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 25% 35%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 55% 8%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 75% 30%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 90% 5%, rgba(255,255,255,0.7) 0%, transparent 100%),
+      radial-gradient(1px 1px at 5% 12%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 48% 40%, rgba(255,255,255,0.3) 0%, transparent 100%);
+  }
+
+  /* ===== LAYOUT ===== */
+  .app {
+    position: relative;
+    z-index: 1;
+    max-width: 430px;
+    margin: 0 auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ===== HEADER ===== */
+  header {
+    padding: 48px 24px 32px;
+    text-align: center;
+    position: relative;
+  }
+  .logo-anchor {
+    display: inline-block;
+    width: 56px;
+    height: 3px;
+    background: var(--gold);
+    border-radius: 2px;
+    margin-bottom: 16px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.2s;
+  }
+  .ship-icon {
+    font-size: 40px;
+    display: block;
+    margin-bottom: 8px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.3s;
+  }
+  .brand-name {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 38px;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+    color: var(--white);
+    line-height: 1;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.4s;
+  }
+  .brand-sub {
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    margin-top: 6px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.5s;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== NAV TABS ===== */
+  .tab-bar {
+    display: flex;
+    margin: 0 20px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 14px;
+    padding: 4px;
+    gap: 4px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.6s;
+  }
+  .tab {
+    flex: 1;
+    padding: 10px 0;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-family: 'Noto Serif JP', serif;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .tab.active {
+    background: var(--gold);
+    color: var(--navy);
+    font-weight: 600;
+  }
+
+  /* ===== MAIN CONTENT ===== */
+  main { flex: 1; padding: 24px 20px 40px; }
+
+  .page { display: none; }
+  .page.active {
+    display: block;
+    animation: fadeIn 0.4s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== SECTION TITLE ===== */
+  .section-title {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--white);
+    margin-bottom: 4px;
+  }
+  .section-subtitle {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.15em;
+    margin-bottom: 20px;
+  }
+  .gold-line {
+    width: 32px;
+    height: 2px;
+    background: var(--gold);
+    border-radius: 1px;
+    margin-bottom: 20px;
+  }
+
+  /* ===== CARDS ===== */
+  .card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+    backdrop-filter: blur(8px);
+  }
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+  .card-title {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+  .badge {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+  .badge-gold {
+    background: rgba(201,168,76,0.2);
+    color: var(--gold-light);
+    border: 1px solid rgba(201,168,76,0.3);
+  }
+  .badge-blue {
+    background: rgba(46,139,192,0.2);
+    color: #6abde8;
+    border: 1px solid rgba(46,139,192,0.3);
+  }
+  .card-detail {
+    font-size: 13px;
+    color: var(--foam);
+    line-height: 1.8;
+  }
+  .price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+  }
+  .price-label { font-size: 11px; color: var(--text-muted); letter-spacing: 0.1em; }
+  .price-value {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--gold-light);
+  }
+  .price-unit { font-size: 11px; color: var(--text-muted); margin-left: 2px; }
+
+  /* ===== PRICE TABLE ===== */
+  .price-table { width: 100%; border-collapse: collapse; }
+  .price-table th {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--text-muted);
+    text-align: left;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .price-table td {
+    font-size: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: var(--foam);
+  }
+  .price-table td:last-child {
+    text-align: right;
+    color: var(--gold-light);
+    font-family: 'Shippori Mincho', serif;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .note-text {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.8;
+    margin-top: 12px;
+    padding: 12px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 8px;
+    border-left: 2px solid var(--gold);
+  }
+
+  /* ===== FORM ===== */
+  .form-group { margin-bottom: 18px; }
+  .form-label {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+  .form-label span {
+    color: #e87070;
+    margin-left: 4px;
+  }
+  .form-control {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 13px 16px;
+    color: var(--white);
+    font-family: 'Noto Serif JP', serif;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.3s, background 0.3s;
+    -webkit-appearance: none;
+  }
+  .form-control:focus {
+    border-color: var(--gold);
+    background: rgba(201,168,76,0.05);
+  }
+  .form-control::placeholder { color: rgba(255,255,255,0.2); }
+  select.form-control {
+    color: var(--white);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238aabb8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 40px;
+    cursor: pointer;
+  }
+  select.form-control option { background: var(--deep); color: var(--white); }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .submit-btn {
+    width: 100%;
+    padding: 17px;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+    color: var(--navy);
+    border: none;
+    border-radius: 12px;
+    font-family: 'Shippori Mincho', serif;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(201,168,76,0.3);
+  }
+  .submit-btn:active { transform: scale(0.98); }
+
+  /* ===== SUCCESS ===== */
+  .success-screen {
+    display: none;
+    text-align: center;
+    padding: 40px 20px;
+  }
+  .success-screen.show { display: block; animation: fadeIn 0.5s ease; }
+  .success-icon { font-size: 64px; margin-bottom: 20px; }
+  .success-title {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    margin-bottom: 12px;
+  }
+  .success-msg {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.9;
+    margin-bottom: 32px;
+  }
+  .booking-number {
+    background: rgba(201,168,76,0.1);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 28px;
+  }
+  .booking-number-label {
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+  .booking-number-value {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+  }
+  .reset-btn {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.15);
+    color: var(--text-muted);
+    border-radius: 10px;
+    padding: 12px 28px;
+    font-family: 'Noto Serif JP', serif;
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  /* ===== INFO PAGE ===== */
+  .info-block {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+  .info-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(201,168,76,0.1);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .info-content-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .info-content-text { font-size: 12px; color: var(--text-muted); line-height: 1.7; }
+
+  /* wave divider */
+  .wave-divider {
+    text-align: center;
+    color: rgba(255,255,255,0.1);
+    font-size: 20px;
+    letter-spacing: 0.3em;
+    margin: 12px 0;
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>emailjs.init("Km0FEUA4tiiZRKeCp");</script>
+</head>
+<body>
+
+<div class="ocean-bg">
+  <div class="stars"></div>
+</div>
+
+<div class="app">
+  <header style="padding: 40px 24px 28px; text-align:center;">
+    <div style="
+      font-family: 'Kaisei Decol', 'Shippori Mincho', serif;
+      font-size: 56px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      color: #ffffff;
+      line-height: 1;
+      text-shadow:
+        2px 2px 0px rgba(0,0,0,0.5),
+        0 0 30px rgba(201,168,76,0.3);
+      opacity: 0;
+      animation: fadeUp 0.9s ease forwards 0.3s;
+    ">栄真丸</div>
+  </header>
+
+  <nav class="tab-bar">
+    <button class="tab active" onclick="switchTab('reserve')">ご予約</button>
+    <button class="tab" onclick="switchTab('schedule')">出船スケジュール</button>
+  </nav>
+
+  <main>
+
+    <!-- ===== 出船スケジュールページ ===== -->
+    <div class="page" id="page-schedule">
+      <div class="section-title">出船スケジュール</div>
+      <div class="section-subtitle">SCHEDULE</div>
+      <div class="gold-line"></div>
+      <div class="card" style="padding:0; overflow:hidden; border-radius:16px;">
+        <iframe
+          src="https://www.eishinmaru-awaji.com/%E5%87%BA%E8%88%B9%E3%82%B9%E3%82%B1%E3%82%B8%E3%83%A5%E3%83%BC%E3%83%AB/"
+          style="width:100%; height:70vh; border:none; display:block;"
+          title="出船スケジュール">
+        </iframe>
+      </div>
+      <p style="font-size:11px; color:#8aabb8; text-align:center; margin-top:12px; letter-spacing:0.1em;">
+        ※ 読み込めない場合は<a href="https://www.eishinmaru-awaji.com/%E5%87%BA%E8%88%B9%E3%82%B9%E3%82%B1%E3%82%B8%E3%83%A5%E3%83%BC%E3%83%AB/" target="_blank" style="color:#c9a84c;">こちら</a>をタップ
+      </p>
+    </div>
+
+    <!-- ===== 予約ページ ===== -->
+    <div class="page active" id="page-reserve">
+      <div class="section-title">乗船予約</div>
+      <div class="section-subtitle">RESERVATION</div>
+      <div class="gold-line"></div>
+
+      <div id="form-area">
+        <div class="card">
+          <div class="form-group" style="position:relative;">
+            <label class="form-label">乗船日<span>*</span></label>
+            <div class="form-control cal-input" id="date-display" onclick="toggleCalendar()" style="cursor:pointer; display:flex; align-items:center; justify-content:space-between; color:rgba(255,255,255,0.25); user-select:none;">
+              <span id="date-display-text">日付を選択してください</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="flex-shrink:0; opacity:0.5;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            </div>
+            <input type="hidden" id="date">
+            <div id="calendar-popup" style="display:none; position:absolute; top:calc(100% + 8px); left:0; right:0; z-index:100; background:#0d2240; border:1px solid rgba(201,168,76,0.35); border-radius:16px; padding:20px; box-shadow:0 16px 48px rgba(0,0,0,0.6);">
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+                <button onclick="calPrevMonth(event)" style="background:rgba(255,255,255,0.07); border:none; color:#fff; width:36px; height:36px; border-radius:50%; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center;">&#8249;</button>
+                <div id="cal-month-label" style="font-family:'Shippori Mincho',serif; font-size:16px; font-weight:600; letter-spacing:0.1em;"></div>
+                <button onclick="calNextMonth(event)" style="background:rgba(255,255,255,0.07); border:none; color:#fff; width:36px; height:36px; border-radius:50%; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center;">&#8250;</button>
+              </div>
+              <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-bottom:8px;">
+                <div style="text-align:center; font-size:11px; color:#e87070; padding:4px 0;">日</div>
+                <div style="text-align:center; font-size:11px; color:#8aabb8; padding:4px 0;">月</div>
+                <div style="text-align:center; font-size:11px; color:#8aabb8; padding:4px 0;">火</div>
+                <div style="text-align:center; font-size:11px; color:#8aabb8; padding:4px 0;">水</div>
+                <div style="text-align:center; font-size:11px; color:#8aabb8; padding:4px 0;">木</div>
+                <div style="text-align:center; font-size:11px; color:#8aabb8; padding:4px 0;">金</div>
+                <div style="text-align:center; font-size:11px; color:#4a8fbd; padding:4px 0;">土</div>
+              </div>
+              <div id="cal-days" style="display:grid; grid-template-columns:repeat(7,1fr); gap:4px;"></div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">午前or午後<span>*</span></label>
+              <select class="form-control" id="ampm">
+                <option value="">選択</option>
+                <option>午前乗合</option>
+                <option>午後乗合</option>
+                <option>乗合通し</option>
+                <option>午前貸切</option>
+                <option>午後貸切</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">人数<span>*</span></label>
+              <input type="number" class="form-control" id="pax" placeholder="例：2" min="1" max="99">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">釣り物（午前）<span>*</span></label>
+            <select class="form-control" id="fishing-am">
+              <option value="なし">なし</option>
+              <option>フグ</option>
+              <option>タイラバ</option>
+              <option>タコ</option>
+              <option>ジギング</option>
+              <option>ノマセ</option>
+              <option>落とし込み</option>
+              <option>ティップラン</option>
+              <option>イカメタル</option>
+              <option>ドテリグ(ミドルゲーム)</option>
+              <option>アジ(サビキ)</option>
+              <option>キス(天秤)</option>
+              <option>カワハギ</option>
+              <option>タチウオ</option>
+              <option>五目</option>
+              <option>その他便</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">釣り物（午後）<span>*</span></label>
+            <select class="form-control" id="fishing-pm">
+              <option value="なし">なし</option>
+              <option>フグ</option>
+              <option>タイラバ</option>
+              <option>タコ</option>
+              <option>ジギング</option>
+              <option>ノマセ</option>
+              <option>落とし込み</option>
+              <option>ティップラン</option>
+              <option>イカメタル</option>
+              <option>ドテリグ(ミドルゲーム)</option>
+              <option>アジ(サビキ)</option>
+              <option>キス(天秤)</option>
+              <option>カワハギ</option>
+              <option>タチウオ</option>
+              <option>五目</option>
+              <option>その他便</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">その他の場合</label>
+            <input type="text" class="form-control" id="fishing-other" placeholder="釣り物をご記入ください">
+          </div>
+          <div class="form-group">
+            <label class="form-label">その他問い合わせ等</label>
+            <textarea class="form-control" id="notes" rows="3" placeholder="ご質問・ご要望などご自由にお書きください"></textarea>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="form-group">
+            <label class="form-label">名前<span>*</span></label>
+            <input type="text" class="form-control" id="name" placeholder="山田 太郎">
+          </div>
+          <div class="form-group">
+            <label class="form-label">フリガナ<span>*</span></label>
+            <input type="text" class="form-control" id="furigana" placeholder="ヤマダ タロウ">
+          </div>
+          <div class="form-group">
+            <label class="form-label">会員番号</label>
+            <input type="text" class="form-control" id="member" placeholder="お持ちの方のみ">
+          </div>
+          <div class="form-group">
+            <label class="form-label">メールアドレス<span>*</span></label>
+            <input type="email" class="form-control" id="email" placeholder="example@email.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">電話番号<span>*</span></label>
+            <input type="tel" class="form-control" id="tel" placeholder="090-0000-0000">
+          </div>
+        </div>
+
+        <button class="submit-btn" onclick="submitForm()">予約を申し込む</button>
+      </div>
+
+      <!-- 完了画面 -->
+      <div class="success-screen" id="success-screen">
+        <div class="success-icon">🎣</div>
+        <div class="success-title">予約申込み完了</div>
+        <div class="success-msg">
+          ご予約のお申し込みを受け付けました。<br>
+          確認後、船長より折り返しご連絡いたします。<br>
+          しばらくお待ちください。
+        </div>
+        <div class="booking-number">
+          <div class="booking-number-label">予約受付番号</div>
+          <div class="booking-number-value" id="booking-no">—</div>
+        </div>
+        <button class="reset-btn" onclick="resetForm()">新しい予約をする</button>
+      </div>
+    </div>
+
+
+  </main>
+</div>
+
+<script>
+  // タブ切り替え
+  function switchTab(tab) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('page-' + tab).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  // 予約送信
+  function submitForm() {
+    var name     = document.getElementById('name').value;
+    var furigana = document.getElementById('furigana').value;
+    var email    = document.getElementById('email').value;
+    var tel      = document.getElementById('tel').value;
+    var date     = document.getElementById('date').value;
+    var pax      = document.getElementById('pax').value;
+    var ampm     = document.getElementById('ampm').value;
+    var fishAm   = document.getElementById('fishing-am').value;
+    var fishPm   = document.getElementById('fishing-pm').value;
+    var other    = document.getElementById('fishing-other').value;
+    var notes    = document.getElementById('notes').value;
+    var member   = document.getElementById('member').value;
+
+    if (!name || !furigana || !email || !tel || !date || !pax || !ampm) {
+      alert('必須項目（*）をすべてご入力ください。');
+      return;
+    }
+
+    var dateParts = date.split('-');
+    var dateLabel = dateParts[0] + '年' + parseInt(dateParts[1]) + '月' + parseInt(dateParts[2]) + '日';
+
+    var btn = document.querySelector('.submit-btn');
+    btn.textContent = '送信中...';
+    btn.disabled = true;
+
+    var params = {
+      name:          name,
+      furigana:      furigana,
+      member:        member || 'なし',
+      email:         email,
+      tel:           tel,
+      date:          dateLabel,
+      pax:           pax,
+      ampm:          ampm,
+      fishing_am:    fishAm,
+      fishing_pm:    fishPm,
+      fishing_other: other || 'なし',
+      notes:         notes || 'なし'
+    };
+
+    emailjs.send('service_rvvn75a', 'template_rdvbitr', params)
+      .then(function() {
+        var now = new Date();
+        var num = 'ESM' + now.getFullYear().toString().slice(2)
+          + String(now.getMonth()+1).padStart(2,'0')
+          + String(now.getDate()).padStart(2,'0')
+          + '-' + String(Math.floor(Math.random()*9000)+1000);
+        document.getElementById('booking-no').textContent = num;
+        document.getElementById('form-area').style.display = 'none';
+        document.getElementById('success-screen').classList.add('show');
+        window.scrollTo(0, 0);
+      }, function(error) {
+        alert('送信に失敗しました。もう一度お試しください。');
+        btn.textContent = '予約を申し込む';
+        btn.disabled = false;
+      });
+  }
+
+
+
+  // ===== カスタムカレンダー =====
+  var calYear, calMonth, calSelected = null;
+
+  function initCal() {
+    var now = new Date();
+    calYear = now.getFullYear();
+    calMonth = now.getMonth();
+  }
+
+  function toggleCalendar() {
+    var popup = document.getElementById('calendar-popup');
+    if (!popup) return;
+    if (popup.style.display === 'none' || popup.style.display === '') {
+      if (!calYear) initCal();
+      renderCalendar();
+      popup.style.display = 'block';
+    } else {
+      popup.style.display = 'none';
+    }
+  }
+
+  function calPrevMonth(e) {
+    e.stopPropagation();
+    calMonth--;
+    if (calMonth < 0) { calMonth = 11; calYear--; }
+    renderCalendar();
+  }
+
+  function calNextMonth(e) {
+    e.stopPropagation();
+    calMonth++;
+    if (calMonth > 11) { calMonth = 0; calYear++; }
+    renderCalendar();
+  }
+
+  function renderCalendar() {
+    var monthNames = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+    document.getElementById('cal-month-label').textContent = calYear + '年 ' + monthNames[calMonth];
+    var grid = document.getElementById('cal-days');
+    grid.innerHTML = '';
+    var firstDay = new Date(calYear, calMonth, 1).getDay();
+    var daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+    var today = new Date(); today.setHours(0,0,0,0);
+
+    for (var i = 0; i < firstDay; i++) {
+      var blank = document.createElement('div');
+      grid.appendChild(blank);
+    }
+
+    for (var d = 1; d <= daysInMonth; d++) {
+      var thisDate = new Date(calYear, calMonth, d);
+      var isPast = thisDate < today;
+      var mm = String(calMonth + 1).padStart(2, '0');
+      var dd = String(d).padStart(2, '0');
+      var dateStr = calYear + '-' + mm + '-' + dd;
+      var isSelected = calSelected === dateStr;
+      var dow = thisDate.getDay();
+
+      var cell = document.createElement('div');
+      cell.textContent = d;
+      cell.style.cssText = 'text-align:center; padding:8px 2px; font-size:14px; border-radius:50%; transition:background 0.2s;';
+
+      if (isSelected) {
+        cell.style.background = '#c9a84c';
+        cell.style.color = '#0a1628';
+      } else if (isPast) {
+        cell.style.color = 'rgba(255,255,255,0.2)';
+        cell.style.cursor = 'default';
+      } else if (dow === 0) {
+        cell.style.color = '#e87070';
+        cell.style.cursor = 'pointer';
+      } else if (dow === 6) {
+        cell.style.color = '#4a8fbd';
+        cell.style.cursor = 'pointer';
+      } else {
+        cell.style.color = '#fff';
+        cell.style.cursor = 'pointer';
+      }
+
+      if (!isPast && !isSelected) {
+        cell.addEventListener('mouseover', function() { this.style.background = 'rgba(255,255,255,0.1)'; });
+        cell.addEventListener('mouseout', function() { this.style.background = ''; });
+      }
+
+      if (!isPast) {
+        (function(ds) {
+          cell.addEventListener('click', function(e) {
+            e.stopPropagation();
+            selectDate(ds);
+          });
+        })(dateStr);
+      }
+
+      grid.appendChild(cell);
+    }
+  }
+
+  function selectDate(dateStr) {
+    calSelected = dateStr;
+    document.getElementById('date').value = dateStr;
+    var parts = dateStr.split('-');
+    var display = parts[0] + '年' + parseInt(parts[1]) + '月' + parseInt(parts[2]) + '日';
+    var el = document.getElementById('date-display-text');
+    el.textContent = display;
+    el.style.color = '#fff';
+    document.getElementById('calendar-popup').style.display = 'none';
+  }
+
+  document.addEventListener('click', function(e) {
+    var popup = document.getElementById('calendar-popup');
+    var trigger = document.getElementById('date-display');
+    if (popup && trigger && !popup.contains(e.target) && !trigger.contains(e.target)) {
+      popup.style.display = 'none';
+    }
+  });
+
+  function resetForm() {
+    document.getElementById('form-area').style.display = 'block';
+    document.getElementById('success-screen').classList.remove('show');
+    ['date','ampm','fishing-am','fishing-pm','fishing-other','name','furigana','member','tel','email','pax','notes'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    calSelected = null;
+    var txt = document.getElementById('date-display-text');
+    if (txt) { txt.textContent = '日付を選択してください'; txt.style.color = 'rgba(255,255,255,0.25)'; }
+    window.scrollTo(0, 0);
+  }
+</script>
