@@ -470,15 +470,130 @@
   <nav class="tab-bar">
     <button class="tab active" onclick="switchTab('reserve')">ご予約</button>
     <button class="tab" onclick="switchTab('schedule')">出船スケジュール</button>
+    <button class="tab" onclick="switchTab('notes')">注意事項</button>
   </nav>
 
   <main>
+
+    <!-- ===== 注意事項ページ ===== -->
+    <div class="page" id="page-notes">
+      <div class="section-title">注意事項</div>
+      <div class="section-subtitle">IMPORTANT NOTES</div>
+      <div class="gold-line"></div>
+
+      <div class="card">
+        <div style="display:flex; flex-direction:column; gap:18px;">
+
+          <div style="display:flex; gap:14px; align-items:flex-start;">
+            <div style="min-width:36px; height:36px; background:rgba(201,168,76,0.15); border:1px solid rgba(201,168,76,0.3); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px;">📅</div>
+            <div>
+              <div style="font-size:13px; font-weight:600; color:#fff; margin-bottom:4px; letter-spacing:0.05em;">出船スケジュールをご確認ください</div>
+              <div style="font-size:12px; color:#8aabb8; line-height:1.8;">ご予約前に必ず出船スケジュールをご確認の上、ご予約ください。</div>
+            </div>
+          </div>
+
+          <div style="height:1px; background:rgba(255,255,255,0.06);"></div>
+
+          <div style="display:flex; gap:14px; align-items:flex-start;">
+            <div style="min-width:36px; height:36px; background:rgba(201,168,76,0.15); border:1px solid rgba(201,168,76,0.3); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px;">📞</div>
+            <div>
+              <div style="font-size:13px; font-weight:600; color:#fff; margin-bottom:4px; letter-spacing:0.05em;">前日・複数日程のご予約はお電話で</div>
+              <div style="font-size:12px; color:#8aabb8; line-height:1.8;">前日のご予約や、複数日程にまたがるご予約はお電話にてお承りします。</div>
+            </div>
+          </div>
+
+          <div style="height:1px; background:rgba(255,255,255,0.06);"></div>
+
+          <div style="display:flex; gap:14px; align-items:flex-start;">
+            <div style="min-width:36px; height:36px; background:rgba(201,168,76,0.15); border:1px solid rgba(201,168,76,0.3); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px;">⚠️</div>
+            <div>
+              <div style="font-size:13px; font-weight:600; color:#fff; margin-bottom:4px; letter-spacing:0.05em;">予約の重複にご注意ください</div>
+              <div style="font-size:12px; color:#8aabb8; line-height:1.8;">電話・公式LINE・Webフォームのいずれか1つでご予約ください。重複予約はご遠慮いただきますようお願いします。</div>
+            </div>
+          </div>
+
+          <div style="height:1px; background:rgba(255,255,255,0.06);"></div>
+
+          <div style="display:flex; gap:14px; align-items:flex-start;">
+            <div style="min-width:36px; height:36px; background:rgba(201,168,76,0.15); border:1px solid rgba(201,168,76,0.3); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px;">🪑</div>
+            <div>
+              <div style="font-size:13px; font-weight:600; color:#fff; margin-bottom:4px; letter-spacing:0.05em;">座席は予約順になります</div>
+              <div style="font-size:12px; color:#8aabb8; line-height:1.8;">当日の座席はご予約いただいた順にご案内します。お早めのご予約をおすすめします。</div>
+            </div>
+          </div>
+
+          <div style="height:1px; background:rgba(255,255,255,0.06);"></div>
+
+          <div style="display:flex; gap:14px; align-items:flex-start;">
+            <div style="min-width:36px; height:36px; background:rgba(201,168,76,0.15); border:1px solid rgba(201,168,76,0.3); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px;">✏️</div>
+            <div>
+              <div style="font-size:13px; font-weight:600; color:#fff; margin-bottom:4px; letter-spacing:0.05em;">入力内容をご確認ください</div>
+              <div style="font-size:12px; color:#8aabb8; line-height:1.8;">必須項目の入力漏れや誤入力がないよう、送信前に必ずご確認ください。特にメールアドレスの誤入力が多くなっています。<br>
+              <span style="color:#e8c96a;">24時間以内に確認メールが届かない場合は、お電話にてご確認ください。</span></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
 
     <!-- ===== 出船スケジュールページ ===== -->
     <div class="page" id="page-schedule">
       <div class="section-title">出船スケジュール</div>
       <div class="section-subtitle">SCHEDULE</div>
       <div class="gold-line"></div>
+
+      <div class="card" style="margin-bottom:16px;">
+        <div style="font-family:'Shippori Mincho',serif; font-size:15px; font-weight:600; letter-spacing:0.1em; margin-bottom:14px; color:#fff;">🕐 集合時間</div>
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px;">
+          <div style="background:rgba(255,255,255,0.05); border-radius:10px; padding:10px 6px; text-align:center;">
+            <div style="font-size:11px; color:#8aabb8; margin-bottom:4px;">1・2月</div>
+            <div style="font-size:15px; font-weight:600; color:#e8c96a;">6:30</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.05); border-radius:10px; padding:10px 6px; text-align:center;">
+            <div style="font-size:11px; color:#8aabb8; margin-bottom:4px;">3月</div>
+            <div style="font-size:15px; font-weight:600; color:#e8c96a;">6:00</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.05); border-radius:10px; padding:10px 6px; text-align:center;">
+            <div style="font-size:11px; color:#8aabb8; margin-bottom:4px;">4月</div>
+            <div style="font-size:15px; font-weight:600; color:#e8c96a;">5:30</div>
+          </div>
+          <div style="background:rgba(201,168,76,0.15); border:1px solid rgba(201,168,76,0.3); border-radius:10px; padding:10px 6px; text-align:center;">
+            <div style="font-size:11px; color:#8aabb8; margin-bottom:4px;">5〜8月</div>
+            <div style="font-size:15px; font-weight:600; color:#e8c96a;">4:30</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.05); border-radius:10px; padding:10px 6px; text-align:center;">
+            <div style="font-size:11px; color:#8aabb8; margin-bottom:4px;">9月</div>
+            <div style="font-size:15px; font-weight:600; color:#e8c96a;">5:00</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.05); border-radius:10px; padding:10px 6px; text-align:center;">
+            <div style="font-size:11px; color:#8aabb8; margin-bottom:4px;">10・11月</div>
+            <div style="font-size:15px; font-weight:600; color:#e8c96a;">5:30</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.05); border-radius:10px; padding:10px 6px; text-align:center;">
+            <div style="font-size:11px; color:#8aabb8; margin-bottom:4px;">12月</div>
+            <div style="font-size:15px; font-weight:600; color:#e8c96a;">6:00</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.02); border-radius:10px; padding:10px 6px; text-align:center; opacity:0;">
+          </div>
+        </div>
+
+      </div>
+
+      <div class="card" style="margin-bottom:16px;">
+        <div style="font-family:'Shippori Mincho',serif; font-size:15px; font-weight:600; letter-spacing:0.1em; margin-bottom:14px; color:#fff;">🅿️ 駐車場・マナーについて</div>
+        <div style="display:flex; flex-direction:column; gap:14px;">
+          <div style="display:flex; gap:12px; align-items:flex-start;">
+            <div style="min-width:28px; height:28px; background:rgba(201,168,76,0.15); border:1px solid rgba(201,168,76,0.3); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0;">🚗</div>
+            <div style="font-size:12px; color:#b8d9ed; line-height:1.8;">駐車場が混雑する場合があります。スタッフの指示に従い、できるだけ詰めてご駐車ください。</div>
+          </div>
+          <div style="display:flex; gap:12px; align-items:flex-start;">
+            <div style="min-width:28px; height:28px; background:rgba(201,168,76,0.15); border:1px solid rgba(201,168,76,0.3); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0;">🤫</div>
+            <div style="font-size:12px; color:#b8d9ed; line-height:1.8;">早朝の集合となります。近隣にお住まいの方へのご配慮として、お声がけはお静かにお願いします。</div>
+          </div>
+        </div>
+      </div
+      </div>
       <div class="card" style="padding:0; overflow:hidden; border-radius:16px;">
         <iframe
           src="https://www.eishinmaru-awaji.com/%E5%87%BA%E8%88%B9%E3%82%B9%E3%82%B1%E3%82%B8%E3%83%A5%E3%83%BC%E3%83%AB/"
