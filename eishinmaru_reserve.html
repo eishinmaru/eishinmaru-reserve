@@ -471,9 +471,38 @@
     <button class="tab active" onclick="switchTab('reserve')">ご予約</button>
     <button class="tab" onclick="switchTab('schedule')">出船スケジュール</button>
     <button class="tab" onclick="switchTab('notes')">注意事項</button>
+    <button class="tab" onclick="switchTab('admin')">管理</button>
   </nav>
 
   <main>
+
+    <!-- ===== 管理者ページ ===== -->
+    <div class="page" id="page-admin">
+      <div class="section-title">管理者ページ</div>
+      <div class="section-subtitle">ADMIN</div>
+      <div class="gold-line"></div>
+
+      <!-- ログイン画面 -->
+      <div id="admin-login">
+        <div class="card">
+          <div style="font-size:13px; color:#8aabb8; margin-bottom:16px; letter-spacing:0.05em;">管理者パスワードを入力してください</div>
+          <div class="form-group">
+            <label class="form-label">パスワード</label>
+            <input type="password" class="form-control" id="admin-password" placeholder="パスワード" onkeydown="if(event.key==='Enter') adminLogin()">
+          </div>
+          <button class="submit-btn" style="margin-top:8px;" onclick="adminLogin()">ログイン</button>
+        </div>
+      </div>
+
+      <!-- 管理画面 -->
+      <div id="admin-panel" style="display:none;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div style="font-size:12px; color:#8aabb8;" id="admin-count">読み込み中...</div>
+          <button onclick="loadReservations()" style="background:rgba(201,168,76,0.15); border:1px solid rgba(201,168,76,0.3); color:#e8c96a; border-radius:8px; padding:8px 14px; font-size:12px; cursor:pointer; font-family:'Noto Serif JP',serif;">🔄 更新</button>
+        </div>
+        <div id="reservation-list"></div>
+      </div>
+    </div>
 
     <!-- ===== 注意事項ページ ===== -->
     <div class="page" id="page-notes">
@@ -770,6 +799,10 @@
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.getElementById('page-' + tab).classList.add('active');
     event.target.classList.add('active');
+    if (tab === 'admin') {
+      var panel = document.getElementById('admin-panel');
+      if (panel && panel.style.display === 'block') { loadReservations(); }
+    }
   }
 
   // 予約送信
@@ -814,6 +847,12 @@
       notes:         notes || 'なし'
     };
 
+    // スプレッドシートに記録
+    fetch('https://script.google.com/macros/s/AKfycbyYyQp09Z4uztbowmJfrbvn4VhJzvAtwtfOvMcz3XGFUdH88x0xu_LaK11OTHjaYU2-/exec', {
+      method: 'POST',
+      body: JSON.stringify(params)
+    }).catch(function(){});
+
     emailjs.send('service_rvvn75a', 'template_rdvbitr', params)
       .then(function() {
         var now = new Date();
@@ -834,7 +873,90 @@
 
 
 
+  // ===== 管理者ページ =====
+  var ADMIN_PASS = 'eishin2024';
+  var GAS_URL = 'https://script.google.com/macros/s/AKfycbyYyQp09Z4uztbowmJfrbvn4VhJzvAtwtfOvMcz3XGFUdH88x0xu_LaK11OTHjaYU2-/exec';
+
+  function adminLogin() {
+    var pass = document.getElementById('admin-password').value;
+    if (pass === ADMIN_PASS) {
+      document.getElementById('admin-login').style.display = 'none';
+      document.getElementById('admin-panel').style.display = 'block';
+      loadReservations();
+    } else {
+      alert('パスワードが違います');
+    }
+  }
+
+  function loadReservations() {
+    document.getElementById('admin-count').textContent = '読み込み中...';
+    document.getElementById('reservation-list').innerHTML = '<div style="text-align:center; padding:30px; color:#8aabb8;">読み込み中...</div>';
+
+    fetch(GAS_URL + '?action=get')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        renderReservations(data);
+      })
+      .catch(function(err) {
+        document.getElementById('reservation-list').innerHTML = '<div style="text-align:center; padding:30px; color:#e87070;">読み込みに失敗しました</div>';
+      });
+  }
+
+  function renderReservations(rows) {
+    var list = document.getElementById('reservation-list');
+    var count = document.getElementById('admin-count');
+
+    if (!rows || rows.length <= 1) {
+      list.innerHTML = '<div class="card" style="text-align:center; padding:30px; color:#8aabb8;">予約データがありません</div>';
+      count.textContent = '予約 0件';
+      return;
+    }
+
+    var dataRows = rows.slice(1); // ヘッダー除く
+    count.textContent = '予約 ' + dataRows.length + '件';
+
+    var html = '';
+    dataRows.reverse().forEach(function(row, i) {
+      var isDone = row[13] === '処理済み';
+      var idx = dataRows.length - i; // 元のindex
+      html += '<div class="card" style="margin-bottom:12px; border-left:3px solid ' + (isDone ? '#4a8fbd' : '#c9a84c') + ';">';
+      html += '<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">';
+      html += '<div>';
+      html += '<div style="font-family:Shippori Mincho,serif; font-size:16px; font-weight:600;">' + (row[7] || '') + ' 様</div>';
+      html += '<div style="font-size:11px; color:#8aabb8; margin-top:2px;">' + formatDate(row[0]) + ' 受付</div>';
+      html += '</div>';
+      html += '<span style="font-size:11px; padding:4px 10px; border-radius:20px; background:' + (isDone ? 'rgba(74,143,189,0.2)' : 'rgba(201,168,76,0.2)') + '; color:' + (isDone ? '#6abde8' : '#e8c96a') + '; border:1px solid ' + (isDone ? 'rgba(74,143,189,0.3)' : 'rgba(201,168,76,0.3)') + ';">' + (isDone ? '✅ 処理済み' : '⏳ 未処理') + '</span>';
+      html += '</div>';
+      html += '<div style="font-size:12px; color:#b8d9ed; line-height:2.0;">';
+      html += '🗓 ' + (row[1] || '') + '&nbsp;&nbsp;👥 ' + (row[2] || '') + '名&nbsp;&nbsp;🚢 ' + (row[3] || '') + '<br>';
+      html += '🎣 午前：' + (row[4] || '') + '&nbsp;&nbsp;午後：' + (row[5] || '') + '<br>';
+      html += '📞 ' + (row[11] || '') + '&nbsp;&nbsp;✉️ ' + (row[10] || '');
+      if (row[12] && row[12] !== 'なし') html += '<br>📝 ' + row[12];
+      html += '</div>';
+      if (!isDone) {
+        html += '<button onclick="markDone(' + (rows.length - 1 - i) + ')" style="margin-top:12px; width:100%; background:rgba(74,143,189,0.15); border:1px solid rgba(74,143,189,0.3); color:#6abde8; border-radius:8px; padding:10px; font-size:13px; cursor:pointer; font-family:Noto Serif JP,serif;">✅ 処理済みにする</button>';
+      }
+      html += '</div>';
+    });
+    list.innerHTML = html;
+  }
+
+  function markDone(rowIndex) {
+    fetch(GAS_URL + '?action=done&row=' + rowIndex)
+      .then(function(r) { return r.json(); })
+      .then(function() { loadReservations(); })
+      .catch(function() { alert('更新に失敗しました'); });
+  }
+
+  function formatDate(val) {
+    if (!val) return '';
+    var d = new Date(val);
+    if (isNaN(d)) return val;
+    return d.getFullYear() + '/' + (d.getMonth()+1) + '/' + d.getDate() + ' ' + d.getHours() + ':' + String(d.getMinutes()).padStart(2,'0');
+  }
+
   // ===== カスタムカレンダー =====
+
   var calYear, calMonth, calSelected = null;
 
   function initCal() {
