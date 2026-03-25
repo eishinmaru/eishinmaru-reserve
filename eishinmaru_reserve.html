@@ -928,15 +928,20 @@
 
     var html = '';
     dataRows.reverse().forEach(function(row, i) {
-      var isDone = row[13] === '処理済み';
-      var idx = dataRows.length - i; // 元のindex
-      html += '<div class="card" style="margin-bottom:12px; border-left:3px solid ' + (isDone ? '#4a8fbd' : '#c9a84c') + ';">';
+      var status = row[13] || '未処理';
+      var isDone = status === '処理済み';
+      var statusColor = status === '処理済み' ? '#4a8fbd' : status === '保留' ? '#b87cc4' : '#c9a84c';
+      var statusBg = status === '処理済み' ? 'rgba(74,143,189,0.2)' : status === '保留' ? 'rgba(184,124,196,0.2)' : 'rgba(201,168,76,0.2)';
+      var statusBorder = status === '処理済み' ? 'rgba(74,143,189,0.3)' : status === '保留' ? 'rgba(184,124,196,0.3)' : 'rgba(201,168,76,0.3)';
+      var statusLabel = status === '処理済み' ? '✅ 処理済み' : status === '保留' ? '⏸ 保留' : '⏳ 未処理';
+      var rowIdx = rows.length - 1 - i;
+      html += '<div class="card" style="margin-bottom:12px; border-left:3px solid ' + statusColor + ';">';
       html += '<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">';
       html += '<div>';
       html += '<div style="font-family:Shippori Mincho,serif; font-size:16px; font-weight:600;">' + (row[7] || '') + ' 様</div>';
       html += '<div style="font-size:11px; color:#8aabb8; margin-top:2px;">' + formatDate(row[0]) + ' 受付</div>';
       html += '</div>';
-      html += '<span style="font-size:11px; padding:4px 10px; border-radius:20px; background:' + (isDone ? 'rgba(74,143,189,0.2)' : 'rgba(201,168,76,0.2)') + '; color:' + (isDone ? '#6abde8' : '#e8c96a') + '; border:1px solid ' + (isDone ? 'rgba(74,143,189,0.3)' : 'rgba(201,168,76,0.3)') + ';">' + (isDone ? '✅ 処理済み' : '⏳ 未処理') + '</span>';
+      html += '<button onclick="cycleStatus(' + rowIdx + ')" style="font-size:11px; padding:4px 10px; border-radius:20px; background:' + statusBg + '; color:' + statusColor + '; border:1px solid ' + statusBorder + '; cursor:pointer; font-family:Noto Serif JP,serif;">' + statusLabel + '</button>';
       html += '</div>';
       html += '<div style="font-size:12px; color:#b8d9ed; line-height:2.0;">';
       html += '🗓 ' + (row[1] || '') + '&nbsp;&nbsp;👥 ' + (row[2] || '') + '名&nbsp;&nbsp;🚢 ' + (row[3] || '') + '<br>';
@@ -944,13 +949,25 @@
       html += '📞 ' + (row[11] || '') + '&nbsp;&nbsp;✉️ ' + (row[10] || '');
       if (row[12] && row[12] !== 'なし') html += '<br>📝 ' + row[12];
       html += '</div>';
-      if (!isDone) {
-        html += '<button onclick="markDone(' + (rows.length - 1 - i) + ')" style="margin-top:12px; width:100%; background:rgba(74,143,189,0.15); border:1px solid rgba(74,143,189,0.3); color:#6abde8; border-radius:8px; padding:10px; font-size:13px; cursor:pointer; font-family:Noto Serif JP,serif;">✅ 処理済みにする</button>';
-      }
-      html += '<button onclick="deleteReservation(' + (rows.length - 1 - i) + ')" style="margin-top:8px; width:100%; background:rgba(232,112,112,0.1); border:1px solid rgba(232,112,112,0.25); color:#e87070; border-radius:8px; padding:10px; font-size:13px; cursor:pointer; font-family:Noto Serif JP,serif;">🗑 この予約を削除</button>';
+      html += '<button onclick="deleteReservation(' + rowIdx + ')" style="margin-top:8px; width:100%; background:rgba(232,112,112,0.1); border:1px solid rgba(232,112,112,0.25); color:#e87070; border-radius:8px; padding:10px; font-size:13px; cursor:pointer; font-family:Noto Serif JP,serif;">🗑 この予約を削除</button>';
       html += '</div>';
     });
     list.innerHTML = html;
+  }
+
+  function cycleStatus(rowIndex) {
+    var GAS_URL_LOCAL = GAS_URL;
+    // 現在のステータスを取得して次のステータスに切り替え
+    fetch(GAS_URL_LOCAL + '?action=get')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var current = data[rowIndex] ? (data[rowIndex][13] || '未処理') : '未処理';
+        var next = current === '未処理' ? '処理済み' : current === '処理済み' ? '保留' : '未処理';
+        return fetch(GAS_URL_LOCAL + '?action=setstatus&row=' + rowIndex + '&status=' + encodeURIComponent(next));
+      })
+      .then(function(r) { return r.json(); })
+      .then(function() { loadReservations(); })
+      .catch(function() { alert('更新に失敗しました'); });
   }
 
   function deleteReservation(rowIndex) {
