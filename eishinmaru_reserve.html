@@ -498,7 +498,10 @@
       <div id="admin-panel" style="display:none;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
           <div style="font-size:12px; color:#8aabb8;" id="admin-count">読み込み中...</div>
-          <button onclick="loadReservations()" style="background:rgba(201,168,76,0.15); border:1px solid rgba(201,168,76,0.3); color:#e8c96a; border-radius:8px; padding:8px 14px; font-size:12px; cursor:pointer; font-family:'Noto Serif JP',serif;">🔄 更新</button>
+          <div style="display:flex; gap:8px;">
+            <button onclick="loadReservations()" style="background:rgba(201,168,76,0.15); border:1px solid rgba(201,168,76,0.3); color:#e8c96a; border-radius:8px; padding:8px 14px; font-size:12px; cursor:pointer; font-family:'Noto Serif JP',serif;">🔄 更新</button>
+            <button onclick="adminLogout()" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.15); color:#8aabb8; border-radius:8px; padding:8px 14px; font-size:12px; cursor:pointer; font-family:'Noto Serif JP',serif;">🔒 ログアウト</button>
+          </div>
         </div>
         <div id="reservation-list"></div>
       </div>
@@ -877,6 +880,14 @@
   var ADMIN_PASS = 'eishin2024';
   var GAS_URL = 'https://script.google.com/macros/s/AKfycbyYyQp09Z4uztbowmJfrbvn4VhJzvAtwtfOvMcz3XGFUdH88x0xu_LaK11OTHjaYU2-/exec';
 
+  function adminLogout() {
+    document.getElementById('admin-panel').style.display = 'none';
+    document.getElementById('admin-login').style.display = 'block';
+    document.getElementById('admin-password').value = '';
+    document.getElementById('reservation-list').innerHTML = '';
+    document.getElementById('admin-count').textContent = '読み込み中...';
+  }
+
   function adminLogin() {
     var pass = document.getElementById('admin-password').value;
     if (pass === ADMIN_PASS) {
@@ -936,9 +947,18 @@
       if (!isDone) {
         html += '<button onclick="markDone(' + (rows.length - 1 - i) + ')" style="margin-top:12px; width:100%; background:rgba(74,143,189,0.15); border:1px solid rgba(74,143,189,0.3); color:#6abde8; border-radius:8px; padding:10px; font-size:13px; cursor:pointer; font-family:Noto Serif JP,serif;">✅ 処理済みにする</button>';
       }
+      html += '<button onclick="deleteReservation(' + (rows.length - 1 - i) + ')" style="margin-top:8px; width:100%; background:rgba(232,112,112,0.1); border:1px solid rgba(232,112,112,0.25); color:#e87070; border-radius:8px; padding:10px; font-size:13px; cursor:pointer; font-family:Noto Serif JP,serif;">🗑 この予約を削除</button>';
       html += '</div>';
     });
     list.innerHTML = html;
+  }
+
+  function deleteReservation(rowIndex) {
+    if (!confirm('この予約を削除しますか？\nスプレッドシートからも完全に削除されます。')) return;
+    fetch(GAS_URL + '?action=delete&row=' + rowIndex)
+      .then(function(r) { return r.json(); })
+      .then(function() { loadReservations(); })
+      .catch(function() { alert('削除に失敗しました'); });
   }
 
   function markDone(rowIndex) {
