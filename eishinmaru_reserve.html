@@ -941,7 +941,7 @@
       html += '<div style="font-family:Shippori Mincho,serif; font-size:16px; font-weight:600;">' + (row[7] || '') + ' 様</div>';
       html += '<div style="font-size:11px; color:#8aabb8; margin-top:2px;">' + formatDate(row[0]) + ' 受付</div>';
       html += '</div>';
-      html += '<button onclick="cycleStatus(' + rowIdx + ')" style="font-size:11px; padding:4px 10px; border-radius:20px; background:' + statusBg + '; color:' + statusColor + '; border:1px solid ' + statusBorder + '; cursor:pointer; font-family:Noto Serif JP,serif;">' + statusLabel + '</button>';
+      html += '<button id="status-btn-' + rowIdx + '" data-status="' + status + '" onclick="cycleStatus(' + rowIdx + ', this)" style="font-size:11px; padding:4px 10px; border-radius:20px; background:' + statusBg + '; color:' + statusColor + '; border:1px solid ' + statusBorder + '; cursor:pointer; font-family:Noto Serif JP,serif;">' + statusLabel + '</button>';
       html += '</div>';
       html += '<div style="font-size:12px; color:#b8d9ed; line-height:2.0;">';
       html += '🗓 ' + (row[1] || '') + '&nbsp;&nbsp;👥 ' + (row[2] || '') + '名&nbsp;&nbsp;🚢 ' + (row[3] || '') + '<br>';
@@ -955,19 +955,28 @@
     list.innerHTML = html;
   }
 
-  function cycleStatus(rowIndex) {
-    var GAS_URL_LOCAL = GAS_URL;
-    // 現在のステータスを取得して次のステータスに切り替え
-    fetch(GAS_URL_LOCAL + '?action=get')
-      .then(function(r) { return r.json(); })
-      .then(function(data) {
-        var current = data[rowIndex] ? (data[rowIndex][13] || '未処理') : '未処理';
-        var next = current === '未処理' ? '処理済み' : current === '処理済み' ? '保留' : '未処理';
-        return fetch(GAS_URL_LOCAL + '?action=setstatus&row=' + rowIndex + '&status=' + encodeURIComponent(next));
-      })
-      .then(function(r) { return r.json(); })
-      .then(function() { loadReservations(); })
-      .catch(function() { alert('更新に失敗しました'); });
+  function cycleStatus(rowIndex, btn) {
+    var current = btn.getAttribute('data-status') || '未処理';
+    var next = current === '未処理' ? '処理済み' : current === '処理済み' ? '保留' : '未処理';
+    var nextColor = next === '処理済み' ? '#4a8fbd' : next === '保留' ? '#b87cc4' : '#c9a84c';
+    var nextBg = next === '処理済み' ? 'rgba(74,143,189,0.2)' : next === '保留' ? 'rgba(184,124,196,0.2)' : 'rgba(201,168,76,0.2)';
+    var nextBorder = next === '処理済み' ? 'rgba(74,143,189,0.3)' : next === '保留' ? 'rgba(184,124,196,0.3)' : 'rgba(201,168,76,0.3)';
+    var nextLabel = next === '処理済み' ? '✅ 処理済み' : next === '保留' ? '⏸ 保留' : '⏳ 未処理';
+
+    // UIを即更新
+    btn.setAttribute('data-status', next);
+    btn.textContent = nextLabel;
+    btn.style.color = nextColor;
+    btn.style.background = nextBg;
+    btn.style.borderColor = nextBorder;
+
+    // カード左のボーダー色も更新
+    var card = btn.closest('.card');
+    if (card) card.style.borderLeftColor = nextColor;
+
+    // GASに保存
+    fetch(GAS_URL + '?action=setstatus&row=' + rowIndex + '&status=' + encodeURIComponent(next))
+      .catch(function() { alert('保存に失敗しました'); });
   }
 
   function deleteReservation(rowIndex) {
