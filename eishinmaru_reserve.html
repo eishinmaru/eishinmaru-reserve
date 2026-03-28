@@ -1169,7 +1169,7 @@
     window.scrollTo(0, 0);
   }
 
-var MEMBER_GAS_URL='https://script.google.com/macros/s/AKfycbwxNr0pYdXlbJy6_UHt2Vz0LYGZrBihknJqfWhQf-ngX8q9rgAdbe83Gpn_wEz49Z-SPQ/exec';
+var MEMBER_GAS_URL='https://script.google.com/macros/s/AKfycbwxNr0pYdXIbJy6_UHt2Vz0LYGZrBihknJqfWhQf-ngX8q9rgAdbe83Gpn_wEz49Z-SPQ/exec';
 (function(){var _o=window.switchTab;window.switchTab=function(t){_o(t);if(t==='member'){memberCheckStatus();memberSetLogo();}};})();
 function memberSetLogo(){var s=document.querySelector('img[alt="栄真丸"]');var c=document.getElementById('member-card-logo');if(s&&c&&!c.src){c.src=s.src;}}
 function memberCheckStatus(){fetch(MEMBER_GAS_URL).then(function(r){return r.json();}).then(function(d){if(d.available===false){document.getElementById('member-full-banner').style.display='block';document.getElementById('member-form').style.display='none';}}).catch(function(){});}
