@@ -454,7 +454,14 @@
 .member-card::after{content:"⚓";position:absolute;bottom:-14px;right:-8px;font-size:86px;opacity:.04;transform:rotate(-15deg);pointer-events:none;color:var(--cream)}
 .member-back-btn{display:inline-block;padding:12px 28px;background:transparent;border:1px solid var(--wave);border-radius:8px;color:var(--foam);font-size:.9rem;cursor:pointer;font-family:inherit;transition:background .2s}
 .member-back-btn:hover{background:rgba(255,255,255,.05)}#member-submit-btn:disabled{opacity:.5;cursor:not-allowed;pointer-events:none}
-</style>
+
+    #admin-tab-ui { display: none !important; }
+    .page.active #admin-tab-ui { display: flex !important; }
+    #admin-tab-reservation { display: none; }
+    .page.active #admin-tab-reservation { display: block; }
+    #admin-tab-member { display: none !important; }
+    .page.active #admin-tab-member.show { display: block !important; }
+  </style>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>emailjs.init("Km0FEUA4tiiZRKeCp");</script>
 </head>
