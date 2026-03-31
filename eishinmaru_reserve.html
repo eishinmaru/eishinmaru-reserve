@@ -454,9 +454,121 @@
 .member-card::after{content:"⚓";position:absolute;bottom:-14px;right:-8px;font-size:86px;opacity:.04;transform:rotate(-15deg);pointer-events:none;color:var(--cream)}
 .member-back-btn{display:inline-block;padding:12px 28px;background:transparent;border:1px solid var(--wave);border-radius:8px;color:var(--foam);font-size:.9rem;cursor:pointer;font-family:inherit;transition:background .2s}
 .member-back-btn:hover{background:rgba(255,255,255,.05)}#member-submit-btn:disabled{opacity:.5;cursor:not-allowed;pointer-events:none}
-@media print{.no-print{display:none!important;}nav,.tab{display:none!important;}#page-admin,#admin-panel,#admin-tab-member,#member-result-area,#member-result-table{display:block!important;}body{background:white!important;color:black!important;}table th{background:#f0f0f0!important;color:black!important;}table td{color:black!important;}}
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
+
+// ===== 管理タブ切り替え =====
+var _memberData = [];
+document.addEventListener('DOMContentLoaded', function() {
+  var btnRes = document.getElementById('admin-tab-btn-reservation');
+  var btnMem = document.getElementById('admin-tab-btn-member');
+  var btnSearch = document.getElementById('btn-search-members');
+  var btnPrint = document.getElementById('btn-print-members');
+
+  if (btnRes) {
+    btnRes.addEventListener('click', function() {
+      document.getElementById('admin-tab-reservation').style.display = 'block';
+      document.getElementById('admin-tab-member').style.display = 'none';
+      btnRes.style.background = 'rgba(201,168,76,0.2)';
+      btnRes.style.color = 'var(--gold-light)';
+      btnRes.style.borderBottom = '3px solid var(--gold)';
+      btnRes.style.fontWeight = 'bold';
+      btnMem.style.background = 'transparent';
+      btnMem.style.color = 'var(--foam)';
+      btnMem.style.borderBottom = '3px solid transparent';
+      btnMem.style.fontWeight = 'normal';
+    });
+  }
+
+  if (btnMem) {
+    btnMem.addEventListener('click', function() {
+      document.getElementById('admin-tab-reservation').style.display = 'none';
+      document.getElementById('admin-tab-member').style.display = 'block';
+      btnMem.style.background = 'rgba(201,168,76,0.2)';
+      btnMem.style.color = 'var(--gold-light)';
+      btnMem.style.borderBottom = '3px solid var(--gold)';
+      btnMem.style.fontWeight = 'bold';
+      btnRes.style.background = 'transparent';
+      btnRes.style.color = 'var(--foam)';
+      btnRes.style.borderBottom = '3px solid transparent';
+      btnRes.style.fontWeight = 'normal';
+    });
+  }
+
+  if (btnSearch) {
+    btnSearch.addEventListener('click', function() {
+      var input = document.getElementById('member-search-input').value;
+      var errEl = document.getElementById('member-search-error');
+      var optEl = document.getElementById('member-search-options');
+      var resEl = document.getElementById('member-result-area');
+      errEl.style.display = 'none';
+      optEl.style.display = 'none';
+      resEl.style.display = 'none';
+      var nums = input.split(',').join('
+').split('
+').map(function(s){ return s.trim(); }).filter(function(s){ return s.length > 0; });
+      if (nums.length === 0) { errEl.textContent = '会員番号を入力してください'; errEl.style.display = 'block'; return; }
+      btnSearch.textContent = '検索中...';
+      btnSearch.disabled = true;
+      fetch(MEMBER_GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'searchMembers', memberNumbers: nums }) })
+        .then(function(r){ return r.json(); })
+        .then(function(d){
+          btnSearch.textContent = '&#128269; 検索';
+          btnSearch.disabled = false;
+          if (d.status === 'ok') {
+            _memberData = d.members;
+            optEl.style.display = 'block';
+            resEl.style.display = 'block';
+            renderMemberTable();
+          } else {
+            errEl.textContent = d.message || 'エラーが発生しました';
+            errEl.style.display = 'block';
+          }
+        })
+        .catch(function(){ btnSearch.textContent = '&#128269; 検索'; btnSearch.disabled = false; errEl.textContent = '通信エラー'; errEl.style.display = 'block'; });
+    });
+  }
+
+  if (btnPrint) {
+    btnPrint.addEventListener('click', function(){ window.print(); });
+  }
+
+  var checkboxIds = ['col-date','col-furigana','col-gender','col-birthday','col-phone','col-emergency','col-relation','col-address','col-memo'];
+  checkboxIds.forEach(function(id){
+    var el = document.getElementById(id);
+    if (el) el.addEventListener('change', renderMemberTable);
+  });
+});
+
+function renderMemberTable() {
+  var cols = [
+    {id:'col-no', key:'memberNo', label:'会員番号', fixed:true},
+    {id:'col-name', key:'name', label:'名前', fixed:true},
+    {id:'col-date', key:'registeredAt', label:'登録日時'},
+    {id:'col-furigana', key:'furigana', label:'フリガナ'},
+    {id:'col-gender', key:'gender', label:'性別'},
+    {id:'col-birthday', key:'birthday', label:'生年月日'},
+    {id:'col-phone', key:'phone', label:'電話番号'},
+    {id:'col-emergency', key:'emergency', label:'緊急連絡先'},
+    {id:'col-relation', key:'relation', label:'続柄'},
+    {id:'col-address', key:'address', label:'住所'},
+    {id:'col-memo', key:'memo', label:'備考'}
+  ];
+  var active = cols.filter(function(c){ var el = document.getElementById(c.id); return el && el.checked; });
+  var html = '<table style="width:100%;border-collapse:collapse;font-size:0.82rem;">';
+  html += '<thead><tr style="background:rgba(201,168,76,0.15);">';
+  active.forEach(function(c){ html += '<th style="padding:8px 10px;text-align:left;color:var(--gold-light);border-bottom:1px solid rgba(201,168,76,0.3);white-space:nowrap;">' + c.label + '</th>'; });
+  html += '</tr></thead><tbody>';
+  _memberData.forEach(function(m){
+    html += '<tr style="border-bottom:1px solid rgba(255,255,255,0.05);">';
+    active.forEach(function(c){ html += '<td style="padding:8px 10px;color:var(--cream);">' + (m[c.key]||'—') + '</td>'; });
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('member-result-table').innerHTML = html;
+}
+
+</script>
 <script>emailjs.init("Km0FEUA4tiiZRKeCp");</script>
 </head>
 <body>
@@ -535,10 +647,13 @@
 
       <!-- 管理画面 -->
       <div id="admin-panel" style="display:none;">
-        <div style="display:flex;gap:0;margin-bottom:20px;border-bottom:2px solid rgba(201,168,76,0.3);" class="no-print">
-          <button id="admin-tab-btn-reservation" onclick="switchAdminTab('reservation')" style="padding:10px 20px;background:rgba(201,168,76,0.2);color:var(--gold-light);border:none;border-bottom:3px solid var(--gold);cursor:pointer;font-size:0.88rem;font-family:inherit;font-weight:bold;">📋 予約確認</button>
-          <button id="admin-tab-btn-member" onclick="switchAdminTab('member')" style="padding:10px 20px;background:transparent;color:var(--foam);border:none;border-bottom:3px solid transparent;cursor:pointer;font-size:0.88rem;font-family:inherit;">👥 会員情報出力</button>
+        <!-- 管理タブ切り替え -->
+        <div style="display:flex;gap:0;margin-bottom:20px;border-bottom:2px solid rgba(201,168,76,0.3);">
+          <button id="admin-tab-btn-reservation" style="padding:10px 20px;background:rgba(201,168,76,0.2);color:var(--gold-light);border:none;border-bottom:3px solid var(--gold);cursor:pointer;font-size:0.88rem;font-family:inherit;font-weight:bold;">📋 予約確認</button>
+          <button id="admin-tab-btn-member" style="padding:10px 20px;background:transparent;color:var(--foam);border:none;border-bottom:3px solid transparent;cursor:pointer;font-size:0.88rem;font-family:inherit;">👥 会員情報出力</button>
         </div>
+
+        <!-- 予約確認タブ（既存コンテンツ） -->
         <div id="admin-tab-reservation">
 
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
@@ -615,38 +730,38 @@
     </div>
 
     <!-- ===== 出船スケジュールページ ===== -->
-    <div cla
+    
         </div>
+
+        <!-- 会員情報出力タブ（新規） -->
         <div id="admin-tab-member" style="display:none;">
-          <div style="background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.3);border-radius:12px;padding:20px;margin-bottom:20px;" class="no-print">
-            <p style="font-size:0.95rem;font-weight:bold;color:var(--gold-light);margin-bottom:12px;">🔍 会員番号入力</p>
-            <p style="font-size:0.82rem;color:var(--foam);margin-bottom:10px;">カンマ区切りまたは改行区切りで複数入力できます（例：No.501, No.502）</p>
-            <textarea id="member-search-input" style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(201,168,76,0.3);background:rgba(255,255,255,0.05);color:var(--cream);font-size:0.88rem;font-family:inherit;min-height:80px;resize:vertical;" placeholder="No.501, No.502&#10;No.503"></textarea>
-            <button onclick="searchMembers()" style="margin-top:10px;padding:10px 24px;background:var(--gold);color:#0a1628;border:none;border-radius:8px;font-size:0.88rem;font-weight:bold;cursor:pointer;font-family:inherit;">🔍 検索</button>
+          <div style="background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.3);border-radius:12px;padding:20px;margin-bottom:20px;">
+            <p style="font-size:0.95rem;font-weight:bold;color:var(--gold-light);margin-bottom:12px;">&#128269; 会員番号入力</p>
+            <p style="font-size:0.82rem;color:var(--foam);margin-bottom:10px;">カンマ区切りまたは改行区切りで複数入力できます。例：No.501, No.502</p>
+            <textarea id="member-search-input" style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(201,168,76,0.3);background:rgba(255,255,255,0.05);color:var(--cream);font-size:0.88rem;font-family:inherit;min-height:80px;resize:vertical;" placeholder="No.501, No.502"></textarea>
+            <button id="btn-search-members" style="margin-top:10px;padding:10px 24px;background:var(--gold);color:#0a1628;border:none;border-radius:8px;font-size:0.88rem;font-weight:bold;cursor:pointer;font-family:inherit;">&#128269; 検索</button>
           </div>
-          <div id="member-search-options" style="display:none;" class="no-print">
-            <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);border-radius:12px;padding:16px;margin-bottom:16px;">
-              <p style="font-size:0.88rem;font-weight:bold;color:var(--gold-light);margin-bottom:10px;">📋 出力項目選択</p>
-              <div style="display:flex;flex-wrap:wrap;gap:10px;">
-                <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--cream);"><input type="checkbox" id="col-no" checked disabled style="accent-color:var(--gold);width:14px;height:14px;"> 会員番号（固定）</label>
-                <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--cream);"><input type="checkbox" id="col-name" checked disabled style="accent-color:var(--gold);width:14px;height:14px;"> 名前（固定）</label>
-                <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--cream);cursor:pointer;"><input type="checkbox" id="col-date" style="accent-color:var(--gold);width:14px;height:14px;" onchange="renderMemberTable()"> 登録日時</label>
-                <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--cream);cursor:pointer;"><input type="checkbox" id="col-furigana" style="accent-color:var(--gold);width:14px;height:14px;" onchange="renderMemberTable()"> フリガナ</label>
-                <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--cream);cursor:pointer;"><input type="checkbox" id="col-gender" style="accent-color:var(--gold);width:14px;height:14px;" onchange="renderMemberTable()"> 性別</label>
-                <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--cream);cursor:pointer;"><input type="checkbox" id="col-birthday" style="accent-color:var(--gold);width:14px;height:14px;" onchange="renderMemberTable()"> 生年月日</label>
-                <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--cream);cursor:pointer;"><input type="checkbox" id="col-phone" style="accent-color:var(--gold);width:14px;height:14px;" onchange="renderMemberTable()"> 電話番号</label>
-                <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--cream);cursor:pointer;"><input type="checkbox" id="col-emergency" style="accent-color:var(--gold);width:14px;height:14px;" onchange="renderMemberTable()"> 緊急連絡先</label>
-                <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--cream);cursor:pointer;"><input type="checkbox" id="col-relation" style="accent-color:var(--gold);width:14px;height:14px;" onchange="renderMemberTable()"> 続柄</label>
-                <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--cream);cursor:pointer;"><input type="checkbox" id="col-address" style="accent-color:var(--gold);width:14px;height:14px;" onchange="renderMemberTable()"> 住所</label>
-                <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--cream);cursor:pointer;"><input type="checkbox" id="col-memo" style="accent-color:var(--gold);width:14px;height:14px;" onchange="renderMemberTable()"> 備考</label>
-              </div>
-              <button onclick="printMemberList()" style="margin-top:14px;padding:10px 24px;background:var(--ocean);color:var(--cream);border:none;border-radius:8px;font-size:0.88rem;font-weight:bold;cursor:pointer;font-family:inherit;">🖨️ PDF出力</button>
+          <div id="member-search-options" style="display:none;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);border-radius:12px;padding:16px;margin-bottom:16px;">
+            <p style="font-size:0.88rem;font-weight:bold;color:var(--gold-light);margin-bottom:10px;">&#128203; 出力項目選択</p>
+            <div style="display:flex;flex-wrap:wrap;gap:10px;">
+              <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--cream);"><input type="checkbox" id="col-no" checked disabled style="accent-color:var(--gold);"> 会員番号（固定）</label>
+              <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--cream);"><input type="checkbox" id="col-name" checked disabled style="accent-color:var(--gold);"> 名前（固定）</label>
+              <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--cream);"><input type="checkbox" id="col-date" style="accent-color:var(--gold);"> 登録日時</label>
+              <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--cream);"><input type="checkbox" id="col-furigana" style="accent-color:var(--gold);"> フリガナ</label>
+              <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--cream);"><input type="checkbox" id="col-gender" style="accent-color:var(--gold);"> 性別</label>
+              <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--cream);"><input type="checkbox" id="col-birthday" style="accent-color:var(--gold);"> 生年月日</label>
+              <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--cream);"><input type="checkbox" id="col-phone" style="accent-color:var(--gold);"> 電話番号</label>
+              <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--cream);"><input type="checkbox" id="col-emergency" style="accent-color:var(--gold);"> 緊急連絡先</label>
+              <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--cream);"><input type="checkbox" id="col-relation" style="accent-color:var(--gold);"> 続柄</label>
+              <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--cream);"><input type="checkbox" id="col-address" style="accent-color:var(--gold);"> 住所</label>
+              <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--cream);"><input type="checkbox" id="col-memo" style="accent-color:var(--gold);"> 備考</label>
             </div>
+            <button id="btn-print-members" style="margin-top:14px;padding:10px 24px;background:var(--ocean);color:var(--cream);border:none;border-radius:8px;font-size:0.88rem;font-weight:bold;cursor:pointer;font-family:inherit;">&#128424; PDF出力</button>
           </div>
           <div id="member-result-area" style="display:none;"><div id="member-result-table"></div></div>
-          <div id="member-search-error" style="display:none;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3);border-radius:8px;padding:12px;color:#f87171;font-size:0.85rem;" class="no-print"></div>
+          <div id="member-search-error" style="display:none;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3);border-radius:8px;padding:12px;color:#f87171;font-size:0.85rem;"></div>
         </div>
-ss="page" id="page-schedule">
+<div class="page" id="page-schedule">
       <div class="section-title">出船スケジュール</div>
       <div class="section-subtitle">SCHEDULE</div>
       <div class="gold-line"></div>
@@ -1214,11 +1329,6 @@ function memberCheckStatus(){fetch(MEMBER_GAS_URL).then(function(r){return r.jso
 var _mzt=null;
 function memberZipInput(i){clearTimeout(_mzt);var z=i.value.replace(/[^\d]/g,'');i.value=z;document.getElementById('m-zip-error').style.display='none';if(z.length===7){_mzt=setTimeout(function(){memberFetchAddress(z);},400);}}
 function memberFetchAddress(zip){var l=document.getElementById('m-zip-loading'),e=document.getElementById('m-zip-error');l.style.display='inline';e.style.display='none';fetch('https://zipcloud.ibsnet.co.jp/api/search?zipcode='+zip).then(function(r){return r.json();}).then(function(d){if(d.results&&d.results.length>0){var r=d.results[0],a=r.address1+r.address2+r.address3,el=document.getElementById('m-address');el.value=a;el.focus();el.setSelectionRange(a.length,a.length);}else{e.style.display='block';}}).catch(function(){e.style.display='block';}).finally(function(){l.style.display='none';});}
-function switchAdminTab(tab){['reservation','member'].forEach(function(t){var c=document.getElementById('admin-tab-'+t),b=document.getElementById('admin-tab-btn-'+t);if(c)c.style.display=t===tab?'block':'none';if(b){if(t===tab){b.style.background='rgba(201,168,76,0.2)';b.style.color='var(--gold-light)';b.style.borderBottom='3px solid var(--gold)';b.style.fontWeight='bold';}else{b.style.background='transparent';b.style.color='var(--foam)';b.style.borderBottom='3px solid transparent';b.style.fontWeight='normal';}}});}
-var _memberData=[];
-function searchMembers(){var inp=document.getElementById('member-search-input').value,errEl=document.getElementById('member-search-error'),optEl=document.getElementById('member-search-options'),resEl=document.getElementById('member-result-area');errEl.style.display='none';optEl.style.display='none';resEl.style.display='none';var nums=inp.split(/[,\n]/).map(function(s){return s.trim();}).filter(function(s){return s.length>0;});if(!nums.length){errEl.textContent='会員番号を入力してください';errEl.style.display='block';return;}var btn=document.querySelector('button[onclick="searchMembers()"]');if(btn){btn.textContent='🔍 検索中...';btn.disabled=true;}fetch(MEMBER_GAS_URL,{method:'POST',body:JSON.stringify({action:'searchMembers',memberNumbers:nums})}).then(function(r){return r.json();}).then(function(d){if(btn){btn.textContent='🔍 検索';btn.disabled=false;}if(d.status==='ok'){_memberData=d.members;optEl.style.display='block';resEl.style.display='block';renderMemberTable();}else{errEl.textContent=d.message||'エラーが発生しました';errEl.style.display='block';}}).catch(function(){if(btn){btn.textContent='🔍 検索';btn.disabled=false;}errEl.textContent='通信エラーが発生しました';errEl.style.display='block';});}
-function renderMemberTable(){var cols=[{id:'col-no',key:'memberNo',label:'会員番号'},{id:'col-name',key:'name',label:'名前'},{id:'col-date',key:'registeredAt',label:'登録日時'},{id:'col-furigana',key:'furigana',label:'フリガナ'},{id:'col-gender',key:'gender',label:'性別'},{id:'col-birthday',key:'birthday',label:'生年月日'},{id:'col-phone',key:'phone',label:'電話番号'},{id:'col-emergency',key:'emergency',label:'緊急連絡先'},{id:'col-relation',key:'relation',label:'続柄'},{id:'col-address',key:'address',label:'住所'},{id:'col-memo',key:'memo',label:'備考'}];var active=cols.filter(function(c){var el=document.getElementById(c.id);return el&&el.checked;});var html='<table style="width:100%;border-collapse:collapse;font-size:0.82rem;"><thead><tr style="background:rgba(201,168,76,0.15);">';active.forEach(function(c){html+='<th style="padding:8px 10px;text-align:left;color:var(--gold-light);border-bottom:1px solid rgba(201,168,76,0.3);white-space:nowrap;">'+c.label+'</th>';});html+='</tr></thead><tbody>';_memberData.forEach(function(m){html+='<tr style="border-bottom:1px solid rgba(255,255,255,0.05);">';active.forEach(function(c){html+='<td style="padding:8px 10px;color:var(--cream);">'+(m[c.key]||'—')+'</td>';});html+='</tr>';});html+='</tbody></table>';document.getElementById('member-result-table').innerHTML=html;}
-function printMemberList(){window.print();}
 function submitMemberForm(event){event.preventDefault();var fc=document.getElementById('m-fee-agree'),fe=document.getElementById('m-fee-error');if(!fc.checked){fe.style.display='block';fc.closest('#member-fee-notice').scrollIntoView({behavior:'smooth',block:'center'});return;}fe.style.display='none';var pc=document.getElementById('m-privacy'),pe=document.getElementById('m-privacy-error');if(!pc.checked){pe.style.display='block';pc.closest('.member-privacy-box').scrollIntoView({behavior:'smooth',block:'center'});return;}pe.style.display='none';var btn=document.getElementById('member-submit-btn');btn.disabled=true;btn.textContent='送信中…';var p={name:document.getElementById('m-name').value.trim(),furigana:document.getElementById('m-furigana').value.trim(),gender:document.getElementById('m-gender').value,birthday:document.getElementById('m-birthday').value,phone:document.getElementById('m-phone').value.trim(),emergency:document.getElementById('m-emergency').value.trim(),relation:document.getElementById('m-relation').value.trim(),address:document.getElementById('m-address').value.trim()};fetch(MEMBER_GAS_URL,{method:'POST',body:JSON.stringify(p)}).then(function(r){return r.json();}).then(function(d){if(d.status==='ok'){memberSetLogo();document.getElementById('complete-member-no').textContent=d.memberNo;document.getElementById('complete-name').textContent=d.name+' 様';document.getElementById('complete-date').textContent='登録日時：'+d.registeredAt;document.getElementById('member-form').style.display='none';document.getElementById('member-complete').style.display='block';document.getElementById('member-complete').scrollIntoView({behavior:'smooth'});}else if(d.status==='full'){alert(d.message);document.getElementById('member-full-banner').style.display='block';document.getElementById('member-form').style.display='none';}else{alert('エラー\n'+(d.message||'再送信してください。'));btn.disabled=false;btn.textContent='🎣 会員登録を申し込む';}}).catch(function(){alert('通信エラー\n080-6794-2646');btn.disabled=false;btn.textContent='🎣 会員登録を申し込む';});}
 function memberGoTop(){document.getElementById('member-form').reset();document.getElementById('member-form').style.display='block';document.getElementById('member-complete').style.display='none';var btn=document.getElementById('member-submit-btn');btn.disabled=false;btn.textContent='🎣 会員登録を申し込む';switchTab('reserve');window.scrollTo({top:0,behavior:'smooth'});}
 
