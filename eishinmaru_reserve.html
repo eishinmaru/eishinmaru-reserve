@@ -456,74 +456,61 @@
 .member-back-btn:hover{background:rgba(255,255,255,.05)}#member-submit-btn:disabled{opacity:.5;cursor:not-allowed;pointer-events:none}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
-var _memberData = [];
-document.addEventListener('DOMContentLoaded', function() {
-  var btnRes = document.getElementById('admin-tab-btn-reservation');
-  var btnMem = document.getElementById('admin-tab-btn-member');
-  var btnSearch = document.getElementById('btn-search-members');
-  var btnPrint = document.getElementById('btn-print-members');
-  function setActiveTab(tab) {
-    var isRes = tab === 'reservation';
-    document.getElementById('admin-tab-reservation').style.display = isRes ? 'block' : 'none';
-    document.getElementById('admin-tab-member').style.display = isRes ? 'none' : 'block';
-    btnRes.style.background = isRes ? 'rgba(201,168,76,0.2)' : 'transparent';
-    btnRes.style.color = isRes ? 'var(--gold-light)' : 'var(--foam)';
-    btnRes.style.borderBottom = isRes ? '3px solid var(--gold)' : '3px solid transparent';
-    btnRes.style.fontWeight = isRes ? 'bold' : 'normal';
-    btnMem.style.background = isRes ? 'transparent' : 'rgba(201,168,76,0.2)';
-    btnMem.style.color = isRes ? 'var(--foam)' : 'var(--gold-light)';
-    btnMem.style.borderBottom = isRes ? '3px solid transparent' : '3px solid var(--gold)';
-    btnMem.style.fontWeight = isRes ? 'normal' : 'bold';
+var _mData=[];
+document.addEventListener('DOMContentLoaded',function(){
+  var bR=document.getElementById('admin-tab-btn-reservation');
+  var bM=document.getElementById('admin-tab-btn-member');
+  var tR=document.getElementById('admin-tab-reservation');
+  var tM=document.getElementById('admin-tab-member');
+  function setTab(isRes){
+    tR.style.display=isRes?'block':'none';
+    tM.style.display=isRes?'none':'block';
+    bR.style.background=isRes?'rgba(201,168,76,0.2)':'transparent';
+    bR.style.color=isRes?'var(--gold-light)':'var(--foam)';
+    bR.style.borderBottom=isRes?'3px solid var(--gold)':'3px solid transparent';
+    bR.style.fontWeight=isRes?'bold':'normal';
+    bM.style.background=isRes?'transparent':'rgba(201,168,76,0.2)';
+    bM.style.color=isRes?'var(--foam)':'var(--gold-light)';
+    bM.style.borderBottom=isRes?'3px solid transparent':'3px solid var(--gold)';
+    bM.style.fontWeight=isRes?'normal':'bold';
   }
-  if (btnRes) btnRes.addEventListener('click', function(){ setActiveTab('reservation'); });
-  if (btnMem) btnMem.addEventListener('click', function(){ setActiveTab('member'); });
-  if (btnSearch) {
-    btnSearch.addEventListener('click', function() {
-      var input = document.getElementById('member-search-input').value;
-      var errEl = document.getElementById('member-search-error');
-      var optEl = document.getElementById('member-search-options');
-      var resEl = document.getElementById('member-result-area');
-      errEl.style.display='none'; optEl.style.display='none'; resEl.style.display='none';
-      var nums = [];
-      input.split(',').forEach(function(s){ s.split('\n').forEach(function(t){ var v=t.trim(); if(v) nums.push(v); }); });
-      nums = nums.filter(function(v,i,a){ return a.indexOf(v)===i; });
-      if (!nums.length) { errEl.textContent='会員番号を入力してください'; errEl.style.display='block'; return; }
-      btnSearch.textContent='検索中...'; btnSearch.disabled=true;
-      fetch(MEMBER_GAS_URL,{method:'POST',body:JSON.stringify({action:'searchMembers',memberNumbers:nums})})
+  if(bR)bR.addEventListener('click',function(){setTab(true);});
+  if(bM)bM.addEventListener('click',function(){setTab(false);});
+  var bS=document.getElementById('btn-search-members');
+  if(bS){
+    bS.addEventListener('click',function(){
+      var inp=document.getElementById('member-search-input').value;
+      var eEl=document.getElementById('member-search-error');
+      var oEl=document.getElementById('member-search-options');
+      var rEl=document.getElementById('member-result-area');
+      eEl.style.display='none';oEl.style.display='none';rEl.style.display='none';
+      var arr=[];
+      inp.split(',').forEach(function(s){s.split('\n').forEach(function(t){var v=t.trim();if(v&&arr.indexOf(v)<0)arr.push(v);});});
+      if(!arr.length){eEl.textContent='会員番号を入力してください';eEl.style.display='block';return;}
+      bS.textContent='検索中...';bS.disabled=true;
+      fetch(MEMBER_GAS_URL,{method:'POST',body:JSON.stringify({action:'searchMembers',memberNumbers:arr})})
         .then(function(r){return r.json();})
         .then(function(d){
-          btnSearch.innerHTML='&#128269; 検索'; btnSearch.disabled=false;
-          if(d.status==='ok'){_memberData=d.members;optEl.style.display='block';resEl.style.display='block';renderMemberTable();}
-          else{errEl.textContent=d.message||'エラー';errEl.style.display='block';}
+          bS.innerHTML='&#128269; 検索';bS.disabled=false;
+          if(d.status==='ok'){_mData=d.members;oEl.style.display='block';rEl.style.display='block';_renderMT();}
+          else{eEl.textContent=d.message||'エラー';eEl.style.display='block';}
         })
-        .catch(function(){btnSearch.innerHTML='&#128269; 検索';btnSearch.disabled=false;errEl.textContent='通信エラー';errEl.style.display='block';});
+        .catch(function(){bS.innerHTML='&#128269; 検索';bS.disabled=false;eEl.textContent='通信エラー';eEl.style.display='block';});
     });
   }
-  if (btnPrint) btnPrint.addEventListener('click', function(){ window.print(); });
-  ['col-date','col-furigana','col-gender','col-birthday','col-phone','col-emergency','col-relation','col-address','col-memo'].forEach(function(id){
-    var el=document.getElementById(id); if(el) el.addEventListener('change', renderMemberTable);
-  });
+  var bP=document.getElementById('btn-print-members');
+  if(bP)bP.addEventListener('click',function(){window.print();});
+  ['col-date','col-furigana','col-gender','col-birthday','col-phone','col-emergency','col-relation','col-address','col-memo'].forEach(function(id){var el=document.getElementById(id);if(el)el.addEventListener('change',_renderMT);});
 });
-function renderMemberTable() {
-  var cols=[
-    {id:'col-no',key:'memberNo',label:'会員番号'},{id:'col-name',key:'name',label:'名前'},
-    {id:'col-date',key:'registeredAt',label:'登録日時'},{id:'col-furigana',key:'furigana',label:'フリガナ'},
-    {id:'col-gender',key:'gender',label:'性別'},{id:'col-birthday',key:'birthday',label:'生年月日'},
-    {id:'col-phone',key:'phone',label:'電話番号'},{id:'col-emergency',key:'emergency',label:'緊急連絡先'},
-    {id:'col-relation',key:'relation',label:'続柄'},{id:'col-address',key:'address',label:'住所'},
-    {id:'col-memo',key:'memo',label:'備考'}
-  ];
-  var active=cols.filter(function(c){var el=document.getElementById(c.id);return el&&el.checked;});
-  var html='<table style="width:100%;border-collapse:collapse;font-size:0.82rem;"><thead><tr style="background:rgba(201,168,76,0.15);">';
-  active.forEach(function(c){html+='<th style="padding:8px 10px;text-align:left;color:var(--gold-light);border-bottom:1px solid rgba(201,168,76,0.3);white-space:nowrap;">'+c.label+'</th>';});
-  html+='</tr></thead><tbody>';
-  _memberData.forEach(function(m){
-    html+='<tr style="border-bottom:1px solid rgba(255,255,255,0.05);">';
-    active.forEach(function(c){html+='<td style="padding:8px 10px;color:var(--cream);">'+(m[c.key]||'—')+'</td>';});
-    html+='</tr>';
-  });
-  html+='</tbody></table>';
-  document.getElementById('member-result-table').innerHTML=html;
+function _renderMT(){
+  var cols=[{i:'col-no',k:'memberNo',l:'会員番号'},{i:'col-name',k:'name',l:'名前'},{i:'col-date',k:'registeredAt',l:'登録日時'},{i:'col-furigana',k:'furigana',l:'フリガナ'},{i:'col-gender',k:'gender',l:'性別'},{i:'col-birthday',k:'birthday',l:'生年月日'},{i:'col-phone',k:'phone',l:'電話番号'},{i:'col-emergency',k:'emergency',l:'緊急連絡先'},{i:'col-relation',k:'relation',l:'続柄'},{i:'col-address',k:'address',l:'住所'},{i:'col-memo',k:'memo',l:'備考'}];
+  var ac=cols.filter(function(c){var e=document.getElementById(c.i);return e&&e.checked;});
+  var h='<table style="width:100%;border-collapse:collapse;font-size:0.82rem;"><thead><tr style="background:rgba(201,168,76,0.15);">';
+  ac.forEach(function(c){h+='<th style="padding:8px 10px;text-align:left;color:var(--gold-light);border-bottom:1px solid rgba(201,168,76,0.3);white-space:nowrap;">'+c.l+'</th>';});
+  h+='</tr></thead><tbody>';
+  _mData.forEach(function(m){h+='<tr style="border-bottom:1px solid rgba(255,255,255,0.05);">';ac.forEach(function(c){h+='<td style="padding:8px 10px;color:var(--cream);">'+( m[c.k]||'—')+'</td>';});h+='</tr>';});
+  h+='</tbody></table>';
+  document.getElementById('member-result-table').innerHTML=h;
 }
 
 </script>
@@ -605,12 +592,10 @@ function renderMemberTable() {
 
       <!-- 管理画面 -->
       <div id="admin-panel" style="display:none;">
-        <!-- 管理タブ切り替え -->
         <div style="display:flex;gap:0;margin-bottom:20px;border-bottom:2px solid rgba(201,168,76,0.3);">
           <button id="admin-tab-btn-reservation" style="padding:10px 20px;background:rgba(201,168,76,0.2);color:var(--gold-light);border:none;border-bottom:3px solid var(--gold);cursor:pointer;font-size:0.88rem;font-family:inherit;font-weight:bold;">&#128203; 予約確認</button>
           <button id="admin-tab-btn-member" style="padding:10px 20px;background:transparent;color:var(--foam);border:none;border-bottom:3px solid transparent;cursor:pointer;font-size:0.88rem;font-family:inherit;">&#128101; 会員情報出力</button>
         </div>
-        <!-- 予約確認タブ -->
         <div id="admin-tab-reservation">
 
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
@@ -624,30 +609,28 @@ function renderMemberTable() {
       </div>
     </div>
 
-    
-        </div>
-        <!-- 会員情報出力タブ -->
+    </div>
         <div id="admin-tab-member" style="display:none;">
           <div style="background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.3);border-radius:12px;padding:20px;margin-bottom:20px;">
             <p style="font-size:0.95rem;font-weight:bold;color:var(--gold-light);margin-bottom:12px;">&#128269; 会員番号入力</p>
-            <p style="font-size:0.82rem;color:var(--foam);margin-bottom:10px;">カンマ区切りまたは改行区切りで複数入力できます。例：No.501, No.502</p>
+            <p style="font-size:0.82rem;color:var(--foam);margin-bottom:10px;">カンマ区切りまたは改行区切りで入力。例：No.501, No.502</p>
             <textarea id="member-search-input" style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(201,168,76,0.3);background:rgba(255,255,255,0.05);color:var(--cream);font-size:0.88rem;font-family:inherit;min-height:80px;resize:vertical;" placeholder="No.501, No.502"></textarea>
             <button id="btn-search-members" style="margin-top:10px;padding:10px 24px;background:var(--gold);color:#0a1628;border:none;border-radius:8px;font-size:0.88rem;font-weight:bold;cursor:pointer;font-family:inherit;">&#128269; 検索</button>
           </div>
           <div id="member-search-options" style="display:none;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);border-radius:12px;padding:16px;margin-bottom:16px;">
-            <p style="font-size:0.88rem;font-weight:bold;color:var(--gold-light);margin-bottom:10px;">&#128203; 出力項目選択</p>
+            <p style="font-size:0.88rem;font-weight:bold;color:var(--gold-light);margin-bottom:10px;">出力項目選択</p>
             <div style="display:flex;flex-wrap:wrap;gap:10px;">
-              <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--cream);"><input type="checkbox" id="col-no" checked disabled style="accent-color:var(--gold);"> 会員番号（固定）</label>
-              <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--cream);"><input type="checkbox" id="col-name" checked disabled style="accent-color:var(--gold);"> 名前（固定）</label>
-              <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--cream);"><input type="checkbox" id="col-date" style="accent-color:var(--gold);"> 登録日時</label>
-              <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--cream);"><input type="checkbox" id="col-furigana" style="accent-color:var(--gold);"> フリガナ</label>
-              <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--cream);"><input type="checkbox" id="col-gender" style="accent-color:var(--gold);"> 性別</label>
-              <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--cream);"><input type="checkbox" id="col-birthday" style="accent-color:var(--gold);"> 生年月日</label>
-              <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--cream);"><input type="checkbox" id="col-phone" style="accent-color:var(--gold);"> 電話番号</label>
-              <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--cream);"><input type="checkbox" id="col-emergency" style="accent-color:var(--gold);"> 緊急連絡先</label>
-              <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--cream);"><input type="checkbox" id="col-relation" style="accent-color:var(--gold);"> 続柄</label>
-              <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--cream);"><input type="checkbox" id="col-address" style="accent-color:var(--gold);"> 住所</label>
-              <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--cream);"><input type="checkbox" id="col-memo" style="accent-color:var(--gold);"> 備考</label>
+              <label style="font-size:0.82rem;color:var(--cream);display:flex;align-items:center;gap:4px;"><input type="checkbox" id="col-no" checked disabled> 会員番号（固定）</label>
+              <label style="font-size:0.82rem;color:var(--cream);display:flex;align-items:center;gap:4px;"><input type="checkbox" id="col-name" checked disabled> 名前（固定）</label>
+              <label style="font-size:0.82rem;color:var(--cream);display:flex;align-items:center;gap:4px;"><input type="checkbox" id="col-date"> 登録日時</label>
+              <label style="font-size:0.82rem;color:var(--cream);display:flex;align-items:center;gap:4px;"><input type="checkbox" id="col-furigana"> フリガナ</label>
+              <label style="font-size:0.82rem;color:var(--cream);display:flex;align-items:center;gap:4px;"><input type="checkbox" id="col-gender"> 性別</label>
+              <label style="font-size:0.82rem;color:var(--cream);display:flex;align-items:center;gap:4px;"><input type="checkbox" id="col-birthday"> 生年月日</label>
+              <label style="font-size:0.82rem;color:var(--cream);display:flex;align-items:center;gap:4px;"><input type="checkbox" id="col-phone"> 電話番号</label>
+              <label style="font-size:0.82rem;color:var(--cream);display:flex;align-items:center;gap:4px;"><input type="checkbox" id="col-emergency"> 緊急連絡先</label>
+              <label style="font-size:0.82rem;color:var(--cream);display:flex;align-items:center;gap:4px;"><input type="checkbox" id="col-relation"> 続柄</label>
+              <label style="font-size:0.82rem;color:var(--cream);display:flex;align-items:center;gap:4px;"><input type="checkbox" id="col-address"> 住所</label>
+              <label style="font-size:0.82rem;color:var(--cream);display:flex;align-items:center;gap:4px;"><input type="checkbox" id="col-memo"> 備考</label>
             </div>
             <button id="btn-print-members" style="margin-top:14px;padding:10px 24px;background:var(--ocean);color:var(--cream);border:none;border-radius:8px;font-size:0.88rem;font-weight:bold;cursor:pointer;font-family:inherit;">&#128424; PDF出力</button>
           </div>
