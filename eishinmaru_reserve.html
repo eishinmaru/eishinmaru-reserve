@@ -458,6 +458,39 @@
     #page-admin:not(.active) #admin-tab-ui { display: none !important; }
     #page-admin:not(.active) #admin-tab-reservation { display: none !important; }
     #page-admin:not(.active) #admin-tab-member { display: none !important; }
+  
+    @media print {
+      /* 印刷時は結果テーブル以外全て非表示 */
+      body * { visibility: hidden; }
+      #member-result-table, #member-result-table * { visibility: visible; }
+      #member-result-table {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+      }
+      #member-result-table table {
+        width: 100%;
+        border-collapse: collapse;
+        color: black !important;
+      }
+      #member-result-table th {
+        background: #333 !important;
+        color: white !important;
+        padding: 8px !important;
+        border: 1px solid #ccc !important;
+        font-size: 11px !important;
+      }
+      #member-result-table td {
+        color: black !important;
+        padding: 6px 8px !important;
+        border: 1px solid #ccc !important;
+        font-size: 11px !important;
+      }
+      #member-result-table tr:nth-child(even) td {
+        background: #f5f5f5 !important;
+      }
+    }
   </style>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>emailjs.init("Km0FEUA4tiiZRKeCp");</script>
