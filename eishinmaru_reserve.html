@@ -455,65 +455,7 @@
 .member-back-btn{display:inline-block;padding:12px 28px;background:transparent;border:1px solid var(--wave);border-radius:8px;color:var(--foam);font-size:.9rem;cursor:pointer;font-family:inherit;transition:background .2s}
 .member-back-btn:hover{background:rgba(255,255,255,.05)}#member-submit-btn:disabled{opacity:.5;cursor:not-allowed;pointer-events:none}
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
-var _mData=[];
-document.addEventListener('DOMContentLoaded',function(){
-  var bR=document.getElementById('admin-tab-btn-reservation');
-  var bM=document.getElementById('admin-tab-btn-member');
-  var tR=document.getElementById('admin-tab-reservation');
-  var tM=document.getElementById('admin-tab-member');
-  function setTab(isRes){
-    tR.style.display=isRes?'block':'none';
-    tM.style.display=isRes?'none':'block';
-    bR.style.background=isRes?'rgba(201,168,76,0.2)':'transparent';
-    bR.style.color=isRes?'var(--gold-light)':'var(--foam)';
-    bR.style.borderBottom=isRes?'3px solid var(--gold)':'3px solid transparent';
-    bR.style.fontWeight=isRes?'bold':'normal';
-    bM.style.background=isRes?'transparent':'rgba(201,168,76,0.2)';
-    bM.style.color=isRes?'var(--foam)':'var(--gold-light)';
-    bM.style.borderBottom=isRes?'3px solid transparent':'3px solid var(--gold)';
-    bM.style.fontWeight=isRes?'normal':'bold';
-  }
-  if(bR)bR.addEventListener('click',function(){setTab(true);});
-  if(bM)bM.addEventListener('click',function(){setTab(false);});
-  var bS=document.getElementById('btn-search-members');
-  if(bS){
-    bS.addEventListener('click',function(){
-      var inp=document.getElementById('member-search-input').value;
-      var eEl=document.getElementById('member-search-error');
-      var oEl=document.getElementById('member-search-options');
-      var rEl=document.getElementById('member-result-area');
-      eEl.style.display='none';oEl.style.display='none';rEl.style.display='none';
-      var arr=[];
-      inp.split(',').forEach(function(s){s.split('\n').forEach(function(t){var v=t.trim();if(v&&arr.indexOf(v)<0)arr.push(v);});});
-      if(!arr.length){eEl.textContent='会員番号を入力してください';eEl.style.display='block';return;}
-      bS.textContent='検索中...';bS.disabled=true;
-      fetch(MEMBER_GAS_URL,{method:'POST',body:JSON.stringify({action:'searchMembers',memberNumbers:arr})})
-        .then(function(r){return r.json();})
-        .then(function(d){
-          bS.innerHTML='&#128269; 検索';bS.disabled=false;
-          if(d.status==='ok'){_mData=d.members;oEl.style.display='block';rEl.style.display='block';_renderMT();}
-          else{eEl.textContent=d.message||'エラー';eEl.style.display='block';}
-        })
-        .catch(function(){bS.innerHTML='&#128269; 検索';bS.disabled=false;eEl.textContent='通信エラー';eEl.style.display='block';});
-    });
-  }
-  var bP=document.getElementById('btn-print-members');
-  if(bP)bP.addEventListener('click',function(){window.print();});
-  ['col-date','col-furigana','col-gender','col-birthday','col-phone','col-emergency','col-relation','col-address','col-memo'].forEach(function(id){var el=document.getElementById(id);if(el)el.addEventListener('change',_renderMT);});
-});
-function _renderMT(){
-  var cols=[{i:'col-no',k:'memberNo',l:'会員番号'},{i:'col-name',k:'name',l:'名前'},{i:'col-date',k:'registeredAt',l:'登録日時'},{i:'col-furigana',k:'furigana',l:'フリガナ'},{i:'col-gender',k:'gender',l:'性別'},{i:'col-birthday',k:'birthday',l:'生年月日'},{i:'col-phone',k:'phone',l:'電話番号'},{i:'col-emergency',k:'emergency',l:'緊急連絡先'},{i:'col-relation',k:'relation',l:'続柄'},{i:'col-address',k:'address',l:'住所'},{i:'col-memo',k:'memo',l:'備考'}];
-  var ac=cols.filter(function(c){var e=document.getElementById(c.i);return e&&e.checked;});
-  var h='<table style="width:100%;border-collapse:collapse;font-size:0.82rem;"><thead><tr style="background:rgba(201,168,76,0.15);">';
-  ac.forEach(function(c){h+='<th style="padding:8px 10px;text-align:left;color:var(--gold-light);border-bottom:1px solid rgba(201,168,76,0.3);white-space:nowrap;">'+c.l+'</th>';});
-  h+='</tr></thead><tbody>';
-  _mData.forEach(function(m){h+='<tr style="border-bottom:1px solid rgba(255,255,255,0.05);">';ac.forEach(function(c){h+='<td style="padding:8px 10px;color:var(--cream);">'+( m[c.k]||'—')+'</td>';});h+='</tr>';});
-  h+='</tbody></table>';
-  document.getElementById('member-result-table').innerHTML=h;
-}
-
-</script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>emailjs.init("Km0FEUA4tiiZRKeCp");</script>
 </head>
 <body>
@@ -1294,27 +1236,20 @@ function memberGoTop(){document.getElementById('member-form').reset();document.g
   if(bR)bR.addEventListener('click',function(){setTab(true);});
   if(bM)bM.addEventListener('click',function(){setTab(false);});
   var bS=document.getElementById('btn-search-members');
-  if(bS){
-    bS.addEventListener('click',function(){
-      var inp=document.getElementById('member-search-input').value;
-      var eEl=document.getElementById('member-search-error');
-      var oEl=document.getElementById('member-search-options');
-      var rEl=document.getElementById('member-result-area');
-      eEl.style.display='none';oEl.style.display='none';rEl.style.display='none';
-      var arr=[];
-      inp.split(',').forEach(function(s){s.split('\n').forEach(function(t){var v=t.trim();if(v&&arr.indexOf(v)<0)arr.push(v);});});
-      if(!arr.length){eEl.textContent='会員番号を入力してください';eEl.style.display='block';return;}
-      bS.textContent='検索中...';bS.disabled=true;
-      fetch(MEMBER_GAS_URL,{method:'POST',body:JSON.stringify({action:'searchMembers',memberNumbers:arr})})
-        .then(function(r){return r.json();})
-        .then(function(d){
-          bS.textContent='検索';bS.disabled=false;
-          if(d.status==='ok'){window._mData=d.members;oEl.style.display='block';rEl.style.display='block';window.mRender();}
-          else{eEl.textContent=d.message||'エラー';eEl.style.display='block';}
-        })
-        .catch(function(){bS.textContent='検索';bS.disabled=false;eEl.textContent='通信エラー';eEl.style.display='block';});
-    });
-  }
+  if(bS){bS.addEventListener('click',function(){
+    var inp=document.getElementById('member-search-input').value;
+    var eEl=document.getElementById('member-search-error');
+    var oEl=document.getElementById('member-search-options');
+    var rEl=document.getElementById('member-result-area');
+    eEl.style.display='none';oEl.style.display='none';rEl.style.display='none';
+    var arr=[];
+    inp.split(',').forEach(function(s){s.split('\n').forEach(function(t){var v=t.trim();if(v&&arr.indexOf(v)<0)arr.push(v);});});
+    if(!arr.length){eEl.textContent='会員番号を入力してください';eEl.style.display='block';return;}
+    bS.textContent='検索中...';bS.disabled=true;
+    fetch(MEMBER_GAS_URL,{method:'POST',body:JSON.stringify({action:'searchMembers',memberNumbers:arr})})
+      .then(function(r){return r.json();})
+      .then(function(d){bS.textContent='検索';bS.disabled=false;if(d.status==='ok'){window._mData=d.members;oEl.style.display='block';rEl.style.display='block';window.mRender();}else{eEl.textContent=d.message||'エラー';eEl.style.display='block';}}).catch(function(){bS.textContent='検索';bS.disabled=false;eEl.textContent='通信エラー';eEl.style.display='block';});
+  });}
   var bP=document.getElementById('btn-print-members');
   if(bP)bP.addEventListener('click',function(){window.print();});
   ['col-date','col-furigana','col-gender','col-birthday','col-phone','col-emergency','col-relation','col-address','col-memo'].forEach(function(id){var el=document.getElementById(id);if(el)el.addEventListener('change',function(){window.mRender();});});
@@ -1323,10 +1258,10 @@ function memberGoTop(){document.getElementById('member-form').reset();document.g
     var cols=[{i:'col-no',k:'memberNo',l:'会員番号'},{i:'col-name',k:'name',l:'名前'},{i:'col-date',k:'registeredAt',l:'登録日時'},{i:'col-furigana',k:'furigana',l:'フリガナ'},{i:'col-gender',k:'gender',l:'性別'},{i:'col-birthday',k:'birthday',l:'生年月日'},{i:'col-phone',k:'phone',l:'電話番号'},{i:'col-emergency',k:'emergency',l:'緊急連絡先'},{i:'col-relation',k:'relation',l:'続柄'},{i:'col-address',k:'address',l:'住所'},{i:'col-memo',k:'memo',l:'備考'}];
     var ac=cols.filter(function(c){var e=document.getElementById(c.i);return e&&e.checked;});
     var h='<table style="width:100%;border-collapse:collapse;font-size:0.82rem;"><thead><tr style="background:rgba(201,168,76,0.15);">';
-    ac.forEach(function(c){h+='<th style="padding:8px 10px;text-align:left;color:var(--gold-light);border-bottom:1px solid rgba(201,168,76,0.3);white-space:nowrap;">'+c.l+'</th>';});
-    h+='</tr></thead><tbody>';
-    window._mData.forEach(function(m){h+='<tr style="border-bottom:1px solid rgba(255,255,255,0.05);">';ac.forEach(function(c){h+='<td style="padding:8px 10px;color:var(--cream);">'+(m[c.k]||'—')+'</td>';});h+='</tr>';});
-    h+='</tbody></table>';
+    ac.forEach(function(c){h+='<th style="padding:8px 10px;text-align:left;color:var(--gold-light);border-bottom:1px solid rgba(201,168,76,0.3);white-space:nowrap;">'+c.l+'<\/th>';});
+    h+='<\/tr><\/thead><tbody>';
+    window._mData.forEach(function(m){h+='<tr style="border-bottom:1px solid rgba(255,255,255,0.05);">';ac.forEach(function(c){h+='<td style="padding:8px 10px;color:var(--cream);">'+( m[c.k]||'—')+'<\/td>';});h+='<\/tr>';});
+    h+='<\/tbody><\/table>';
     document.getElementById('member-result-table').innerHTML=h;
   };
 })();
