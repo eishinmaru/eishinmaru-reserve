@@ -1291,7 +1291,7 @@ function memberGoTop(){document.getElementById('member-form').reset();document.g
     var eEl=document.getElementById('member-search-error');
     var oEl=document.getElementById('member-search-options');
     var rEl=document.getElementById('member-result-area');
-    eEl.style.display='none';oEl.style.display='none';rEl.style.display='none';
+    eEl.style.display='none';oEl.style.display='none';
     var arr=[];
     inp.split(',').forEach(function(s){s.split('\n').forEach(function(t){var v=t.trim();if(!v)return;if(/^\d+$/.test(v))v='No.'+parseInt(v,10);if(arr.indexOf(v)<0)arr.push(v);});});
     if(!arr.length){eEl.textContent='会員番号を入力してください';eEl.style.display='block';return;}
