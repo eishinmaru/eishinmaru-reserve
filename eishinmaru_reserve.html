@@ -616,9 +616,51 @@
         </div>
 
       <div id="admin-tab-input" style="display:none;padding:16px 0;">
-        <div style="background:rgba(255,255,255,0.05);border-radius:8px;padding:24px;max-width:600px;">
-          <h3 style="color:var(--gold);margin:0 0 20px 0;font-size:1rem;">✏ 会員情報入力</h3>
-          <p style="color:var(--gold-light);font-size:0.85rem;margin:0;">フォームは順次実装中です。</p>
+        <div style="max-width:560px;">
+          <div style="background:rgba(255,255,255,0.05);border-radius:8px;padding:16px;margin-bottom:16px;">
+            <div style="color:var(--gold);font-weight:bold;margin-bottom:10px;">🔍 会員番号検索</div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <input id="mi-search-no" type="text" placeholder="No.501" style="flex:1;padding:8px 12px;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.1);color:white;font-size:0.9rem;" />
+              <button id="mi-search-btn" style="padding:8px 16px;background:var(--gold);color:#1a2f4a;border:none;border-radius:6px;cursor:pointer;font-weight:bold;white-space:nowrap;">🔍 検索</button>
+            </div>
+            <div id="mi-search-msg" style="margin-top:8px;font-size:0.82rem;display:none;"></div>
+          </div>
+          <div id="mi-form-area" style="display:none;">
+            <div style="background:rgba(255,255,255,0.05);border-radius:8px;padding:16px;margin-bottom:12px;">
+              <div id="mi-mode-label" style="color:var(--gold);font-weight:bold;margin-bottom:14px;font-size:0.9rem;"></div>
+              <div style="display:grid;gap:10px;">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                  <div><label style="display:block;color:var(--gold-light);font-size:0.78rem;margin-bottom:4px;">氏名 <span style="color:#f87171;">*</span></label><input id="mi-name" type="text" style="width:100%;box-sizing:border-box;padding:7px 10px;border-radius:5px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:white;font-size:0.88rem;" /></div>
+                  <div><label style="display:block;color:var(--gold-light);font-size:0.78rem;margin-bottom:4px;">フリガナ <span style="color:#f87171;">*</span></label><input id="mi-furigana" type="text" style="width:100%;box-sizing:border-box;padding:7px 10px;border-radius:5px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:white;font-size:0.88rem;" /></div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                  <div><label style="display:block;color:var(--gold-light);font-size:0.78rem;margin-bottom:4px;">性別</label><select id="mi-gender" style="width:100%;box-sizing:border-box;padding:7px 10px;border-radius:5px;border:1px solid rgba(255,255,255,0.2);background:rgba(30,50,80,0.9);color:white;font-size:0.88rem;"><option value="">未選択</option><option value="男性">男性</option><option value="女性">女性</option></select></div>
+                  <div><label style="display:block;color:var(--gold-light);font-size:0.78rem;margin-bottom:4px;">生年月日</label><input id="mi-birthday" type="date" style="width:100%;box-sizing:border-box;padding:7px 10px;border-radius:5px;border:1px solid rgba(255,255,255,0.2);background:rgba(30,50,80,0.9);color:white;font-size:0.88rem;" /></div>
+                </div>
+                <div><label style="display:block;color:var(--gold-light);font-size:0.78rem;margin-bottom:4px;">住所</label><input id="mi-address" type="text" style="width:100%;box-sizing:border-box;padding:7px 10px;border-radius:5px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:white;font-size:0.88rem;" /></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                  <div><label style="display:block;color:var(--gold-light);font-size:0.78rem;margin-bottom:4px;">電話番号</label><input id="mi-phone" type="tel" style="width:100%;box-sizing:border-box;padding:7px 10px;border-radius:5px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:white;font-size:0.88rem;" /></div>
+                  <div><label style="display:block;color:var(--gold-light);font-size:0.78rem;margin-bottom:4px;">緊急連絡先</label><input id="mi-emergency" type="tel" style="width:100%;box-sizing:border-box;padding:7px 10px;border-radius:5px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:white;font-size:0.88rem;" /></div>
+                </div>
+                <div><label style="display:block;color:var(--gold-light);font-size:0.78rem;margin-bottom:4px;">備考</label><textarea id="mi-memo" rows="2" style="width:100%;box-sizing:border-box;padding:7px 10px;border-radius:5px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:white;font-size:0.88rem;resize:vertical;"></textarea></div>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;margin-bottom:12px;">
+              <button id="mi-confirm-btn" style="flex:1;padding:10px;background:#22c55e;color:white;border:none;border-radius:6px;cursor:pointer;font-weight:bold;font-size:0.9rem;">✅ 入力完了</button>
+              <button id="mi-cancel-btn" style="padding:10px 20px;background:rgba(255,255,255,0.15);color:var(--gold-light);border:none;border-radius:6px;cursor:pointer;font-size:0.9rem;">キャンセル</button>
+            </div>
+          </div>
+          <div id="mi-confirm-area" style="display:none;">
+            <div style="background:rgba(255,255,255,0.05);border-radius:8px;padding:16px;margin-bottom:12px;">
+              <div style="color:var(--gold);font-weight:bold;margin-bottom:14px;">📋 変更内容の確認</div>
+              <div id="mi-diff-table" style="font-size:0.85rem;"></div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button id="mi-execute-btn" style="flex:1;padding:10px;background:#22c55e;color:white;border:none;border-radius:6px;cursor:pointer;font-weight:bold;font-size:0.9rem;">✅ 実行</button>
+              <button id="mi-fix-btn" style="padding:10px 16px;background:rgba(255,200,50,0.2);color:var(--gold-light);border:1px solid var(--gold);border-radius:6px;cursor:pointer;font-size:0.88rem;">✏ 修正に戻る</button>
+              <button id="mi-back-btn" style="padding:10px 16px;background:rgba(255,255,255,0.1);color:var(--gold-light);border:none;border-radius:6px;cursor:pointer;font-size:0.88rem;">↩ キャンセル</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1332,6 +1374,155 @@ function memberGoTop(){document.getElementById('member-form').reset();document.g
       tr.querySelectorAll('td,th').forEach(function(td){row.push(td.textContent.trim());});
       if(row.length)rows.push(row);
     });
+  // ===== 会員情報入力タブ =====
+  var miGasUrl = 'https://script.google.com/macros/s/AKfycbyYyQp09Z4uztbowmJfrbvn4VhJzvAtwtfOvMcz3XGFUdH88x0xu_LaK11OTHjaYU2-/exec';
+  var _miRowIndex = -1;
+  var _miOrigData = {};
+  var _miFields = [
+    {id:'mi-name', label:'氏名'}, {id:'mi-furigana', label:'フリガナ'},
+    {id:'mi-gender', label:'性別'}, {id:'mi-birthday', label:'生年月日'},
+    {id:'mi-address', label:'住所'}, {id:'mi-phone', label:'電話番号'},
+    {id:'mi-emergency', label:'緊急連絡先'}, {id:'mi-memo', label:'備考'}
+  ];
+  function miSetMsg(msg, color) {
+    var el = document.getElementById('mi-search-msg');
+    if (!el) return;
+    el.textContent = msg;
+    el.style.color = color || 'var(--gold-light)';
+    el.style.display = msg ? 'block' : 'none';
+  }
+  function miGetFormData() {
+    var d = {};
+    _miFields.forEach(function(f) {
+      var el = document.getElementById(f.id);
+      d[f.id] = el ? el.value.trim() : '';
+    });
+    return d;
+  }
+  function miSetFormData(data) {
+    var map = {
+      'mi-name': data.name, 'mi-furigana': data.furigana,
+      'mi-gender': data.gender, 'mi-birthday': data.birthday,
+      'mi-address': data.address, 'mi-phone': data.phone,
+      'mi-emergency': data.emergency, 'mi-memo': data.memo
+    };
+    Object.keys(map).forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.value = map[id] || '';
+    });
+  }
+  function miResetAll() {
+    document.getElementById('mi-form-area').style.display = 'none';
+    document.getElementById('mi-confirm-area').style.display = 'none';
+    document.getElementById('mi-search-no').value = '';
+    miSetMsg('');
+    _miRowIndex = -1; _miOrigData = {};
+  }
+  var miSearchBtn = document.getElementById('mi-search-btn');
+  if (miSearchBtn) miSearchBtn.addEventListener('click', function() {
+    var no = document.getElementById('mi-search-no').value.trim().replace(/^No\./i, '');
+    if (!no) { miSetMsg('会員番号を入力してください', '#f87171'); return; }
+    miSetMsg('検索中…', 'var(--gold-light)');
+    fetch(miGasUrl, {method:'POST', body:JSON.stringify({action:'getOneMember', memberNo:'No.' + no})})
+      .then(function(r){return r.json();})
+      .then(function(d){
+        if (d.status === 'ok') {
+          _miRowIndex = d.rowIndex;
+          _miOrigData = d.data;
+          miSetFormData(d.data);
+          document.getElementById('mi-mode-label').textContent = '✏ 編集モード：No.' + no + ' 「' + (d.data.name||'')+'」';
+          document.getElementById('mi-form-area').style.display = 'block';
+          document.getElementById('mi-confirm-area').style.display = 'none';
+          miSetMsg('データを読み込みました✔', '#4ade80');
+        } else {
+          miSetMsg('該当会員が見つかりません', '#f87171');
+          document.getElementById('mi-form-area').style.display = 'none';
+        }
+      }).catch(function(){
+        miSetMsg('通信エラーが発生しました', '#f87171');
+      });
+  });
+  var miConfirmBtn = document.getElementById('mi-confirm-btn');
+  if (miConfirmBtn) miConfirmBtn.addEventListener('click', function() {
+    if (!document.getElementById('mi-name').value.trim()) {
+      alert('氏名は必須です');
+      return;
+    }
+    var newData = miGetFormData();
+    var html = '<table style="width:100%;border-collapse:collapse;">'+
+      '<tr style="background:rgba(255,255,255,0.08)"><th style="padding:5px 8px;text-align:left;color:var(--gold-light);width:100px;">項目</th>'+
+      '<th style="padding:5px 8px;text-align:left;color:#94a3b8;">変更前</th>'+
+      '<th style="padding:5px 8px;text-align:left;color:#4ade80;">変更後</th></tr>';
+    var changed = false;
+    var labelMap = {
+      'mi-name':'氏名','mi-furigana':'フリガナ','mi-gender':'性別',
+      'mi-birthday':'生年月日','mi-address':'住所','mi-phone':'電話番号',
+      'mi-emergency':'緊急連絡先','mi-memo':'備考'
+    };
+    var origMap = {
+      'mi-name':_miOrigData.name,'mi-furigana':_miOrigData.furigana,
+      'mi-gender':_miOrigData.gender,'mi-birthday':_miOrigData.birthday,
+      'mi-address':_miOrigData.address,'mi-phone':_miOrigData.phone,
+      'mi-emergency':_miOrigData.emergency,'mi-memo':_miOrigData.memo
+    };
+    _miFields.forEach(function(f) {
+      var orig = origMap[f.id] || '';
+      var next = newData[f.id] || '';
+      var bg = orig !== next ? 'background:rgba(74,222,128,0.1);' : '';
+      var origStyle = orig !== next ? 'color:#f87171;text-decoration:line-through;' : 'color:#94a3b8;';
+      html += '<tr style="' + bg + 'border-bottom:1px solid rgba(255,255,255,0.05);">'+
+        '<td style="padding:5px 8px;color:var(--gold-light);">' + labelMap[f.id] + '</td>'+
+        '<td style="padding:5px 8px;' + origStyle + '">' + (orig||'－') + '</td>'+
+        '<td style="padding:5px 8px;color:' + (orig!==next?'#4ade80':'') + '">' + (next||'－') + '</td></tr>';
+      if (orig !== next) changed = true;
+    });
+    html += '</table>';
+    if (!changed) { alert('変更点がありません'); return; }
+    document.getElementById('mi-diff-table').innerHTML = html;
+    document.getElementById('mi-form-area').style.display = 'none';
+    document.getElementById('mi-confirm-area').style.display = 'block';
+    window._miNewData = newData;
+  });
+  var miCancelBtn = document.getElementById('mi-cancel-btn');
+  if (miCancelBtn) miCancelBtn.addEventListener('click', miResetAll);
+  var miFixBtn = document.getElementById('mi-fix-btn');
+  if (miFixBtn) miFixBtn.addEventListener('click', function() {
+    document.getElementById('mi-confirm-area').style.display = 'none';
+    document.getElementById('mi-form-area').style.display = 'block';
+  });
+  var miBackBtn = document.getElementById('mi-back-btn');
+  if (miBackBtn) miBackBtn.addEventListener('click', miResetAll);
+  var miExecuteBtn = document.getElementById('mi-execute-btn');
+  if (miExecuteBtn) miExecuteBtn.addEventListener('click', function() {
+    miExecuteBtn.disabled = true;
+    miExecuteBtn.textContent = '更新中…';
+    var d = window._miNewData;
+    fetch(miGasUrl, {method:'POST', body:JSON.stringify({
+      action:'updateMember', rowIndex:_miRowIndex,
+      data:{name:d['mi-name'],furigana:d['mi-furigana'],gender:d['mi-gender'],
+            birthday:d['mi-birthday'],address:d['mi-address'],phone:d['mi-phone'],
+            emergency:d['mi-emergency'],memo:d['mi-memo']}
+    })})
+      .then(function(r){return r.json();})
+      .then(function(res){
+        if (res.status === 'ok') {
+          document.getElementById('mi-confirm-area').style.display = 'none';
+          miSetMsg('✅ 更新しました！', '#4ade80');
+          document.getElementById('mi-form-area').style.display = 'none';
+          miExecuteBtn.disabled = false;
+          miExecuteBtn.textContent = '✅ 実行';
+        } else {
+          alert('更新に失敗しました');
+          miExecuteBtn.disabled = false;
+          miExecuteBtn.textContent = '✅ 実行';
+        }
+      }).catch(function(){
+        alert('通信エラーが発生しました');
+        miExecuteBtn.disabled = false;
+        miExecuteBtn.textContent = '✅ 実行';
+      });
+  });
+
     var css='body{font-family:sans-serif;padding:20px;}h2{color:#1a6b8a;border-bottom:2px solid #1a6b8a;padding-bottom:8px;}table{border-collapse:collapse;width:100%;font-size:12px;}th{background:#1a6b8a;color:white;padding:6px 8px;border:1px solid #ccc;text-align:left;}td{padding:5px 8px;border:1px solid #ccc;}tr:nth-child(even){background:#f0f8ff;}@media print{button{display:none!important;}}';
     var tbody=rows.map(function(r){return '<tr>'+r.map(function(c){return '<td>'+c+'</td>';}).join('')+'</tr>';}).join('');
     var thead='<tr>'+heads.map(function(h){return '<th>'+h+'</th>';}).join('')+'</tr>';
