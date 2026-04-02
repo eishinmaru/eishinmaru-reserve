@@ -1485,10 +1485,10 @@ function memberGoTop(){document.getElementById('member-form').reset();document.g
       'mi-emergency':'緊急連絡先','mi-memo':'備考'
     };
     var origMap = {
-      'mi-name':_miOrigData.name,'mi-furigana':_miOrigData.furigana,
-      'mi-gender':_miOrigData.gender,'mi-birthday':_miOrigData.birthday,
-      'mi-address':_miOrigData.address,'mi-phone':_miOrigData.phone,
-      'mi-emergency':_miOrigData.emergency,'mi-memo':_miOrigData.memo
+      'mi-name':_miOrigData.name||'','mi-furigana':_miOrigData.furigana||'',
+      'mi-gender':_miOrigData.gender||'','mi-birthday':_miOrigData.birthday||'',
+      'mi-address':_miOrigData.address||'','mi-phone':_miOrigData.phone||'',
+      'mi-emergency':_miOrigData.emergency||'','mi-memo':_miOrigData.memo||''
     };
     _miFields.forEach(function(f) {
       var orig = origMap[f.id] || '';
@@ -1526,7 +1526,7 @@ function memberGoTop(){document.getElementById('member-form').reset();document.g
       action:'updateMember', rowIndex:_miRowIndex,
       data:{name:d['mi-name'],furigana:d['mi-furigana'],gender:d['mi-gender'],
             birthday:d['mi-birthday'],address:d['mi-address'],phone:d['mi-phone'],
-            emergency:d['mi-emergency'],memo:d['mi-memo']}
+            emergency:d['mi-emergency'],memo:d['mi-memo'],relation:''}
     })})
       .then(function(r){return r.json();})
       .then(function(res){
