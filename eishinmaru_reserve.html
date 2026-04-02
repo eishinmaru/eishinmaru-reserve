@@ -1043,9 +1043,9 @@
     };
 
     // スプレッドシートに記録
-    fetch('https://script.google.com/macros/s/AKfycbwxNr0pYdXIbJy6_UHt2Vz0LYGZrBihknJqfWhQf-ngX8q9rgAdbe83Gpn_wEz49Z-SPQ/exec', {
+    fetch('https://script.google.com/macros/s/AKfycbyYyQp09Z4uztbowmJfrbvn4VhJzvAtwtfOvMcz3XGFUdH88x0xu_LaK11OTHjaYU2-/exec', {
       method: 'POST',
-      body: JSON.stringify(params)
+      body: JSON.stringify({action:'addReservation', data:params})
     }).catch(function(){});
 
     emailjs.send('service_rvvn75a', 'template_rdvbitr', params)
