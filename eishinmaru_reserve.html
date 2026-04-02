@@ -1374,6 +1374,31 @@ function memberGoTop(){document.getElementById('member-form').reset();document.g
       tr.querySelectorAll('td,th').forEach(function(td){row.push(td.textContent.trim());});
       if(row.length)rows.push(row);
     });
+    var css='body{font-family:sans-serif;padding:20px;}h2{color:#1a6b8a;border-bottom:2px solid #1a6b8a;padding-bottom:8px;}table{border-collapse:collapse;width:100%;font-size:12px;}th{background:#1a6b8a;color:white;padding:6px 8px;border:1px solid #ccc;text-align:left;}td{padding:5px 8px;border:1px solid #ccc;}tr:nth-child(even){background:#f0f8ff;}@media print{button{display:none!important;}}';
+    var tbody=rows.map(function(r){return '<tr>'+r.map(function(c){return '<td>'+c+'</td>';}).join('')+'</tr>';}).join('');
+    var thead='<tr>'+heads.map(function(h){return '<th>'+h+'</th>';}).join('')+'</tr>';
+    var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>栄真丸 会員情報</title><style>'+css+'</style></head><body>';
+    html+='<h2>栄真丸 会員情報</h2>';
+    html+='<div style="margin-bottom:12px"><button onclick="window.print()" style="background:#1a6b8a;color:white;border:none;padding:8px 20px;border-radius:4px;cursor:pointer;font-size:14px;">🖨 PDF保存 / 印刺</button>';
+    html+='&nbsp;<small style="color:#666">印刺ダイアログで「PDFに保存」を選択するとPDFファイルで保存できます</small></div>';
+    html+='<table><thead>'+thead+'</thead><tbody>'+tbody+'</tbody></table></body></html>';
+    var blob=new Blob([html],{type:'text/html;charset=utf-8'});
+    var url=URL.createObjectURL(blob);
+    window.open(url,'_blank');
+  });
+  ['col-date','col-furigana','col-gender','col-birthday','col-phone','col-emergency','col-relation','col-address','col-memo'].forEach(function(id){var el=document.getElementById(id);if(el)el.addEventListener('change',function(){window.mRender();});});
+  window._mData=[];
+  window.mRender=function(){
+    var cols=[{i:'col-no',k:'memberNo',l:'会員番号'},{i:'col-name',k:'name',l:'名前'},{i:'col-date',k:'registeredAt',l:'登録日時'},{i:'col-furigana',k:'furigana',l:'フリガナ'},{i:'col-gender',k:'gender',l:'性別'},{i:'col-birthday',k:'birthday',l:'生年月日'},{i:'col-phone',k:'phone',l:'電話番号'},{i:'col-emergency',k:'emergency',l:'緊急連絡先'},{i:'col-relation',k:'relation',l:'続柄'},{i:'col-address',k:'address',l:'住所'},{i:'col-memo',k:'memo',l:'備考'}];
+    var ac=cols.filter(function(c){var e=document.getElementById(c.i);return e&&e.checked;});
+    var h='<table style="width:100%;border-collapse:collapse;font-size:0.82rem;"><thead><tr style="background:rgba(201,168,76,0.15);">';
+    ac.forEach(function(c){h+='<th style="padding:8px 10px;text-align:left;color:var(--gold-light);border-bottom:1px solid rgba(201,168,76,0.3);white-space:nowrap;">'+c.l+'<\/th>';});
+    h+='<\/tr><\/thead><tbody>';
+    window._mData.forEach(function(m){h+='<tr style="border-bottom:1px solid rgba(255,255,255,0.05);">';ac.forEach(function(c){h+='<td style="padding:8px 10px;color:var(--cream);">'+( m[c.k]||'—')+'<\/td>';});h+='<\/tr>';});
+    h+='<\/tbody><\/table>';
+    document.getElementById('member-result-table').innerHTML=h;
+  };
+
   // ===== 会員情報入力タブ =====
   var miGasUrl = 'https://script.google.com/macros/s/AKfycbyYyQp09Z4uztbowmJfrbvn4VhJzvAtwtfOvMcz3XGFUdH88x0xu_LaK11OTHjaYU2-/exec';
   var _miRowIndex = -1;
@@ -1522,30 +1547,5 @@ function memberGoTop(){document.getElementById('member-form').reset();document.g
         miExecuteBtn.textContent = '✅ 実行';
       });
   });
-
-    var css='body{font-family:sans-serif;padding:20px;}h2{color:#1a6b8a;border-bottom:2px solid #1a6b8a;padding-bottom:8px;}table{border-collapse:collapse;width:100%;font-size:12px;}th{background:#1a6b8a;color:white;padding:6px 8px;border:1px solid #ccc;text-align:left;}td{padding:5px 8px;border:1px solid #ccc;}tr:nth-child(even){background:#f0f8ff;}@media print{button{display:none!important;}}';
-    var tbody=rows.map(function(r){return '<tr>'+r.map(function(c){return '<td>'+c+'</td>';}).join('')+'</tr>';}).join('');
-    var thead='<tr>'+heads.map(function(h){return '<th>'+h+'</th>';}).join('')+'</tr>';
-    var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>栄真丸 会員情報</title><style>'+css+'</style></head><body>';
-    html+='<h2>栄真丸 会員情報</h2>';
-    html+='<div style="margin-bottom:12px"><button onclick="window.print()" style="background:#1a6b8a;color:white;border:none;padding:8px 20px;border-radius:4px;cursor:pointer;font-size:14px;">🖨 PDF保存 / 印刺</button>';
-    html+='&nbsp;<small style="color:#666">印刺ダイアログで「PDFに保存」を選択するとPDFファイルで保存できます</small></div>';
-    html+='<table><thead>'+thead+'</thead><tbody>'+tbody+'</tbody></table></body></html>';
-    var blob=new Blob([html],{type:'text/html;charset=utf-8'});
-    var url=URL.createObjectURL(blob);
-    window.open(url,'_blank');
-  });
-  ['col-date','col-furigana','col-gender','col-birthday','col-phone','col-emergency','col-relation','col-address','col-memo'].forEach(function(id){var el=document.getElementById(id);if(el)el.addEventListener('change',function(){window.mRender();});});
-  window._mData=[];
-  window.mRender=function(){
-    var cols=[{i:'col-no',k:'memberNo',l:'会員番号'},{i:'col-name',k:'name',l:'名前'},{i:'col-date',k:'registeredAt',l:'登録日時'},{i:'col-furigana',k:'furigana',l:'フリガナ'},{i:'col-gender',k:'gender',l:'性別'},{i:'col-birthday',k:'birthday',l:'生年月日'},{i:'col-phone',k:'phone',l:'電話番号'},{i:'col-emergency',k:'emergency',l:'緊急連絡先'},{i:'col-relation',k:'relation',l:'続柄'},{i:'col-address',k:'address',l:'住所'},{i:'col-memo',k:'memo',l:'備考'}];
-    var ac=cols.filter(function(c){var e=document.getElementById(c.i);return e&&e.checked;});
-    var h='<table style="width:100%;border-collapse:collapse;font-size:0.82rem;"><thead><tr style="background:rgba(201,168,76,0.15);">';
-    ac.forEach(function(c){h+='<th style="padding:8px 10px;text-align:left;color:var(--gold-light);border-bottom:1px solid rgba(201,168,76,0.3);white-space:nowrap;">'+c.l+'<\/th>';});
-    h+='<\/tr><\/thead><tbody>';
-    window._mData.forEach(function(m){h+='<tr style="border-bottom:1px solid rgba(255,255,255,0.05);">';ac.forEach(function(c){h+='<td style="padding:8px 10px;color:var(--cream);">'+( m[c.k]||'—')+'<\/td>';});h+='<\/tr>';});
-    h+='<\/tbody><\/table>';
-    document.getElementById('member-result-table').innerHTML=h;
-  };
 })();
 </script>
