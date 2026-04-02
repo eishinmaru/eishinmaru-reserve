@@ -1000,7 +1000,7 @@
       this.value = formatPhone(this.value);
     });
   }
-  ['m-phone','m-emergency','mi-phone','mi-emergency'].forEach(bindPhoneFormat);
+  ['m-phone','m-emergency','mi-phone','mi-emergency','tel'].forEach(bindPhoneFormat);
   function submitForm() {
     var name     = document.getElementById('name').value;
     var furigana = document.getElementById('furigana').value;
