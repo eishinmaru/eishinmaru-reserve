@@ -1066,7 +1066,7 @@
     fetch(GAS_URL + '?action=get')
       .then(function(r) { return r.json(); })
       .then(function(data) {
-        renderReservations(data);
+        renderReservations(data.reservations);
       })
       .catch(function(err) {
         document.getElementById('reservation-list').innerHTML = '<div style="text-align:center; padding:30px; color:#e87070;">読み込みに失敗しました</div>';
