@@ -969,6 +969,38 @@
   }
 
   // 予約送信
+
+  // ===== 電話番号ハイフン自動整形 =====
+  function formatPhone(val) {
+    var n = val.replace(/[^0-9]/g, '');
+    if (n.length <= 3) return n;
+    if (n.startsWith('0120') || n.startsWith('0800') || n.startsWith('0570')) {
+      if (n.length <= 7) return n.substring(0,4) + '-' + n.substring(4);
+      return n.substring(0,4) + '-' + n.substring(4,7) + '-' + n.substring(7,11);
+    }
+    if (n.startsWith('03') || n.startsWith('06')) {
+      if (n.length <= 6) return n.substring(0,2) + '-' + n.substring(2);
+      return n.substring(0,2) + '-' + n.substring(2,6) + '-' + n.substring(6,10);
+    }
+    if (n.length <= 7) return n.substring(0,3) + '-' + n.substring(3);
+    return n.substring(0,3) + '-' + n.substring(3,7) + '-' + n.substring(7,11);
+  }
+  function bindPhoneFormat(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', function() {
+      var pos = this.selectionStart;
+      var prev = this.value;
+      this.value = formatPhone(this.value);
+      // カーソル位置を維持
+      var diff = this.value.length - prev.length;
+      this.setSelectionRange(pos + diff, pos + diff);
+    });
+    el.addEventListener('blur', function() {
+      this.value = formatPhone(this.value);
+    });
+  }
+  ['m-phone','m-emergency','mi-phone','mi-emergency'].forEach(bindPhoneFormat);
   function submitForm() {
     var name     = document.getElementById('name').value;
     var furigana = document.getElementById('furigana').value;
