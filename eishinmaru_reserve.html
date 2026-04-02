@@ -1195,11 +1195,11 @@
 
    function formatBoardingDate(val, kubun) {
      if (!val) return '';
-     var d = new Date(val);
-     if (isNaN(d)) return val;
-     var year  = d.getUTCFullYear();
-     var month = String(d.getUTCMonth() + 1).padStart(2, '0');
-     var day   = String(d.getUTCDate()).padStart(2, '0');
+     var s = String(val).replace('T', ' ');
+     var parts = s.split(/[-\/]/);
+     var year  = parts[0] ? parts[0].substring(0,4) : '';
+     var month = parts[1] ? String(parseInt(parts[1])).padStart(2,'0') : '';
+     var day   = parts[2] ? String(parseInt(parts[2])).padStart(2,'0') : '';
      var ampm = (kubun && kubun.indexOf('午前') >= 0) ? 'AM' :
                 (kubun && kubun.indexOf('午後') >= 0) ? 'PM' : 'AM';
      return year + ' ' + month + ' ' + day + ' ' + ampm;
