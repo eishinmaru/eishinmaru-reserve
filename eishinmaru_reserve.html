@@ -1303,21 +1303,23 @@ function memberGoTop(){document.getElementById('member-form').reset();document.g
   var bP=document.getElementById('btn-print-members');
   if(bP)bP.addEventListener('click',function(){
     var table=document.getElementById('member-result-table');
-    if(!table){alert('データを検索してから出力してください');return;}
-    var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' +
-      (document.getElementById('search-no') ? 'No.'+document.getElementById('search-no').value : '') + ' 会員情報</title>'+
-      '<style>body{font-family:''Noto Sans JP'',''Yu Gothic'',sans-serif;padding:20px;}'+ 
-      'h2{color:#1a6b8a;border-bottom:2px solid #1a6b8a;padding-bottom:8px;}'+ 
-      'table{border-collapse:collapse;width:100%;font-size:12px;}'+ 
-      'th{background:#1a6b8a;color:white;padding:6px 8px;border:1px solid #ccc;text-align:left;}'+ 
-      'td{padding:5px 8px;border:1px solid #ccc;}'+ 
-      'tr:nth-child(even){background:#f0f8ff;}'+ 
-      '@media print{body{padding:0;}button{display:none!important;}}'+ 
-      '</style></head><body>'+ 
-      '<h2>栄真丸 会員情報</h2>'+ 
-      '<div style="margin-bottom:12px"><button onclick="window.print()" style="background:#1a6b8a;color:white;border:none;padding:8px 20px;border-radius:4px;cursor:pointer;font-size:14px;">🖨 PDF保存 / 印刺</button>'+ 
-      '&nbsp;<small style="color:#666">ブラウザの印刺ダイアログで「PDFに保存」を選択するとPDFファイルで保存できます</small></div>'+ 
-      table.outerHTML+'</body></html>';
+    if(!table){alert('dataを検索してから出力してください');return;}
+    var rows=[];
+    var heads=[];
+    table.querySelectorAll('thead th,thead td').forEach(function(th){heads.push(th.textContent.trim());});
+    table.querySelectorAll('tbody tr').forEach(function(tr){
+      var row=[];
+      tr.querySelectorAll('td,th').forEach(function(td){row.push(td.textContent.trim());});
+      if(row.length)rows.push(row);
+    });
+    var css='body{font-family:sans-serif;padding:20px;}h2{color:#1a6b8a;border-bottom:2px solid #1a6b8a;padding-bottom:8px;}table{border-collapse:collapse;width:100%;font-size:12px;}th{background:#1a6b8a;color:white;padding:6px 8px;border:1px solid #ccc;text-align:left;}td{padding:5px 8px;border:1px solid #ccc;}tr:nth-child(even){background:#f0f8ff;}@media print{button{display:none!important;}}';
+    var tbody=rows.map(function(r){return '<tr>'+r.map(function(c){return '<td>'+c+'</td>';}).join('')+'</tr>';}).join('');
+    var thead='<tr>'+heads.map(function(h){return '<th>'+h+'</th>';}).join('')+'</tr>';
+    var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>栄真丸 会員情報</title><style>'+css+'</style></head><body>';
+    html+='<h2>栄真丸 会員情報</h2>';
+    html+='<div style="margin-bottom:12px"><button onclick="window.print()" style="background:#1a6b8a;color:white;border:none;padding:8px 20px;border-radius:4px;cursor:pointer;font-size:14px;">🖨 PDF保存 / 印刺</button>';
+    html+='&nbsp;<small style="color:#666">印刺ダイアログで「PDFに保存」を選択するとPDFファイルで保存できます</small></div>';
+    html+='<table><thead>'+thead+'</thead><tbody>'+tbody+'</tbody></table></body></html>';
     var blob=new Blob([html],{type:'text/html;charset=utf-8'});
     var url=URL.createObjectURL(blob);
     window.open(url,'_blank');
