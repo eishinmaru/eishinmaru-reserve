@@ -1126,7 +1126,7 @@
       var statusBg = status === '処理済み' ? 'rgba(74,143,189,0.2)' : status === '保留' ? 'rgba(184,124,196,0.2)' : 'rgba(201,168,76,0.2)';
       var statusBorder = status === '処理済み' ? 'rgba(74,143,189,0.3)' : status === '保留' ? 'rgba(184,124,196,0.3)' : 'rgba(201,168,76,0.3)';
       var statusLabel = status === '処理済み' ? '✅ 処理済み' : status === '保留' ? '⏸ 保留' : '⏳ 未処理';
-      var rowIdx = rows.length - 1 - i;
+      var rowIdx = rows.length - i;
       html += '<div class="card" style="margin-bottom:12px; border-left:3px solid ' + statusColor + ';">';
       html += '<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">';
       html += '<div>';
