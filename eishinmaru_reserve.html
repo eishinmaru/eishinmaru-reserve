@@ -574,6 +574,7 @@
         <div id="admin-tab-ui" style="display:flex;gap:0;margin-bottom:20px;border-bottom:2px solid rgba(201,168,76,0.3);">
           <button id="admin-tab-btn-reservation" style="padding:10px 20px;background:rgba(201,168,76,0.2);color:var(--gold-light);border:none;border-bottom:3px solid var(--gold);cursor:pointer;font-size:0.88rem;font-family:inherit;font-weight:bold;">&#128203; 予約確認</button>
           <button id="admin-tab-btn-member" style="padding:10px 20px;background:transparent;color:var(--foam);border:none;border-bottom:3px solid transparent;cursor:pointer;font-size:0.88rem;font-family:inherit;">&#128101; 会員情報出力</button>
+          <button id="admin-tab-btn-input" style="padding:10px 20px;background:transparent;color:var(--gold-light);border:none;border-bottom:3px solid transparent;cursor:pointer;font-size:0.88rem;font-family:inherit;font-weight:bold;">&#x270F; 会員情報入力</button>
         </div>
         <div id="admin-tab-reservation">
 
@@ -613,6 +614,13 @@
           <div id="member-result-area" style="display:none;"><div id="member-result-table"></div></div>
           <div id="member-search-error" style="display:none;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3);border-radius:8px;padding:12px;color:#f87171;font-size:0.85rem;"></div>
         </div>
+
+      <div id="admin-tab-input" style="display:none;padding:16px 0;">
+        <div style="background:rgba(255,255,255,0.05);border-radius:8px;padding:24px;max-width:600px;">
+          <h3 style="color:var(--gold);margin:0 0 20px 0;font-size:1rem;">✏ 会員情報入力</h3>
+          <p style="color:var(--gold-light);font-size:0.85rem;margin:0;">フォームは順次実装中です。</p>
+        </div>
+      </div>
 
       </div>
     </div>
@@ -1270,21 +1278,33 @@ function memberGoTop(){document.getElementById('member-form').reset();document.g
   var bM=document.getElementById('admin-tab-btn-member');
   var tR=document.getElementById('admin-tab-reservation');
   var tM=document.getElementById('admin-tab-member');
-  function setTab(isRes){
+  function setTab(tab){
     if(!tR||!tM||!bR||!bM)return;
-    tR.style.display=isRes?'block':'none';
-    tM.style.display=isRes?'none':'block';
-    bR.style.background=isRes?'rgba(201,168,76,0.2)':'transparent';
-    bR.style.color=isRes?'var(--gold-light)':'var(--foam)';
-    bR.style.borderBottom=isRes?'3px solid var(--gold)':'3px solid transparent';
-    bR.style.fontWeight=isRes?'bold':'normal';
-    bM.style.background=isRes?'transparent':'rgba(201,168,76,0.2)';
-    bM.style.color=isRes?'var(--foam)':'var(--gold-light)';
-    bM.style.borderBottom=isRes?'3px solid transparent':'3px solid var(--gold)';
-    bM.style.fontWeight=isRes?'normal':'bold';
+    var tI=document.getElementById('admin-tab-input');
+    var bI=document.getElementById('admin-tab-btn-input');
+    tR.style.display=tab==='reservation'?'block':'none';
+    tM.style.display=tab==='member'?'block':'none';
+    if(tI)tI.style.display=tab==='input'?'block':'none';
+    [bR,bM,bI].forEach(function(b){
+      if(!b)return;
+      b.style.background='transparent';
+      b.style.color='var(--foam)';
+      b.style.borderBottom='3px solid transparent';
+      b.style.fontWeight='normal';
+    });
+    var activeBtn=tab==='reservation'?bR:tab==='member'?bM:bI;
+    if(activeBtn){
+      activeBtn.style.background='rgba(201,168,76,0.2)';
+      activeBtn.style.color='var(--gold-light)';
+      activeBtn.style.borderBottom='3px solid var(--gold)';
+      activeBtn.style.fontWeight='bold';
+    }
   }
-  if(bR)bR.addEventListener('click',function(){setTab(true);});
-  if(bM)bM.addEventListener('click',function(){setTab(false);});
+  var bI=document.getElementById('admin-tab-btn-input');
+  var tI=document.getElementById('admin-tab-input');
+  if(bR)bR.addEventListener('click',function(){setTab('reservation');});
+  if(bM)bM.addEventListener('click',function(){setTab('member');});
+  if(bI)bI.addEventListener('click',function(){setTab('input');});
   var bS=document.getElementById('btn-search-members');
   if(bS)bS.addEventListener('click',function(){
     var inp=document.getElementById('member-search-input').value;
