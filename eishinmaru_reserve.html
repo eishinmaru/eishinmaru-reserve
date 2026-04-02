@@ -1301,7 +1301,27 @@ function memberGoTop(){document.getElementById('member-form').reset();document.g
       .then(function(d){bS.textContent='検索';bS.disabled=false;if(d.status==='ok'){window._mData=d.members;oEl.style.display='block';rEl.style.display='block';window.mRender();}else{eEl.textContent=d.message||'エラー';eEl.style.display='block';}}).catch(function(){bS.textContent='検索';bS.disabled=false;eEl.textContent='通信エラー';eEl.style.display='block';});
   });
   var bP=document.getElementById('btn-print-members');
-  if(bP)bP.addEventListener('click',function(){window.print();});
+  if(bP)bP.addEventListener('click',function(){
+    var table=document.getElementById('member-result-table');
+    if(!table){alert('データを検索してから出力してください');return;}
+    var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' +
+      (document.getElementById('search-no') ? 'No.'+document.getElementById('search-no').value : '') + ' 会員情報</title>'+
+      '<style>body{font-family:''Noto Sans JP'',''Yu Gothic'',sans-serif;padding:20px;}'+ 
+      'h2{color:#1a6b8a;border-bottom:2px solid #1a6b8a;padding-bottom:8px;}'+ 
+      'table{border-collapse:collapse;width:100%;font-size:12px;}'+ 
+      'th{background:#1a6b8a;color:white;padding:6px 8px;border:1px solid #ccc;text-align:left;}'+ 
+      'td{padding:5px 8px;border:1px solid #ccc;}'+ 
+      'tr:nth-child(even){background:#f0f8ff;}'+ 
+      '@media print{body{padding:0;}button{display:none!important;}}'+ 
+      '</style></head><body>'+ 
+      '<h2>栄真丸 会員情報</h2>'+ 
+      '<div style="margin-bottom:12px"><button onclick="window.print()" style="background:#1a6b8a;color:white;border:none;padding:8px 20px;border-radius:4px;cursor:pointer;font-size:14px;">🖨 PDF保存 / 印刺</button>'+ 
+      '&nbsp;<small style="color:#666">ブラウザの印刺ダイアログで「PDFに保存」を選択するとPDFファイルで保存できます</small></div>'+ 
+      table.outerHTML+'</body></html>';
+    var blob=new Blob([html],{type:'text/html;charset=utf-8'});
+    var url=URL.createObjectURL(blob);
+    window.open(url,'_blank');
+  });
   ['col-date','col-furigana','col-gender','col-birthday','col-phone','col-emergency','col-relation','col-address','col-memo'].forEach(function(id){var el=document.getElementById(id);if(el)el.addEventListener('change',function(){window.mRender();});});
   window._mData=[];
   window.mRender=function(){
