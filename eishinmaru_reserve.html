@@ -1054,7 +1054,7 @@
       html += '<button id="status-btn-' + rowIdx + '" data-status="' + status + '" onclick="cycleStatus(' + rowIdx + ', this)" style="font-size:11px; padding:4px 10px; border-radius:20px; background:' + statusBg + '; color:' + statusColor + '; border:1px solid ' + statusBorder + '; cursor:pointer; font-family:Noto Serif JP,serif;">' + statusLabel + '</button>';
       html += '</div>';
       html += '<div style="font-size:12px; color:#b8d9ed; line-height:2.0;">';
-      html += '🗓 ' + (row[1] || '') + '&nbsp;&nbsp;👥 ' + (row[2] || '') + '名&nbsp;&nbsp;🚢 ' + (row[3] || '') + '<br>';
+      html += '🗓 ' + formatBoardingDate(row[1], row[3]) + '&nbsp;&nbsp;👥 ' + (row[2] || '') + '名&nbsp;&nbsp;🚢 ' + (row[3] || '') + '<br>';
       html += '🎣 午前：' + (row[4] || '') + '&nbsp;&nbsp;午後：' + (row[5] || '') + '<br>';
       html += '📞 ' + (row[11] || '') + '&nbsp;&nbsp;✉️ ' + (row[10] || '');
       if (row[12] && row[12] !== 'なし') html += '<br>📝 ' + row[12];
@@ -1110,6 +1110,18 @@
     if (isNaN(d)) return val;
     return d.getFullYear() + '/' + (d.getMonth()+1) + '/' + d.getDate() + ' ' + d.getHours() + ':' + String(d.getMinutes()).padStart(2,'0');
   }
+
+   function formatBoardingDate(val, kubun) {
+     if (!val) return '';
+     var d = new Date(val);
+     if (isNaN(d)) return val;
+     var year  = d.getUTCFullYear();
+     var month = String(d.getUTCMonth() + 1).padStart(2, '0');
+     var day   = String(d.getUTCDate()).padStart(2, '0');
+     var ampm = (kubun && kubun.indexOf('午前') >= 0) ? 'AM' :
+                (kubun && kubun.indexOf('午後') >= 0) ? 'PM' : 'AM';
+     return year + ' ' + month + ' ' + day + ' ' + ampm;
+   }
 
   // ===== カスタムカレンダー =====
 
