@@ -635,13 +635,14 @@
                 </div>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
                   <div><label style="display:block;color:var(--gold-light);font-size:0.78rem;margin-bottom:4px;">性別</label><select id="mi-gender" style="width:100%;box-sizing:border-box;padding:7px 10px;border-radius:5px;border:1px solid rgba(255,255,255,0.2);background:rgba(30,50,80,0.9);color:white;font-size:0.88rem;"><option value="">未選択</option><option value="男性">男性</option><option value="女性">女性</option></select></div>
-                  <div><label style="display:block;color:var(--gold-light);font-size:0.78rem;margin-bottom:4px;">生年月日</label><input id="mi-birthday" type="date" style="width:100%;box-sizing:border-box;padding:7px 10px;border-radius:5px;border:1px solid rgba(255,255,255,0.2);background:rgba(30,50,80,0.9);color:white;font-size:0.88rem;" /></div>
+                  <div><label style="display:block;color:var(--gold-light);font-size:0.78rem;margin-bottom:4px;">生年月日</label><input id="mi-birthday" type="text" placeholder="1987-08-14" style="width:100%;box-sizing:border-box;padding:7px 10px;border-radius:5px;border:1px solid rgba(255,255,255,0.2);background:rgba(30,50,80,0.9);color:white;font-size:0.88rem;" /></div>
                 </div>
                 <div><label style="display:block;color:var(--gold-light);font-size:0.78rem;margin-bottom:4px;">住所</label><input id="mi-address" type="text" style="width:100%;box-sizing:border-box;padding:7px 10px;border-radius:5px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:white;font-size:0.88rem;" /></div>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
                   <div><label style="display:block;color:var(--gold-light);font-size:0.78rem;margin-bottom:4px;">電話番号</label><input id="mi-phone" type="tel" style="width:100%;box-sizing:border-box;padding:7px 10px;border-radius:5px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:white;font-size:0.88rem;" /></div>
                   <div><label style="display:block;color:var(--gold-light);font-size:0.78rem;margin-bottom:4px;">緊急連絡先</label><input id="mi-emergency" type="tel" style="width:100%;box-sizing:border-box;padding:7px 10px;border-radius:5px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:white;font-size:0.88rem;" /></div>
                 </div>
+                <div><label style="display:block;color:var(--gold-light);font-size:0.78rem;margin-bottom:4px;">続柄</label><input id="mi-relation" type="text" style="width:100%;box-sizing:border-box;padding:7px 10px;border-radius:5px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:white;font-size:0.88rem;" /></div>
                 <div><label style="display:block;color:var(--gold-light);font-size:0.78rem;margin-bottom:4px;">備考</label><textarea id="mi-memo" rows="2" style="width:100%;box-sizing:border-box;padding:7px 10px;border-radius:5px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:white;font-size:0.88rem;resize:vertical;"></textarea></div>
               </div>
             </div>
@@ -1461,7 +1462,7 @@ function memberGoTop(){document.getElementById('member-form').reset();document.g
       'mi-name': data.name, 'mi-furigana': data.furigana,
       'mi-gender': data.gender, 'mi-birthday': data.birthday,
       'mi-address': data.address, 'mi-phone': data.phone,
-      'mi-emergency': data.emergency, 'mi-memo': data.memo
+      'mi-emergency': data.emergency, 'mi-relation': data.relation, 'mi-memo': data.memo
     };
     Object.keys(map).forEach(function(id) {
       var el = document.getElementById(id);
@@ -1514,13 +1515,13 @@ function memberGoTop(){document.getElementById('member-form').reset();document.g
     var labelMap = {
       'mi-name':'氏名','mi-furigana':'フリガナ','mi-gender':'性別',
       'mi-birthday':'生年月日','mi-address':'住所','mi-phone':'電話番号',
-      'mi-emergency':'緊急連絡先','mi-memo':'備考'
+      'mi-emergency':'緊急連絡先','mi-relation':'続柄','mi-memo':'備考'
     };
     var origMap = {
       'mi-name':_miOrigData.name||'','mi-furigana':_miOrigData.furigana||'',
       'mi-gender':_miOrigData.gender||'','mi-birthday':_miOrigData.birthday||'',
       'mi-address':_miOrigData.address||'','mi-phone':_miOrigData.phone||'',
-      'mi-emergency':_miOrigData.emergency||'','mi-memo':_miOrigData.memo||''
+      'mi-emergency':_miOrigData.emergency||'','mi-relation':_miOrigData.relation||'','mi-memo':_miOrigData.memo||''
     };
     _miFields.forEach(function(f) {
       var orig = origMap[f.id] || '';
@@ -1558,7 +1559,7 @@ function memberGoTop(){document.getElementById('member-form').reset();document.g
       action:'updateMember', rowIndex:_miRowIndex,
       data:{name:d['mi-name'],furigana:d['mi-furigana'],gender:d['mi-gender'],
             birthday:d['mi-birthday'],address:d['mi-address'],phone:d['mi-phone'],
-            emergency:d['mi-emergency'],memo:d['mi-memo'],relation:''}
+            emergency:d['mi-emergency'],relation:d['mi-relation'],memo:d['mi-memo'],relation:''}
     })})
       .then(function(r){return r.json();})
       .then(function(res){
