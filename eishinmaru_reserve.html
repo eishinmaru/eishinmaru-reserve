@@ -1460,7 +1460,7 @@ function memberGoTop(){document.getElementById('member-form').reset();document.g
   function miSetFormData(data) {
     var map = {
       'mi-name': data.name, 'mi-furigana': data.furigana,
-      'mi-gender': data.gender, 'mi-birthday': data.birthday,
+      'mi-gender': data.gender, 'mi-birthday': data.birthday ? String(data.birthday).split('T')[0] : '',
       'mi-address': data.address, 'mi-phone': data.phone,
       'mi-emergency': data.emergency, 'mi-relation': data.relation, 'mi-memo': data.memo
     };
