@@ -1070,7 +1070,7 @@
 
 
   // ===== 管理者ページ =====
-  var ADMIN_PASS = 'eishin2024';
+  
     var GAS_URL = 'https://script.google.com/macros/s/AKfycbyYyQp09Z4uztbowmJfrbvn4VhJzvAtwtfOvMcz3XGFUdH88x0xu_LaK11OTHjaYU2-/exec';
 
   function adminLogout() {
@@ -1083,16 +1083,33 @@
 
   function adminLogin() {
     var pass = document.getElementById('admin-password').value;
-    if (pass === ADMIN_PASS) {
-      document.getElementById('admin-login').style.display = 'none';
-      document.getElementById('admin-panel').style.display = 'block';
-      loadReservations();
-    } else {
-      alert('パスワードが違います');
-    }
+    var btn = document.querySelector('.submit-btn');
+    btn.textContent = '...';
+    btn.disabled = true;
+    fetch(GAS_URL, {method:'POST', body:JSON.stringify({action:'checkPassword', password:pass})})
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        btn.textContent = 'ログイン';
+        btn.disabled = false;
+        if (d.status === 'ok') {
+          document.getElementById('admin-login').style.display = 'none';
+          document.getElementById('admin-panel').style.display = 'block';
+          document.getElementById('admin-password').value = '';
+          document.getElementById('reservation-list').innerHTML = '';
+          document.getElementById('admin-count').textContent = '...';
+          loadReservations();
+        } else {
+          alert('パスワードが違います。');
+        }
+      })
+      .catch(function(){
+        btn.textContent = 'ログイン';
+        btn.disabled = false;
+        alert('通信エラー。もう一度お試しください。');
+      });
   }
 
-  function loadReservations() {
+function loadReservations() {
     document.getElementById('admin-count').textContent = '読み込み中...';
     document.getElementById('reservation-list').innerHTML = '<div style="text-align:center; padding:30px; color:#8aabb8;">読み込み中...</div>';
 
