@@ -591,7 +591,7 @@
           <div style="background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.3);border-radius:12px;padding:20px;margin-bottom:20px;">
             <p style="font-size:0.95rem;font-weight:bold;color:var(--gold-light);margin-bottom:12px;">&#128269; 会員番号入力</p>
             <p style="font-size:0.82rem;color:var(--foam);margin-bottom:10px;">カンマ区切りまたは改行区切りで入力。例：No.501, No.502</p>
-            <textarea id="member-search-input" style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(201,168,76,0.3);background:rgba(255,255,255,0.05);color:var(--cream);font-size:0.88rem;font-family:inherit;min-height:80px;resize:vertical;" placeholder="501, 502 または No.501, No.502"></textarea>
+            <textarea id="member-search-input" style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(201,168,76,0.3);background:rgba(255,255,255,0.05);color:var(--cream);font-size:0.88rem;font-family:inherit;min-height:80px;resize:vertical;" placeholder="501 / No.501 / 山田 / ヤマダ"></textarea>
             <button id="btn-search-members" style="margin-top:10px;padding:10px 24px;background:var(--gold);color:#0a1628;border:none;border-radius:8px;font-size:0.88rem;font-weight:bold;cursor:pointer;font-family:inherit;">&#128269; 検索</button>
           </div>
           <div id="member-search-options" style="display:none;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);border-radius:12px;padding:16px;margin-bottom:16px;">
@@ -1391,9 +1391,11 @@ function memberGoTop(){document.getElementById('member-form').reset();document.g
     inp.split(',').forEach(function(s){s.split('\n').forEach(function(t){var v=t.trim();if(!v)return;if(/^\d+$/.test(v))v='No.'+parseInt(v,10);if(arr.indexOf(v)<0)arr.push(v);});});
     if(!arr.length){eEl.textContent='会員番号を入力してください';eEl.style.display='block';return;}
     bS.textContent='検索中...';bS.disabled=true;
-    fetch(MEMBER_GAS_URL,{method:'POST',body:JSON.stringify({action:'searchMembers',memberNumbers:arr})})
+    /\.^[0-9 ,\-]+$/.test(inp)
+      ? fetch(MEMBER_GAS_URL,{method:'POST',body:JSON.stringify({action:'searchMembers',memberNumbers:arr})})
+      : fetch(GAS_URL+'?action=searchMembers&keyword='+encodeURIComponent(inp.trim()))
       .then(function(r){return r.json();})
-      .then(function(d){bS.textContent='検索';bS.disabled=false;if(d.status==='ok'){window._mData=d.members;oEl.style.display='block';rEl.style.display='block';window.mRender();}else{eEl.textContent=d.message||'エラー';eEl.style.display='block';}}).catch(function(){bS.textContent='検索';bS.disabled=false;eEl.textContent='通信エラー';eEl.style.display='block';});
+      .then(function(d){bS.textContent='検索';bS.disabled=false;if(d.status==='ok'){window._mData=d.members||d.results;oEl.style.display='block';rEl.style.display='block';window.mRender();}else{eEl.textContent=d.message||'エラー';eEl.style.display='block';}}).catch(function(){bS.textContent='検索';bS.disabled=false;eEl.textContent='通信エラー';eEl.style.display='block';});
   });
   var bP=document.getElementById('btn-print-members');
   if(bP)bP.addEventListener('click',function(){
