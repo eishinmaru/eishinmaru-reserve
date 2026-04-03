@@ -1072,6 +1072,7 @@
   // ===== 管理者ページ =====
   
     var GAS_URL = 'https://script.google.com/macros/s/AKfycbyYyQp09Z4uztbowmJfrbvn4VhJzvAtwtfOvMcz3XGFUdH88x0xu_LaK11OTHjaYU2-/exec';
+  var _adminToken = null;
 
   function adminLogout() {
     document.getElementById('admin-panel').style.display = 'none';
@@ -1092,6 +1093,7 @@
         btn.textContent = 'ログイン';
         btn.disabled = false;
         if (d.status === 'ok') {
+          _adminToken = d.token;
           document.getElementById('admin-login').style.display = 'none';
           document.getElementById('admin-panel').style.display = 'block';
           document.getElementById('admin-password').value = '';
@@ -1113,7 +1115,7 @@ function loadReservations() {
     document.getElementById('admin-count').textContent = '読み込み中...';
     document.getElementById('reservation-list').innerHTML = '<div style="text-align:center; padding:30px; color:#8aabb8;">読み込み中...</div>';
 
-    fetch(GAS_URL + '?action=get')
+    fetch(GAS_URL + '?action=get&token=' + encodeURIComponent(_adminToken))
       .then(function(r) { return r.json(); })
       .then(function(data) {
         renderReservations(data.reservations);
@@ -1185,13 +1187,13 @@ function loadReservations() {
     if (card) card.style.borderLeftColor = nextColor;
 
     // GASに保存
-    fetch(GAS_URL + '?action=setstatus&row=' + rowIndex + '&status=' + encodeURIComponent(next))
+    fetch(GAS_URL + '?action=setstatus&row=' + rowIndex + '&status=' + encodeURIComponent(next) + '&token=' + encodeURIComponent(_adminToken))
       .catch(function() { alert('保存に失敗しました'); });
   }
 
   function deleteReservation(rowIndex) {
     if (!confirm('この予約を削除しますか？\nスプレッドシートからも完全に削除されます。')) return;
-    fetch(GAS_URL + '?action=delete&row=' + rowIndex)
+    fetch(GAS_URL + '?action=delete&row=' + rowIndex + '&token=' + encodeURIComponent(_adminToken))
       .then(function(r) { return r.json(); })
       .then(function() { loadReservations(); })
       .catch(function() { alert('削除に失敗しました'); });
@@ -1410,7 +1412,7 @@ function memberGoTop(){document.getElementById('member-form').reset();document.g
     bS.textContent='検索中...';bS.disabled=true;
     /\.^[0-9 ,\-]+$/.test(inp)
       ? fetch(MEMBER_GAS_URL,{method:'POST',body:JSON.stringify({action:'searchMembers',memberNumbers:arr})})
-      : fetch(GAS_URL+'?action=searchMembers&keyword='+encodeURIComponent(inp.trim()))
+      : fetch(GAS_URL+'?action=searchMembers&keyword='+encodeURIComponent(inp.trim())+'&token='+encodeURIComponent(_adminToken))
       .then(function(r){return r.json();})
       .then(function(d){bS.textContent='検索';bS.disabled=false;if(d.status==='ok'){window._mData=d.members||d.results;oEl.style.display='block';rEl.style.display='block';window.mRender();}else{eEl.textContent=d.message||'エラー';eEl.style.display='block';}}).catch(function(){bS.textContent='検索';bS.disabled=false;eEl.textContent='通信エラー';eEl.style.display='block';});
   });
@@ -1500,7 +1502,7 @@ function memberGoTop(){document.getElementById('member-form').reset();document.g
     var no = document.getElementById('mi-search-no').value.trim().replace(/^No\./i, '');
     if (!no) { miSetMsg('会員番号を入力してください', '#f87171'); return; }
     miSetMsg('検索中…', 'var(--gold-light)');
-    fetch(miGasUrl, {method:'POST', body:JSON.stringify({action:'getOneMember', memberNo:'No.' + no})})
+    fetch(miGasUrl, {method:'POST', body:JSON.stringify({action:'getOneMember', memberNo:'No.' + no, token:_adminToken})})
       .then(function(r){return r.json();})
       .then(function(d){
         if (d.status === 'ok') {
@@ -1575,7 +1577,7 @@ function memberGoTop(){document.getElementById('member-form').reset();document.g
     miExecuteBtn.textContent = '更新中…';
     var d = window._miNewData;
     fetch(miGasUrl, {method:'POST', body:JSON.stringify({
-      action:'updateMember', rowIndex:_miRowIndex,
+      action:'updateMember', rowIndex:_miRowIndex, token:_adminToken,
       data:{name:d['mi-name'],furigana:d['mi-furigana'],gender:d['mi-gender'],
             birthday:d['mi-birthday'],address:d['mi-address'],phone:d['mi-phone'],
             emergency:d['mi-emergency'],relation:d['mi-relation'],memo:d['mi-memo']}
