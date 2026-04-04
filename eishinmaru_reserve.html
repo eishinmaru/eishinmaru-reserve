@@ -1580,7 +1580,7 @@ function memberGoTop(){document.getElementById('member-form').reset();document.g
       action:'updateMember', rowIndex:_miRowIndex, token:_adminToken,
       data:{name:d['mi-name'],furigana:d['mi-furigana'],gender:d['mi-gender'],
             birthday:d['mi-birthday'],address:d['mi-address'],phone:d['mi-phone'],
-            emergency:d['mi-emergency'],relation:d['mi-relation'],memo:d['mi-memo']})})      .then(function(r){return r.json();})
+            emergency:d['mi-emergency'],relation:d['mi-relation'],memo:d['mi-memo']}})})      .then(function(r){return r.json();})
       .then(function(res){
         if (res.status === 'ok') {
           document.getElementById('mi-confirm-area').style.display = 'none';
