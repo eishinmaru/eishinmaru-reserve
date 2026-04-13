@@ -1410,9 +1410,7 @@ function memberGoTop(){document.getElementById('member-form').reset();document.g
     inp.split(',').forEach(function(s){s.split('\n').forEach(function(t){var v=t.trim();if(!v)return;if(/^\d+$/.test(v))v='No.'+parseInt(v,10);if(arr.indexOf(v)<0)arr.push(v);});});
     if(!arr.length){eEl.textContent='会員番号を入力してください';eEl.style.display='block';return;}
     bS.textContent='検索中...';bS.disabled=true;
-    /\.^[0-9 ,\-]+$/.test(inp)
-      ? fetch(MEMBER_GAS_URL,{method:'POST',body:JSON.stringify({action:'searchMembers',memberNumbers:arr})})
-      : fetch(GAS_URL+'?action=searchMembers&keyword='+encodeURIComponent(inp.trim())+'&token='+encodeURIComponent(_adminToken))
+    fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'searchMembers',memberNumbers:arr})})
       .then(function(r){return r.json();})
       .then(function(d){bS.textContent='検索';bS.disabled=false;if(d.status==='ok'){window._mData=d.members||d.results;oEl.style.display='block';rEl.style.display='block';window.mRender();}else{eEl.textContent=d.message||'エラー';eEl.style.display='block';}}).catch(function(){bS.textContent='検索';bS.disabled=false;eEl.textContent='通信エラー';eEl.style.display='block';});
   });
