@@ -1433,7 +1433,22 @@ function memberGoTop(){document.getElementById('member-form').reset();document.g
     html+='<h2>栄真丸 会員情報</h2>';
     html+='<div style="margin-bottom:12px"><button onclick="window.print()" style="background:#1a6b8a;color:white;border:none;padding:8px 20px;border-radius:4px;cursor:pointer;font-size:14px;">🖨 PDF保存 / 印刺</button>';
     html+='&nbsp;<small style="color:#666">印刺ダイアログで「PDFに保存」を選択するとPDFファイルで保存できます</small></div>';
-    html+='<table><thead>'+thead+'</thead><tbody>'+tbody+'</tbody></table></body></html>';
+    html+='<table><thead>'+thead+'</thead><tbody>'+tbody+'</tbody></table>
+<script>
+(function(){
+  try {
+    var params = new URLSearchParams(window.location.search);
+    var tab = params.get('tab');
+    if(tab === 'member'){
+      var btn = document.querySelector('button.tab[onclick*="member"]');
+      if(btn){ btn.click(); }
+    }
+  } catch(e){
+    console.error('Tab auto-switch error:', e);
+  }
+})();
+</script>
+</body></html>';
     var blob=new Blob([html],{type:'text/html;charset=utf-8'});
     var url=URL.createObjectURL(blob);
     window.open(url,'_blank');
