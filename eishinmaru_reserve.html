@@ -1435,20 +1435,33 @@ function memberGoTop(){document.getElementById('member-form').reset();document.g
     html+='&nbsp;<small style="color:#666">印刺ダイアログで「PDFに保存」を選択するとPDFファイルで保存できます</small></div>';
     html+='<table><thead>'+thead+'</thead><tbody>'+tbody+'</tbody></table>
 <script>
-window.addEventListener('load', function(){
-  try {
-    var params = new URLSearchParams(window.location.search);
-    var tab = params.get('tab');
-    if(tab === 'member'){
-      setTimeout(function(){
-        var btn = document.querySelector('button.tab[onclick*="member"]');
-        if(btn){ btn.click(); }
-      }, 100);
+(function(){
+  function tryAutoSwitchTab(){
+    try {
+      var params = new URLSearchParams(window.location.search);
+      if(params.get('tab') !== 'member') return true;
+      var btn = document.querySelector('button.tab[onclick*="member"]');
+      if(btn){ btn.click(); return true; }
+      return false;
+    } catch(e){
+      console.error('Tab auto-switch error:', e);
+      return true;
     }
-  } catch(e){
-    console.error('Tab auto-switch error:', e);
   }
-});
+  function startTry(){
+    if(tryAutoSwitchTab()) return;
+    var attempts = 0;
+    var timer = setInterval(function(){
+      attempts++;
+      if(tryAutoSwitchTab() || attempts > 20){ clearInterval(timer); }
+    }, 100);
+  }
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', startTry);
+  } else {
+    startTry();
+  }
+})();
 </script>
 </body></html>';
     var blob=new Blob([html],{type:'text/html;charset=utf-8'});
