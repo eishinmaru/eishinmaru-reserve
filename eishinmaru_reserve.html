@@ -1435,18 +1435,20 @@ function memberGoTop(){document.getElementById('member-form').reset();document.g
     html+='&nbsp;<small style="color:#666">印刺ダイアログで「PDFに保存」を選択するとPDFファイルで保存できます</small></div>';
     html+='<table><thead>'+thead+'</thead><tbody>'+tbody+'</tbody></table>
 <script>
-(function(){
+window.addEventListener('load', function(){
   try {
     var params = new URLSearchParams(window.location.search);
     var tab = params.get('tab');
     if(tab === 'member'){
-      var btn = document.querySelector('button.tab[onclick*="member"]');
-      if(btn){ btn.click(); }
+      setTimeout(function(){
+        var btn = document.querySelector('button.tab[onclick*="member"]');
+        if(btn){ btn.click(); }
+      }, 100);
     }
   } catch(e){
     console.error('Tab auto-switch error:', e);
   }
-})();
+});
 </script>
 </body></html>';
     var blob=new Blob([html],{type:'text/html;charset=utf-8'});
