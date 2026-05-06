@@ -543,13 +543,30 @@ window.addEventListener('DOMContentLoaded', function(){
     <button class="tab" onclick="switchTab('schedule')">出船スケジュール</button>
     <button class="tab" onclick="switchTab('notes')">注意事項</button>
     <button class="tab" onclick="switchTab('member')">会員登録</button>
-    <button class="tab" onclick="location.href='member_mypage.html'">会員様専用</button>
+    <button class="tab" onclick="switchTab('mypage')">会員様専用</button>
     <button class="tab" onclick="switchTab('admin')">管理</button>
   </nav>
 
   <main>
 
-    <!-- ===== 管理者ページ ===== -->
+    <!-- ===== 会員様専用ページ ===== -->
+<div id="page-mypage" class="page">
+  <div class="section-title">👤 会員様専用ページ</div>
+  <div class="section-subtitle">MEMBER EXCLUSIVE PAGE</div>
+  <div class="gold-line"></div>
+  <div style="text-align:center;padding:60px 20px;">
+    <div style="font-size:4rem;margin-bottom:24px;">🛥️</div>
+    <div style="display:inline-block;background:linear-gradient(135deg,var(--gold),#e8c56a);color:var(--navy);font-weight:700;font-size:0.85rem;padding:6px 20px;border-radius:20px;letter-spacing:0.08em;margin-bottom:24px;">会員様専用ページ</div>
+    <div style="width:60px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:0 auto 24px;"></div>
+    <div style="font-family:'Shippori Mincho',serif;font-size:1.5rem;color:var(--gold);font-weight:800;margin-bottom:20px;">〜 準備中 〜</div>
+    <div style="font-size:1rem;line-height:1.9;color:var(--cream);opacity:0.85;margin-bottom:32px;">
+      会員様専用ページはただいま準備中でございます。<br>
+      まもなく公開予定ですので、しばらくお待ちくださいませ。
+    </div>
+  </div>
+</div>
+
+<!-- ===== 管理者ページ ===== -->
 <div id="page-member" class="page">
   <div class="section-title">会員登録</div>
   <div class="section-subtitle">MEMBER REGISTRATION</div>
