@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="栄真丸">
+<title>栄真丸 | 会員様専用ページ</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600;700&family=Shippori+Mincho:wght@400;600;800&family=Kaisei+Decol:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0a1628;
+    --deep: #0d1f3c;
+    --ocean: #1a3a5c;
+    --wave: #1e5f8a;
+    --gold: #c9a84c;
+    --cream: #f5f0e8;
+    --white: #ffffff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: linear-gradient(180deg, var(--navy) 0%, var(--deep) 50%, var(--ocean) 100%);
+    min-height: 100vh;
+    font-family: 'Noto Serif JP', serif;
+    color: var(--cream);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+  .logo-area {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .logo-title {
+    font-family: 'Kaisei Decol', serif;
+    font-size: 2.2rem;
+    color: var(--gold);
+    letter-spacing: 0.15em;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  }
+  .logo-sub {
+    font-size: 0.85rem;
+    color: var(--cream);
+    opacity: 0.7;
+    margin-top: 4px;
+    letter-spacing: 0.1em;
+  }
+  .card {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 16px;
+    padding: 48px 36px;
+    max-width: 420px;
+    width: 100%;
+    text-align: center;
+    backdrop-filter: blur(10px);
+  }
+  .icon {
+    font-size: 4rem;
+    margin-bottom: 24px;
+  }
+  .card-title {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 1.5rem;
+    color: var(--gold);
+    font-weight: 800;
+    margin-bottom: 20px;
+    letter-spacing: 0.05em;
+  }
+  .card-text {
+    font-size: 1rem;
+    line-height: 1.9;
+    color: var(--cream);
+    opacity: 0.85;
+    margin-bottom: 32px;
+  }
+  .badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--gold), #e8c56a);
+    color: var(--navy);
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 6px 20px;
+    border-radius: 20px;
+    letter-spacing: 0.08em;
+    margin-bottom: 32px;
+  }
+  .divider {
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 0 auto 24px;
+  }
+  .back-btn {
+    display: inline-block;
+    background: transparent;
+    border: 1px solid rgba(201,168,76,0.5);
+    color: var(--gold);
+    font-family: 'Noto Serif JP', serif;
+    font-size: 0.9rem;
+    padding: 12px 32px;
+    border-radius: 8px;
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    transition: all 0.3s;
+  }
+  .back-btn:hover {
+    background: rgba(201,168,76,0.15);
+    border-color: var(--gold);
+  }
+  .wave-deco {
+    font-size: 1.5rem;
+    opacity: 0.4;
+    margin: 0 8px;
+  }
+</style>
+</head>
+<body>
+  <div class="logo-area">
+    <div class="logo-title">栄真丸</div>
+    <div class="logo-sub">EISHINMARU FISHING BOAT</div>
+  </div>
+
+  <div class="card">
+    <div class="icon">🛥️</div>
+    <div class="badge">会員様専用ページ</div>
+    <div class="divider"></div>
+    <div class="card-title">
+      <span class="wave-deco">〜</span>
+      準備中
+      <span class="wave-deco">〜</span>
+    </div>
+    <div class="card-text">
+      会員様専用ページはただいま準備中でございます。<br>
+      まもなく公開予定ですので、<br>
+      しばらくお待ちくださいませ。<br><br>
+      予約・お問い合わせは<br>
+      お気軽にどうぞ。
+    </div>
+    <a href="eishinmaru_reserve.html" class="back-btn">← トップページに戻る</a>
+  </div>
+</body>
+</html>
