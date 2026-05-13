@@ -1771,6 +1771,9 @@ function searchMembersByName(keyword) {
 function _displayNameSearchResults(members, keyword) {
   var resultTable = document.getElementById('member-result-table');
   if(!resultTable) return;
+  // 結果エリアを表示する（初期状態で隠れてるため）
+  var resultArea = document.getElementById('member-result-area');
+  if(resultArea) resultArea.style.display = 'block';
   // 既存データ行をクリア（ヘッダー除く）
   var existingRows = resultTable.querySelectorAll('tr');
   for(var r = 1; r < existingRows.length; r++) { existingRows[r].remove(); }
