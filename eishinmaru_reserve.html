@@ -717,6 +717,31 @@ window.addEventListener('DOMContentLoaded', function(){
         </div>
       </div>
 
+  <!-- 受付管理タブ -->
+  <div id="admin-tab-control" style="display:none;padding:20px;">
+    <div id="control-msg" style="text-align:center;padding:10px;margin-bottom:16px;border-radius:8px;font-size:0.9rem;min-height:20px;"></div>
+    <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(201,168,76,0.3);border-radius:12px;padding:20px;margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+        <div>
+          <div style="font-weight:bold;color:#c9a84c;">予約受付</div>
+          <div id="reserve-status-label" style="font-size:0.85rem;margin-top:4px;">読み込み中...</div>
+          <div style="font-size:0.75rem;color:rgba(245,240,232,0.5);margin-top:2px;">21:00、4:30は自動停止</div>
+        </div>
+        <button id="reserve-toggle-btn" style="padding:10px 20px;border:none;border-radius:8px;font-size:0.9rem;font-weight:bold;cursor:pointer;background:#888;color:#fff;">読み込み中</button>
+      </div>
+    </div>
+    <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(201,168,76,0.3);border-radius:12px;padding:20px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+        <div>
+          <div style="font-weight:bold;color:#c9a84c;">会員登録受付</div>
+          <div id="member-status-label" style="font-size:0.85rem;margin-top:4px;">読み込み中...</div>
+        </div>
+        <button id="member-toggle-btn" style="padding:10px 20px;border:none;border-radius:8px;font-size:0.9rem;font-weight:bold;cursor:pointer;background:#888;color:#fff;">読み込み中</button>
+      </div>
+    </div>
+  </div>
+
+
       </div>
     </div>
 
