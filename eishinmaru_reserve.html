@@ -1753,5 +1753,40 @@ function loadReceptionStatus() {
     .catch(function(err){ console.error('loadReceptionStatus error:', err); });
 }
 
+// 受付の停止/再開を切り替える
+function toggleReception(type) {
+  if(typeof MEMBER_GAS_URL === 'undefined') return;
+  var key = (type === 'reserve') ? 'reserve_stopped' : 'member_stopped';
+  var btnId = (type === 'reserve') ? 'reserve-toggle-btn' : 'member-toggle-btn';
+  var btn = document.getElementById(btnId);
+  if(!btn) return;
+  var isStopped = (btn.textContent.trim() === '再開する');
+  var newValue = !isStopped; // 現在停止中なら再開(false)、受付中なら停止(true)
+  btn.disabled = true;
+  btn.textContent = '処理中...';
+  fetch(MEMBER_GAS_URL, {method:'POST', body: JSON.stringify({action:'setStatus', key: key, value: String(newValue)})})
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      btn.disabled = false;
+      if(d && d.status === 'ok') {
+        var msgEl = document.getElementById('control-msg');
+        if(msgEl) {
+          msgEl.textContent = (type === 'reserve' ? '予約' : '会員登録') + '受付を' + (newValue ? '停止' : '再開') + 'しました。';
+          msgEl.style.background = newValue ? 'rgba(200,50,50,0.2)' : 'rgba(50,200,50,0.2)';
+          msgEl.style.color = newValue ? '#ff6b6b' : '#2ecc71';
+        }
+        loadReceptionStatus();
+      } else {
+        alert('更新に失敗しました。');
+      }
+    })
+    .catch(function(err){
+      btn.disabled = false;
+      console.error('toggleReception error:', err);
+      alert('エラーが発生しました。');
+    });
+}
+
+
 
 </script>
