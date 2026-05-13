@@ -1818,6 +1818,20 @@ function setupControlTabEvents() {
   if(mToggle) mToggle.addEventListener('click', function(){ toggleReception('member'); });
 }
 
+// 受付管理タブの初期化（独立したDOMContentLoadedリスナー）
+document.addEventListener('DOMContentLoaded', function(){
+  try {
+    setupControlTabEvents();
+    // 初回ステータス読み込み（メンテ表示を反映させるため）
+    loadReceptionStatus();
+    // 1分ごとに自動再読み込み
+    setInterval(loadReceptionStatus, 60000);
+  } catch(e) {
+    console.error('受付管理タブ初期化エラー:', e);
+  }
+});
+
+
 
 
 
