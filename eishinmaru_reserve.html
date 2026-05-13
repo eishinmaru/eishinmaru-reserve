@@ -1738,4 +1738,20 @@ function updateControlUI(rStop, mStop) {
   }
 }
 
+// GASから現在の受付状態を取得してUIを更新
+function loadReceptionStatus() {
+  if(typeof MEMBER_GAS_URL === 'undefined') return;
+  fetch(MEMBER_GAS_URL, {method:'POST', body: JSON.stringify({action:'getStatus'})})
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(d && d.status === 'ok' && d.data) {
+        var rStop = String(d.data.reserve_stopped) === 'true';
+        var mStop = String(d.data.member_stopped) === 'true';
+        updateControlUI(rStop, mStop);
+      }
+    })
+    .catch(function(err){ console.error('loadReceptionStatus error:', err); });
+}
+
+
 </script>
