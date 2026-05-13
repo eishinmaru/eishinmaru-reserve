@@ -1708,6 +1708,115 @@ function checkReserveTimeStop() {
   }
 }
 
+// === 名前検索機能 ===
+// カタカナをひらがなに変換
+function _katakanaToHiragana(s) {
+  return String(s||'').replace(/[\u30a1-\u30f6]/g, function(c){ return String.fromCharCode(c.charCodeAt(0) - 0x60); });
+}
+// ひらがなをカタカナに変換
+function _hiraganaToKatakana(s) {
+  return String(s||'').replace(/[\u3041-\u3096]/g, function(c){ return String.fromCharCode(c.charCodeAt(0) + 0x60); });
+}
+// 正規化（空白除去・ひらがなへ統一）
+function _normalizeForSearch(s) {
+  return _katakanaToHiragana(String(s||'')).replace(/[\s　]/g, '').toLowerCase();
+}
+// 検索語が数字・会員番号形式かどうか
+function _isNumberQuery(s) {
+  var t = String(s||'').trim();
+  if(/^[0-9]+$/.test(t)) return true;
+  if(/^No\.?[0-9]+$/i.test(t)) return true;
+  return false;
+}
+// 名前検索を実行
+function searchMembersByName(keyword) {
+  if(typeof MEMBER_GAS_URL === 'undefined') { alert('GAS URL未定義'); return; }
+  var msgEl = document.getElementById('member-search-msg') || document.getElementById('control-msg');
+  // 全会員番号を生成（No.1〜No.1000）
+  var allNos = [];
+  for(var i = 1; i <= 1000; i++) { allNos.push('No.' + i); }
+  // 検索中表示
+  var resultTable = document.getElementById('member-result-table');
+  if(resultTable) {
+    var tbody = resultTable.querySelector('tbody') || resultTable;
+    // ヘッダー以外をクリア
+    var existingRows = resultTable.querySelectorAll('tr');
+    for(var r = 1; r < existingRows.length; r++) { existingRows[r].remove(); }
+  }
+  var btn = document.getElementById('btn-search-members');
+  if(btn) { btn.disabled = true; btn.textContent = '検索中...'; }
+  fetch(MEMBER_GAS_URL, {method:'POST', body: JSON.stringify({action:'searchMembers', memberNumbers: allNos})})
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(btn) { btn.disabled = false; btn.textContent = '🔍 検索'; }
+      if(!d || d.status !== 'ok' || !d.results) { alert('検索に失敗しました。'); return; }
+      // キーワードを正規化
+      var normKeyword = _normalizeForSearch(keyword);
+      // nameまたはfuriganaに含まれる会員を抽出
+      var matched = d.results.filter(function(m){
+        var n = _normalizeForSearch(m.name);
+        var f = _normalizeForSearch(m.furigana);
+        return n.indexOf(normKeyword) !== -1 || f.indexOf(normKeyword) !== -1;
+      });
+      // 結果を画面に表示
+      _displayNameSearchResults(matched, keyword);
+    })
+    .catch(function(err){
+      if(btn) { btn.disabled = false; btn.textContent = '🔍 検索'; }
+      console.error('名前検索エラー:', err);
+      alert('エラーが発生しました。');
+    });
+}
+// 名前検索結果をテーブルに表示
+function _displayNameSearchResults(members, keyword) {
+  var resultTable = document.getElementById('member-result-table');
+  if(!resultTable) return;
+  // 既存データ行をクリア（ヘッダー除く）
+  var existingRows = resultTable.querySelectorAll('tr');
+  for(var r = 1; r < existingRows.length; r++) { existingRows[r].remove(); }
+  if(members.length === 0) {
+    var noRow = document.createElement('tr');
+    noRow.innerHTML = '<td colspan="99" style="text-align:center;padding:20px;color:#aaa;">「' + keyword + '」に一致する会員は見つかりませんでした。</td>';
+    resultTable.appendChild(noRow);
+    return;
+  }
+  // チェックボックスで選ばれている項目を取得
+  var checkedFields = {};
+  document.querySelectorAll('#admin-tab-member input[type="checkbox"]').forEach(function(cb){
+    if(cb.checked) checkedFields[cb.dataset.field || cb.value || cb.id] = true;
+  });
+  // 名前検索結果の行を生成
+  members.forEach(function(m){
+    var tr = document.createElement('tr');
+    var html = '<td>' + (m.memberNo||'') + '</td><td>' + (m.name||'') + '</td>';
+    // フリガナが選ばれていたら追加
+    if(checkedFields['フリガナ'] || checkedFields['furigana']) html += '<td>' + (m.furigana||'') + '</td>';
+    tr.innerHTML = html;
+    resultTable.appendChild(tr);
+  });
+}
+// 検索ボタンにリスナーを追加（名前検索判定）
+function _setupNameSearchInterceptor() {
+  var btn = document.getElementById('btn-search-members');
+  var input = document.getElementById('member-search-input');
+  if(!btn || !input) return;
+  // キャプチャフェーズで既存処理より先に実行
+  btn.addEventListener('click', function(e){
+    var query = String(input.value || '').trim();
+    if(!query) return;
+    // 番号形式ならスルー（既存処理に任せる）
+    if(_isNumberQuery(query)) return;
+    // 名前検索モード
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    searchMembersByName(query);
+  }, true); // captureフェーズで登録して既存より先に実行
+}
+document.addEventListener('DOMContentLoaded', function(){
+  try { _setupNameSearchInterceptor(); } catch(e){ console.error('名前検索初期化エラー:', e); }
+});
+
+
 // ページ読み込み時と、以降1分ごとにチェック
 document.addEventListener('DOMContentLoaded', function(){
   try {
