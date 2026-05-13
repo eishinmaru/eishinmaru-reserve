@@ -1787,6 +1787,38 @@ function toggleReception(type) {
     });
 }
 
+// 受付管理タブのイベントリスナーを設定
+function setupControlTabEvents() {
+  var ctrlBtn = document.getElementById('admin-tab-btn-control');
+  var ctrlPanel = document.getElementById('admin-tab-control');
+  var resvPanel = document.getElementById('admin-tab-reservation');
+  var memPanel = document.getElementById('admin-tab-member');
+  var inputPanel = document.getElementById('admin-tab-input');
+  // 受付管理タブボタンクリック
+  if(ctrlBtn && ctrlPanel) {
+    ctrlBtn.addEventListener('click', function(){
+      if(resvPanel) resvPanel.style.display = 'none';
+      if(memPanel) memPanel.style.display = 'none';
+      if(inputPanel) inputPanel.style.display = 'none';
+      ctrlPanel.style.display = 'block';
+      loadReceptionStatus();
+    });
+  }
+  // 既存タブボタンに control パネルを隠す処理を追加
+  var resvBtn = document.getElementById('admin-tab-btn-reservation');
+  var memBtn = document.getElementById('admin-tab-btn-member');
+  var inputBtn = document.getElementById('admin-tab-btn-input');
+  if(resvBtn) resvBtn.addEventListener('click', function(){ if(ctrlPanel) ctrlPanel.style.display = 'none'; });
+  if(memBtn) memBtn.addEventListener('click', function(){ if(ctrlPanel) ctrlPanel.style.display = 'none'; });
+  if(inputBtn) inputBtn.addEventListener('click', function(){ if(ctrlPanel) ctrlPanel.style.display = 'none'; });
+  // 停止/再開ボタン
+  var rToggle = document.getElementById('reserve-toggle-btn');
+  var mToggle = document.getElementById('member-toggle-btn');
+  if(rToggle) rToggle.addEventListener('click', function(){ toggleReception('reserve'); });
+  if(mToggle) mToggle.addEventListener('click', function(){ toggleReception('member'); });
+}
+
+
 
 
 </script>
