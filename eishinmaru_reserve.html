@@ -1809,6 +1809,10 @@ function _setupNameSearchInterceptor() {
     // 名前検索モード
     e.preventDefault();
     e.stopImmediatePropagation();
+    // 既存処理が走らないように一時的に入力をクリア
+    var savedValue = input.value;
+    input.value = '';
+    setTimeout(function(){ input.value = savedValue; }, 100);
     searchMembersByName(query);
   }, true); // captureフェーズで登録して既存より先に実行
 }
