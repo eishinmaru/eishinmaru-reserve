@@ -1728,27 +1728,24 @@ function _isNumberQuery(s) {
   if(/^No\.?[0-9]+$/i.test(t)) return true;
   return false;
 }
-// 名前検索を実行
+// 名前検索を実行（該当No.リストを取得して既存検索に委譲）
 function searchMembersByName(keyword) {
   if(typeof MEMBER_GAS_URL === 'undefined') { alert('GAS URL未定義'); return; }
-  var msgEl = document.getElementById('member-search-msg') || document.getElementById('control-msg');
+  var btn = document.getElementById('btn-search-members');
+  var input = document.getElementById('member-search-input');
+  if(!btn || !input) return;
   // 全会員番号を生成（No.1〜No.1000）
   var allNos = [];
   for(var i = 1; i <= 1000; i++) { allNos.push('No.' + i); }
   // 検索中表示
-  var resultTable = document.getElementById('member-result-table');
-  if(resultTable) {
-    var tbody = resultTable.querySelector('tbody') || resultTable;
-    // ヘッダー以外をクリア
-    var existingRows = resultTable.querySelectorAll('tr');
-    for(var r = 1; r < existingRows.length; r++) { existingRows[r].remove(); }
-  }
-  var btn = document.getElementById('btn-search-members');
-  if(btn) { btn.disabled = true; btn.textContent = '検索中...'; }
+  btn.disabled = true;
+  var origBtnText = btn.innerHTML;
+  btn.innerHTML = '名前検索中...';
   fetch(MEMBER_GAS_URL, {method:'POST', body: JSON.stringify({action:'searchMembers', memberNumbers: allNos})})
     .then(function(r){ return r.json(); })
     .then(function(d){
-      if(btn) { btn.disabled = false; btn.textContent = '🔍 検索'; }
+      btn.disabled = false;
+      btn.innerHTML = origBtnText;
       if(!d || d.status !== 'ok' || !d.results) { alert('検索に失敗しました。'); return; }
       // キーワードを正規化
       var normKeyword = _normalizeForSearch(keyword);
@@ -1758,11 +1755,21 @@ function searchMembersByName(keyword) {
         var f = _normalizeForSearch(m.furigana);
         return n.indexOf(normKeyword) !== -1 || f.indexOf(normKeyword) !== -1;
       });
-      // 結果を画面に表示
-      _displayNameSearchResults(matched, keyword);
+      if(matched.length === 0) {
+        alert('「' + keyword + '」に一致する会員は見つかりませんでした。');
+        return;
+      }
+      // 該当するNo.をカンマ区切りで入力欄にセット
+      var noList = matched.map(function(m){ return m.memberNo; }).join(',');
+      input.value = noList;
+      // 既存の検索処理を発動（インターセプタをすり抜けるため、フラグを一時セット）
+      window._skipNameSearchInterceptor = true;
+      btn.click();
+      setTimeout(function(){ window._skipNameSearchInterceptor = false; }, 500);
     })
     .catch(function(err){
-      if(btn) { btn.disabled = false; btn.textContent = '🔍 検索'; }
+      btn.disabled = false;
+      btn.innerHTML = origBtnText;
       console.error('名前検索エラー:', err);
       alert('エラーが発生しました。');
     });
@@ -1805,6 +1812,8 @@ function _setupNameSearchInterceptor() {
   if(!btn || !input) return;
   // キャプチャフェーズで既存処理より先に実行
   btn.addEventListener('click', function(e){
+    // 名前検索をすり抜けた後の再実行は既存処理に任せる
+    if(window._skipNameSearchInterceptor) return;
     var query = String(input.value || '').trim();
     if(!query) return;
     // 番号形式ならスルー（既存処理に任せる）
