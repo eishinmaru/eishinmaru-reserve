@@ -1,11 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
-<h
-  <div id="reserve-maintenance" style="display:none;text-align:center;padding:40px 20px;background:rgba(200,50,50,0.15);border:2px solid rgba(200,50,50,0.5);border-radius:12px;margin:20px;">
-    <div style="font-size:2rem;margin-bottom:12px;">🚫</div>
-    <div style="font-size:1.1rem;font-weight:bold;color:#ff6b6b;margin-bottom:8px;">メンテナンス中です</div>
-    <div style="font-size:0.95rem;color:var(--cream);opacity:0.85;">受付を停止しています。</div>
-  </div>ead>
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -545,7 +540,6 @@ window.addEventListener('DOMContentLoaded', function(){
 
   <nav class="tab-bar">
     <button class="tab active" onclick="switchTab('reserve')">予約</button>
-    <button id="admin-tab-control" class="admin-tab-btn" onclick="switchAdminTab('control')">受付管理</button>
     <button class="tab" onclick="switchTab('schedule')">出船スケジュール</button>
     <button class="tab" onclick="switchTab('notes')">注意事項</button>
     <button class="tab" onclick="switchTab('member')">会員登録</button>
@@ -555,38 +549,7 @@ window.addEventListener('DOMContentLoaded', function(){
 
   <main>
 
-    
-  <!-- ===== 受付管理タブ ===== -->
-  <div id="admin-tab-control-content" class="admin-tab-content" style="display:none;">
-    <div style="padding:20px;">
-      <div class="section-title">受付管理</div>
-      <div class="gold-line"></div>
-      <div id="control-status-msg" style="text-align:center;padding:10px;margin-bottom:20px;border-radius:8px;font-size:0.9rem;"></div>
-      <!-- 予約受付 -->
-      <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(201,168,76,0.3);border-radius:12px;padding:20px;margin-bottom:16px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-          <div>
-            <div style="font-size:1rem;font-weight:bold;color:var(--gold);">予約受付</div>
-            <div id="reserve-status-label" style="font-size:0.8rem;margin-top:4px;"></div>
-            <div style="font-size:0.75rem;color:rgba(245,240,232,0.5);margin-top:2px;">21:00～4:30は自動停止</div>
-          </div>
-          <button id="reserve-toggle-btn" onclick="toggleReception('reserve')" style="padding:10px 20px;border:none;border-radius:8px;font-size:0.9rem;font-weight:bold;cursor:pointer;"></button>
-        </div>
-      </div>
-      <!-- 会員登録受付 -->
-      <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(201,168,76,0.3);border-radius:12px;padding:20px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <div>
-            <div style="font-size:1rem;font-weight:bold;color:var(--gold);">会員登録受付</div>
-            <div id="member-status-label" style="font-size:0.8rem;margin-top:4px;"></div>
-          </div>
-          <button id="member-toggle-btn" onclick="toggleReception('member')" style="padding:10px 20px;border:none;border-radius:8px;font-size:0.9rem;font-weight:bold;cursor:pointer;"></button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-<!-- ===== 会員様専用ページ ===== -->
+    <!-- ===== 会員様専用ページ ===== -->
 <div id="page-mypage" class="page">
   <div class="section-title">👤 会員様専用ページ</div>
   <div class="section-subtitle">MEMBER EXCLUSIVE PAGE</div>
@@ -617,11 +580,6 @@ window.addEventListener('DOMContentLoaded', function(){
 
 <!-- ===== 管理者ページ ===== -->
 <div id="page-member" class="page">
-  <div id="member-maintenance" style="display:none;text-align:center;padding:40px 20px;background:rgba(200,50,50,0.15);border:2px solid rgba(200,50,50,0.5);border-radius:12px;margin:20px;">
-    <div style="font-size:2rem;margin-bottom:12px;">🚫</div>
-    <div style="font-size:1.1rem;font-weight:bold;color:#ff6b6b;margin-bottom:8px;">メンテナンス中です</div>
-    <div style="font-size:0.95rem;color:var(--cream);opacity:0.85;">受付を停止しています。</div>
-  </div>
   <div class="section-title">会員登録</div>
   <div class="section-subtitle">MEMBER REGISTRATION</div>
   <div class="gold-line"></div>
@@ -1691,156 +1649,4 @@ function memberGoTop(){document.getElementById('member-form').reset();document.g
       });
   });
 })();
-
-
-// ====================================
-// 受付管理機能
-// ====================================
-
-// 受付状態を取得してUIを更新
-function loadReceptionStatus() {
-  fetch(MEMBER_GAS_URL, {
-    method: 'POST',
-    body: JSON.stringify({action: 'getStatus'})
-  })
-  .then(function(r){ return r.json(); })
-  .then(function(data) {
-    if(data.status === 'ok') {
-      updateReceptionUI(data.data);
-    }
-  })
-  .catch(function(e){ console.log('status load error', e); });
-}
-
-// UIを更新
-function updateReceptionUI(statusData) {
-  var reserveStopped = String(statusData['reserve_stopped']) === 'true';
-  var memberStopped = String(statusData['member_stopped']) === 'true';
-
-  // 予約ボタン
-  var rBtn = document.getElementById('reserve-toggle-btn');
-  var rLabel = document.getElementById('reserve-status-label');
-  if(rBtn) {
-    if(reserveStopped) {
-      rBtn.textContent = '再開する';
-      rBtn.style.background = '#27ae60';
-      rBtn.style.color = '#fff';
-      if(rLabel) { rLabel.textContent = '停止中'; rLabel.style.color = '#ff6b6b'; }
-    } else {
-      rBtn.textContent = '停止する';
-      rBtn.style.background = '#e74c3c';
-      rBtn.style.color = '#fff';
-      if(rLabel) { rLabel.textContent = '受付中'; rLabel.style.color = '#2ecc71'; }
-    }
-  }
-
-  // 会員登録ボタン
-  var mBtn = document.getElementById('member-toggle-btn');
-  var mLabel = document.getElementById('member-status-label');
-  if(mBtn) {
-    if(memberStopped) {
-      mBtn.textContent = '再開する';
-      mBtn.style.background = '#27ae60';
-      mBtn.style.color = '#fff';
-      if(mLabel) { mLabel.textContent = '停止中'; mLabel.style.color = '#ff6b6b'; }
-    } else {
-      mBtn.textContent = '停止する';
-      mBtn.style.background = '#e74c3c';
-      mBtn.style.color = '#fff';
-      if(mLabel) { mLabel.textContent = '受付中'; mLabel.style.color = '#2ecc71'; }
-    }
-  }
-
-  // メンテナンス表示制御
-  applyMaintenanceDisplay(reserveStopped, memberStopped);
-}
-
-// 時間チェック（21:00～4:30）
-function isReserveTimeStop() {
-  var now = new Date();
-  var h = now.getHours();
-  var m = now.getMinutes();
-  var totalMin = h * 60 + m;
-  var stop = 21 * 60;   // 21:00
-  var start = 4 * 60 + 30; // 4:30
-  return totalMin >= stop || totalMin < start;
-}
-
-// メンテナンス表示の適用
-function applyMaintenanceDisplay(reserveStopped, memberStopped) {
-  var timeStop = isReserveTimeStop();
-  var reserveStop = reserveStopped || timeStop;
-
-  // 予約ページ
-  var reserveMaint = document.getElementById('reserve-maintenance');
-  var reserveContent = document.querySelector('#page-reserve .section-title');
-  if(reserveMaint) {
-    if(reserveStop) {
-      reserveMaint.style.display = 'block';
-      var msg = reserveStopped ? 'メンテナンス中です。受付を停止しています。' : '現在予約受付時間外です（21:00～4:30）';
-      reserveMaint.querySelector('div:last-child').textContent = msg;
-    } else {
-      reserveMaint.style.display = 'none';
-    }
-  }
-
-  // 会員登録ページ
-  var memberMaint = document.getElementById('member-maintenance');
-  if(memberMaint) {
-    memberMaint.style.display = memberStopped ? 'block' : 'none';
-  }
-}
-
-// 停止／再開の切り替え
-function toggleReception(type) {
-  var btn = document.getElementById(type === 'reserve' ? 'reserve-toggle-btn' : 'member-toggle-btn');
-  var key = type === 'reserve' ? 'reserve_stopped' : 'member_stopped';
-  var currentlyStopped = btn.textContent.trim() === '再開する';
-  var newValue = !currentlyStopped;
-  var msg = document.getElementById('control-status-msg');
-
-  btn.disabled = true;
-  btn.textContent = '処理中...';
-
-  fetch(MEMBER_GAS_URL, {
-    method: 'POST',
-    body: JSON.stringify({action: 'setStatus', key: key, value: String(newValue)})
-  })
-  .then(function(r){ return r.json(); })
-  .then(function(data) {
-    btn.disabled = false;
-    if(data.status === 'ok') {
-      if(msg) {
-        msg.textContent = (type === 'reserve' ? '予約' : '会員登録') + '受付を' + (newValue ? '停止' : '再開') + 'しました。';
-        msg.style.background = newValue ? 'rgba(200,50,50,0.2)' : 'rgba(50,200,50,0.2)';
-        msg.style.color = newValue ? '#ff6b6b' : '#2ecc71';
-        msg.style.border = '1px solid ' + (newValue ? 'rgba(200,50,50,0.5)' : 'rgba(50,200,50,0.5)');
-      }
-      loadReceptionStatus();
-    }
-  })
-  .catch(function(e){
-    btn.disabled = false;
-    alert('エラーが発生しました。');
-  });
-}
-
-// switchAdminTabに受付管理を追加
-var _origSwitchAdminTab = typeof switchAdminTab === 'function' ? switchAdminTab : null;
-
-// ページ読み込み時に状態を取得
-document.addEventListener('DOMContentLoaded', function() {
-  loadReceptionStatus();
-  // 1分ごとに状態を再取得
-  setInterval(function() {
-    loadReceptionStatus();
-    // 時間自動停止の再チェック
-    var timeStop = isReserveTimeStop();
-    var reserveMaint = document.getElementById('reserve-maintenance');
-    if(reserveMaint && reserveMaint.style.display === 'none' && timeStop) {
-      applyMaintenanceDisplay(false, false);
-    }
-  }, 60000);
-});
-
 </script>
