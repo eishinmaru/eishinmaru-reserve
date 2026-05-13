@@ -1095,6 +1095,10 @@ window.addEventListener('DOMContentLoaded', function(){
   }
   ['m-phone','m-emergency','mi-phone','mi-emergency','tel'].forEach(bindPhoneFormat);
   function submitForm() {
+    if(typeof isReserveTimeStop === 'function' && isReserveTimeStop()) {
+      alert('現在予約受付時間外です。\nWeb予約受付時間：4:30〜21:00に再度お試しください。');
+      return;
+    }
     var name     = document.getElementById('name').value;
     var furigana = document.getElementById('furigana').value;
     var email    = document.getElementById('email').value;
@@ -1703,13 +1707,19 @@ function isReserveTimeStop() {
 // 予約受付時間チェック（21:00ー4:30は自動停止表示）
 function checkReserveTimeStop() {
   var rMaint = document.getElementById('reserve-maintenance');
+  var rForm = document.getElementById('form-area');
+  var rHours = document.getElementById('reserve-hours-notice');
   if(!rMaint) return;
   if(isReserveTimeStop()) {
     rMaint.style.display = 'block';
+    if(rForm) rForm.style.display = 'none';
+    if(rHours) rHours.style.display = 'none';
     var msg = document.getElementById('reserve-maint-msg');
-    if(msg) msg.textContent = '現在予約受付時間外です（21:00ー翌4:30は自動停止）。ご不便をおかけしますが、時間内に再度お試しください。';
+    if(msg) msg.textContent = '現在予約受付時間外です（21:00ー翼4:30は自動停止）。ご不便をおかけしますが、時間内に再度お試しください。';
   } else {
     rMaint.style.display = 'none';
+    if(rForm) rForm.style.display = '';
+    if(rHours) rHours.style.display = '';
   }
 }
 
