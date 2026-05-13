@@ -1685,4 +1685,13 @@ function memberGoTop(){document.getElementById('member-form').reset();document.g
       });
   });
 })();
+
+
+// === 受付管理関連 ===
+// 予約受付の自動停止時間判定 (21:00、4:30)
+function isReserveTimeStop() {
+  var now = new Date();
+  var t = now.getHours() * 60 + now.getMinutes();
+  return t >= 1260 || t < 270;
+}
 </script>
