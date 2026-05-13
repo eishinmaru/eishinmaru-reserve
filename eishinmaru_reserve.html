@@ -1740,6 +1740,9 @@ function updateControlUI(rStop, mStop) {
 
 // GASから現在の受付状態を取得してUIを更新
 function loadReceptionStatus() {
+  // === 緊急止血: GASのgetStatus未実装のため一時的に無効化 ===
+  return; // TODO: GAS実装完了後にこの行を削除
+
   if(typeof MEMBER_GAS_URL === 'undefined') return;
   fetch(MEMBER_GAS_URL, {method:'POST', body: JSON.stringify({action:'getStatus'})})
     .then(function(r){ return r.json(); })
@@ -1755,6 +1758,10 @@ function loadReceptionStatus() {
 
 // 受付の停止/再開を切り替える
 function toggleReception(type) {
+  // === 緊急止血: GASのsetStatus未実装のため一時的に無効化 ===
+  alert('受付管理機能GAS実装中、しばらくお待ちください。');
+  return; // TODO: GAS実装完了後にこの行を削除
+
   if(typeof MEMBER_GAS_URL === 'undefined') return;
   var key = (type === 'reserve') ? 'reserve_stopped' : 'member_stopped';
   var btnId = (type === 'reserve') ? 'reserve-toggle-btn' : 'member-toggle-btn';
@@ -1817,19 +1824,6 @@ function setupControlTabEvents() {
   if(rToggle) rToggle.addEventListener('click', function(){ toggleReception('reserve'); });
   if(mToggle) mToggle.addEventListener('click', function(){ toggleReception('member'); });
 }
-
-// 受付管理タブの初期化（独立したDOMContentLoadedリスナー）
-document.addEventListener('DOMContentLoaded', function(){
-  try {
-    setupControlTabEvents();
-    // 初回ステータス読み込み（メンテ表示を反映させるため）
-    loadReceptionStatus();
-    // 1分ごとに自動再読み込み
-    setInterval(loadReceptionStatus, 60000);
-  } catch(e) {
-    console.error('受付管理タブ初期化エラー:', e);
-  }
-});
 
 
 
