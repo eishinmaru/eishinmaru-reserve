@@ -1702,7 +1702,7 @@ function checkReserveTimeStop() {
   if(isReserveTimeStop()) {
     rMaint.style.display = 'block';
     var msg = document.getElementById('reserve-maint-msg');
-    if(msg) msg.textContent = '現在予約受付時間外です（21:00ー翼4:30は自動停止）。ご不便をおかけしますが、時間内に再度お試しください。';
+    if(msg) msg.textContent = '現在予約受付時間外です（21:00ー翌4:30は自動停止）。ご不便をおかけしますが、時間内に再度お試しください。';
   } else {
     rMaint.style.display = 'none';
   }
