@@ -1695,6 +1695,30 @@ function isReserveTimeStop() {
   return t >= 1260 || t < 270;
 }
 
+// 予約受付時間チェック（21:00ー4:30は自動停止表示）
+function checkReserveTimeStop() {
+  var rMaint = document.getElementById('reserve-maintenance');
+  if(!rMaint) return;
+  if(isReserveTimeStop()) {
+    rMaint.style.display = 'block';
+    var msg = document.getElementById('reserve-maint-msg');
+    if(msg) msg.textContent = '現在予約受付時間外です（21:00ー翼4:30は自動停止）。ご不便をおかけしますが、時間内に再度お試しください。';
+  } else {
+    rMaint.style.display = 'none';
+  }
+}
+
+// ページ読み込み時と、以降1分ごとにチェック
+document.addEventListener('DOMContentLoaded', function(){
+  try {
+    checkReserveTimeStop();
+    setInterval(checkReserveTimeStop, 60000);
+  } catch(e) {
+    console.error('予約受付時間チェックエラー:', e);
+  }
+});
+
+
 // 受付管理タブのUI更新
 function updateControlUI(rStop, mStop) {
   var timeStop = isReserveTimeStop();
