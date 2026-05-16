@@ -1221,8 +1221,8 @@ function submitForm() {
 
     // 確認画面分岐
     if(!window.__reserveConfirmed){
-      window.__pendingReserveData = p;
-      showReserveConfirmScreen(p);
+      window.__pendingReserveData = params;
+      showReserveConfirmScreen(params);
       return;
     }
     window.__reserveConfirmed = false;
