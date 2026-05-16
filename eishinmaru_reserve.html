@@ -547,14 +547,7 @@ window.addEventListener('DOMContentLoaded', function(){
     >
   </header>
 
-  <nav class="tab-bar">
-    <button class="tab active" onclick="switchTab('reserve')">予約</button>
-    <button class="tab" onclick="switchTab('member')">会員登録</button>
-    <button class="tab" onclick="switchTab('mypage')">会員様専用</button>
-    <button class="tab tab-small" onclick="switchTab('schedule')">出船スケジュール</button>
-    <button class="tab" onclick="switchTab('notes')">注意事項</button>
-    <button class="tab" onclick="switchTab('admin')">管理</button>
-  </nav>
+  <nav class="tab-bar"><button class="tab active" onclick="switchTab('notes')">トップ</button><button class="tab" onclick="switchTab('reserve')">予約</button><button class="tab" onclick="switchTab('member')">会員登録</button><button class="tab tab-small" onclick="switchTab('schedule')">出船スケジュール</button><button class="tab" onclick="switchTab('mypage')">会員様専用</button><button class="tab" onclick="switchTab('admin')">管理</button></nav>
 
   <main>
 
@@ -790,7 +783,7 @@ window.addEventListener('DOMContentLoaded', function(){
     </div>
 
     <!-- ===== 注意事項ページ ===== -->
-    <div class="page" id="page-notes">
+    <div class="page active" id="page-notes">
       <div class="section-title">注意事項</div>
       <div class="section-subtitle">IMPORTANT NOTES</div>
       <div class="gold-line"></div>
@@ -921,7 +914,7 @@ window.addEventListener('DOMContentLoaded', function(){
     </div>
 
     <!-- ===== 予約ページ ===== -->
-    <div class="page active" id="page-reserve">
+    <div class="page" id="page-reserve">
   <div id="reserve-maintenance" style="display:none;text-align:center;padding:40px 20px;background:rgba(200,50,50,0.15);border:2px solid rgba(200,50,50,0.5);border-radius:12px;margin:0 0 20px 0;">
     <div style="font-size:2rem;margin-bottom:12px;">🚫</div>
     <div id="reserve-maint-msg" style="font-size:0.95rem;opacity:0.85;">受付を停止しています。</div>
