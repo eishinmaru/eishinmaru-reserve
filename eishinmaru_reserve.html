@@ -1063,7 +1063,45 @@ window.addEventListener('DOMContentLoaded', function(){
           </div>
         </div>
 
-        <button class="submit-btn" onclick="submitForm()">申し込む</button>
+        <button class="submit-btn" onclick="submitForm()">📋 次の画面で内容を確認</button>
+      </div>
+
+      <!-- 予約確認画面 -->
+      <div id="reserve-confirm" style="display:none;padding:20px;background:rgba(255,255,255,0.04);border-radius:12px;margin-top:16px">
+        <h3 style="color:#c9a84c;text-align:center;margin-bottom:20px">📋 入力内容の確認</h3>
+        <p style="text-align:center;color:#aabbb8;font-size:0.88rem;margin-bottom:20px">以下の内容で予約します。<br>修正がある場合は「修正に戻る」を押してください。</p>
+        <div style="background:rgba(0,0,0,0.2);padding:16px;border-radius:8px;margin-bottom:20px">
+          <dl style="margin:0;line-height:1.8">
+            <dt style="color:#c9a84c;font-size:0.82rem">乗船日</dt>
+            <dd id="rconfirm-date" style="margin:0 0 12px 0;color:#fff"></dd>
+            <dt style="color:#c9a84c;font-size:0.82rem">午前 or 午後</dt>
+            <dd id="rconfirm-ampm" style="margin:0 0 12px 0;color:#fff"></dd>
+            <dt style="color:#c9a84c;font-size:0.82rem">人数</dt>
+            <dd id="rconfirm-pax" style="margin:0 0 12px 0;color:#fff"></dd>
+            <dt style="color:#c9a84c;font-size:0.82rem">釣り物（午前）</dt>
+            <dd id="rconfirm-fishing-am" style="margin:0 0 12px 0;color:#fff"></dd>
+            <dt style="color:#c9a84c;font-size:0.82rem">釣り物（午後）</dt>
+            <dd id="rconfirm-fishing-pm" style="margin:0 0 12px 0;color:#fff"></dd>
+            <dt style="color:#c9a84c;font-size:0.82rem">その他の釣り物</dt>
+            <dd id="rconfirm-fishing-other" style="margin:0 0 12px 0;color:#fff"></dd>
+            <dt style="color:#c9a84c;font-size:0.82rem">備考</dt>
+            <dd id="rconfirm-notes" style="margin:0 0 12px 0;color:#fff;white-space:pre-wrap"></dd>
+            <dt style="color:#c9a84c;font-size:0.82rem">お名前</dt>
+            <dd id="rconfirm-name" style="margin:0 0 12px 0;color:#fff"></dd>
+            <dt style="color:#c9a84c;font-size:0.82rem">フリガナ</dt>
+            <dd id="rconfirm-furigana" style="margin:0 0 12px 0;color:#fff"></dd>
+            <dt style="color:#c9a84c;font-size:0.82rem">会員番号</dt>
+            <dd id="rconfirm-member" style="margin:0 0 12px 0;color:#fff"></dd>
+            <dt style="color:#c9a84c;font-size:0.82rem">メール</dt>
+            <dd id="rconfirm-email" style="margin:0 0 12px 0;color:#fff"></dd>
+            <dt style="color:#c9a84c;font-size:0.82rem">電話番号</dt>
+            <dd id="rconfirm-tel" style="margin:0 0 0 0;color:#fff"></dd>
+          </dl>
+        </div>
+        <div style="display:flex;gap:10px;flex-direction:column">
+          <button type="button" id="reserve-execute-btn" class="submit-btn" style="width:100%">🎣 この内容で予約する</button>
+          <button type="button" id="reserve-confirm-back-btn" style="width:100%;padding:12px;background:transparent;border:1px solid #aabbb8;color:#aabbb8;border-radius:8px;cursor:pointer">← 修正に戻る</button>
+        </div>
       </div>
 
       <!-- 完了画面 -->
@@ -1133,7 +1171,10 @@ window.addEventListener('DOMContentLoaded', function(){
     });
   }
   ['m-phone','m-emergency','mi-phone','mi-emergency','tel'].forEach(bindPhoneFormat);
-  function submitForm() {
+  function showReserveConfirmScreen(p){document.getElementById("rconfirm-date").textContent=p.date||"";document.getElementById("rconfirm-ampm").textContent=p.ampm||"";document.getElementById("rconfirm-pax").textContent=(p.pax||"")+"名";document.getElementById("rconfirm-fishing-am").textContent=p.fishing_am||"(なし)";document.getElementById("rconfirm-fishing-pm").textContent=p.fishing_pm||"(なし)";document.getElementById("rconfirm-fishing-other").textContent=(p.fishing_other&&p.fishing_other!=="なし")?p.fishing_other:"(なし)";document.getElementById("rconfirm-notes").textContent=(p.notes&&p.notes!=="なし")?p.notes:"(なし)";document.getElementById("rconfirm-name").textContent=p.name||"";document.getElementById("rconfirm-furigana").textContent=p.furigana||"";document.getElementById("rconfirm-member").textContent=p.member||"(未入力)";document.getElementById("rconfirm-email").textContent=p.email||"";document.getElementById("rconfirm-tel").textContent=p.tel||"";var pageReserve=document.getElementById("page-reserve");var cards=pageReserve?pageReserve.querySelectorAll(".card"):[];cards.forEach(function(c){if(!c.contains(document.getElementById("reserve-confirm")))c.style.display="none";});document.getElementById("reserve-confirm").style.display="block";window.scrollTo({top:document.getElementById("reserve-confirm").offsetTop-80,behavior:"smooth"});}
+function backToReserveForm(){document.getElementById("reserve-confirm").style.display="none";var pageReserve=document.getElementById("page-reserve");var cards=pageReserve?pageReserve.querySelectorAll(".card"):[];cards.forEach(function(c){c.style.display="";});window.__pendingReserveData=null;window.scrollTo({top:0,behavior:"smooth"});}
+document.addEventListener("DOMContentLoaded",function(){var execBtn=document.getElementById("reserve-execute-btn");if(execBtn){execBtn.addEventListener("click",function(){window.__reserveConfirmed=true;submitForm();});}var backBtn=document.getElementById("reserve-confirm-back-btn");if(backBtn){backBtn.addEventListener("click",backToReserveForm);}});
+function submitForm() {
     if(typeof isReserveTimeStop === 'function' && isReserveTimeStop()) {
       alert('現在予約受付時間外です。\nWeb予約受付時間：4:30〜21:00に再度お試しください。');
       return;
@@ -1178,6 +1219,14 @@ window.addEventListener('DOMContentLoaded', function(){
       notes:         notes || 'なし'
     };
 
+    // 確認画面分岐
+    if(!window.__reserveConfirmed){
+      window.__pendingReserveData = p;
+      showReserveConfirmScreen(p);
+      return;
+    }
+    window.__reserveConfirmed = false;
+
     // スプレッドシートに記録
     fetch('https://script.google.com/macros/s/AKfycbyYyQp09Z4uztbowmJfrbvn4VhJzvAtwtfOvMcz3XGFUdH88x0xu_LaK11OTHjaYU2-/exec', {
       method: 'POST',
@@ -1193,6 +1242,7 @@ window.addEventListener('DOMContentLoaded', function(){
           + '-' + String(Math.floor(Math.random()*9000)+1000);
         document.getElementById('booking-no').textContent = num;
         document.getElementById('form-area').style.display = 'none';
+        var rc = document.getElementById('reserve-confirm'); if(rc) rc.style.display = 'none';
         document.getElementById('success-screen').classList.add('show');
         window.scrollTo(0, 0);
       }, function(error) {
@@ -1479,6 +1529,7 @@ function loadReservations() {
 
   function resetForm() {
     document.getElementById('form-area').style.display = 'block';
+    var rc2 = document.getElementById('reserve-confirm'); if(rc2) rc2.style.display = 'none';
     document.getElementById('success-screen').classList.remove('show');
     ['date','ampm','fishing-am','fishing-pm','fishing-other','name','furigana','member','tel','email','pax','notes'].forEach(function(id) {
       var el = document.getElementById(id);
