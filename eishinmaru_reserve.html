@@ -596,30 +596,127 @@ window.addEventListener('DOMContentLoaded', function(){
   <div class="section-title">👤 会員様専用ページ</div>
   <div class="section-subtitle">MEMBER EXCLUSIVE PAGE</div>
   <div class="gold-line"></div>
-  <div style="text-align:center;padding:60px 20px;">
-    <div style="font-size:4rem;margin-bottom:24px;">🛥️</div>
-    <div style="display:inline-block;background:linear-gradient(135deg,var(--gold),#e8c56a);color:var(--navy);font-weight:700;font-size:0.85rem;padding:6px 20px;border-radius:20px;letter-spacing:0.08em;margin-bottom:24px;">会員様専用ページ</div>
-    <div style="width:60px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:0 auto 24px;"></div>
-    <div style="font-family:'Shippori Mincho',serif;font-size:1.5rem;color:var(--gold);font-weight:800;margin-bottom:20px;">〜 準備中 〜</div>
-    <div style="font-size:1rem;line-height:1.9;color:var(--cream);opacity:0.85;margin-bottom:32px;">
-      会員様専用ページはただいま準備中です。<br>
-      公開まで、しばらくお待ちください。
+
+  <!-- ログイン画面 -->
+  <div id="mypage-login-area">
+    <div style="max-width:480px;margin:0 auto;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.3);border-radius:12px;padding:24px;">
+      <div style="text-align:center;margin-bottom:20px;">
+        <div style="font-size:0.85rem;color:var(--gold);letter-spacing:0.1em;">MEMBER LOGIN</div>
+        <div style="width:60px;height:2px;background:var(--gold);margin:12px auto;"></div>
+        <div style="font-family:'Shippori Mincho',serif;font-size:1.3rem;color:var(--gold);font-weight:800;">会員様ログイン</div>
+        <div style="font-size:0.85rem;color:var(--text-muted);margin-top:8px;">ご登録情報でログインしてください</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">お名前 <span class="member-badge">必須</span></label>
+        <div style="display:flex;gap:8px;">
+          <input type="text" id="mp-login-sei" class="form-control" placeholder="姓（山田）" autocomplete="family-name" style="flex:1;">
+          <input type="text" id="mp-login-mei" class="form-control" placeholder="名（太郎）" autocomplete="given-name" style="flex:1;">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">緊急連絡先 <span class="member-badge">必須</span></label>
+        <input type="tel" id="mp-login-emergency" class="form-control" placeholder="例：080-0000-0000" inputmode="tel">
+        <p style="font-size:0.75rem;color:var(--foam);margin-top:5px;line-height:1.5;opacity:0.8;">ご登録時に入力した緊急連絡先をご入力ください</p>
+      </div>
+
+      <div id="mp-login-error" style="display:none;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3);border-radius:8px;padding:12px;color:#f87171;font-size:0.85rem;margin-bottom:12px;"></div>
+
+      <button type="button" id="mp-login-btn" class="submit-btn" style="width:100%;">🔓 ログイン</button>
     </div>
   </div>
-</div>
 
-<!-- ===== 会員様専用ページ ===== -->
-<div id="page-mypage" class="page">
-  <div class="section-title">会員様専用ページ</div>
-  <div class="section-subtitle">MEMBER EXCLUSIVE PAGE</div>
-  <div class="gold-line"></div>
-  <div style="text-align:center;padding:60px 20px;">
-    <div style="font-size:3.5rem;margin-bottom:20px;">🛥️</div>
-    <div class="section-title" style="font-size:1.4rem;margin-bottom:16px;">〜 準備中 〜</div>
-    <div style="font-size:0.95rem;line-height:2;color:var(--cream);opacity:0.85;">会員様専用ページはただいま準備中でございます。<br>まもなく公開予定ですので、しばらくお待ちくださいませ。</div>
+  <!-- マイページ画面（ログイン後） -->
+  <div id="mypage-main-area" style="display:none;">
+    <!-- 会員カード -->
+    <div style="background:linear-gradient(135deg,#1a2f4a 0%,#0a1628 100%);border:2px solid var(--gold);border-radius:14px;padding:22px;margin-bottom:20px;max-width:520px;margin-left:auto;margin-right:auto;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div style="font-size:0.7rem;letter-spacing:0.3em;color:var(--gold);">MEMBER CARD</div>
+        <div style="font-size:0.7rem;color:var(--text-muted);">栄真丸</div>
+      </div>
+      <div style="text-align:center;padding:10px 0;">
+        <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:4px;">会員番号</div>
+        <div id="mp-member-no" style="font-size:2.4rem;font-weight:bold;color:var(--gold-light);letter-spacing:0.1em;line-height:1;text-shadow:0 0 20px rgba(201,168,76,0.6);">No.---</div>
+        <div id="mp-member-name" style="font-size:1.05rem;color:var(--cream);margin-top:12px;">― 様</div>
+      </div>
+    </div>
+
+    <!-- ご登録情報（表示のみ） -->
+    <div style="max-width:520px;margin:0 auto 16px;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);border-radius:12px;padding:16px;">
+      <div style="font-size:0.88rem;color:var(--gold);font-weight:bold;margin-bottom:12px;border-left:3px solid var(--gold);padding-left:10px;">📋 ご登録情報</div>
+      <div style="display:grid;gap:8px;">
+        <div style="display:flex;padding:10px;background:rgba(255,255,255,0.03);border-radius:6px;align-items:center;">
+          <span style="font-size:0.78rem;color:var(--text-muted);width:90px;flex-shrink:0;">氏名</span>
+          <span id="mp-view-name" style="font-size:0.92rem;color:var(--cream);"></span>
+        </div>
+        <div style="display:flex;padding:10px;background:rgba(255,255,255,0.03);border-radius:6px;align-items:center;">
+          <span style="font-size:0.78rem;color:var(--text-muted);width:90px;flex-shrink:0;">フリガナ</span>
+          <span id="mp-view-furigana" style="font-size:0.92rem;color:var(--cream);"></span>
+        </div>
+        <div style="display:flex;padding:10px;background:rgba(255,255,255,0.03);border-radius:6px;align-items:center;">
+          <span style="font-size:0.78rem;color:var(--text-muted);width:90px;flex-shrink:0;">性別</span>
+          <span id="mp-view-gender" style="font-size:0.92rem;color:var(--cream);"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ご登録情報の変更（編集） -->
+    <div style="max-width:520px;margin:0 auto 16px;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);border-radius:12px;padding:16px;">
+      <div style="font-size:0.88rem;color:var(--gold);font-weight:bold;margin-bottom:12px;border-left:3px solid var(--gold);padding-left:10px;">📝 ご登録情報の変更</div>
+
+      <div class="form-group">
+        <label class="form-label" style="font-size:0.82rem;">生年月日</label>
+        <input type="text" id="mp-edit-birthday" class="form-control" placeholder="例：昭和55年8月14日">
+      </div>
+      <div class="form-group">
+        <label class="form-label" style="font-size:0.82rem;">電話番号</label>
+        <input type="tel" id="mp-edit-phone" class="form-control" inputmode="tel">
+      </div>
+      <div class="form-group">
+        <label class="form-label" style="font-size:0.82rem;">緊急連絡先</label>
+        <input type="tel" id="mp-edit-emergency" class="form-control" inputmode="tel">
+      </div>
+      <div class="form-group">
+        <label class="form-label" style="font-size:0.82rem;">緊急連絡先続柄</label>
+        <input type="text" id="mp-edit-relation" class="form-control" placeholder="例：配偶者・父・母 など">
+      </div>
+      <div class="form-group">
+        <label class="form-label" style="font-size:0.82rem;">住所</label>
+        <input type="text" id="mp-edit-address" class="form-control">
+      </div>
+
+      <button type="button" id="mp-confirm-btn" class="submit-btn" style="width:100%;margin-top:8px;">💾 変更内容を確認</button>
+    </div>
+
+    <div style="max-width:520px;margin:0 auto;">
+      <button type="button" id="mp-logout-btn" style="width:100%;padding:10px;background:transparent;color:var(--text-muted);border:1px solid var(--text-muted);border-radius:8px;font-size:0.88rem;cursor:pointer;">↩ ログアウト</button>
+    </div>
+  </div>
+
+  <!-- 確認画面 -->
+  <div id="mypage-confirm-area" style="display:none;max-width:520px;margin:0 auto;">
+    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.3);border-radius:12px;padding:20px;margin-bottom:16px;">
+      <div style="text-align:center;margin-bottom:16px;">
+        <div style="font-family:'Shippori Mincho',serif;font-size:1.2rem;color:var(--gold);font-weight:800;">変更内容のご確認</div>
+        <div style="font-size:0.82rem;color:var(--text-muted);margin-top:6px;">以下の内容で更新します</div>
+      </div>
+      <div id="mp-diff-area" style="display:grid;gap:10px;margin-bottom:16px;"></div>
+      <button type="button" id="mp-execute-btn" class="submit-btn" style="width:100%;margin-bottom:8px;">✅ この内容で更新する</button>
+      <button type="button" id="mp-back-btn" style="width:100%;padding:12px;background:transparent;border:1px solid #aabbb8;color:#aabbb8;border-radius:8px;cursor:pointer;">← 修正に戻る</button>
+    </div>
+  </div>
+
+  <!-- 完了画面 -->
+  <div id="mypage-complete-area" style="display:none;max-width:520px;margin:0 auto;text-align:center;padding:30px 20px;">
+    <div style="font-size:3rem;margin-bottom:16px;">✅</div>
+    <div style="font-family:'Shippori Mincho',serif;font-size:1.4rem;color:var(--gold-light);font-weight:800;margin-bottom:16px;">変更完了</div>
+    <div style="font-size:0.95rem;color:var(--cream);line-height:1.8;margin-bottom:24px;">ご登録情報の変更が完了しました。<br>ありがとうございました。</div>
+    <button type="button" id="mp-complete-back-btn" class="submit-btn" style="width:100%;">マイページに戻る</button>
   </div>
 </div>
 
+<!-- ===== 管理者ページ ===== -->
 <!-- ===== 管理者ページ ===== -->
 <div id="page-member" class="page">
   <div id="member-maintenance" style="display:none;text-align:center;padding:40px 20px;background:rgba(200,50,50,0.15);border:2px solid rgba(200,50,50,0.5);border-radius:12px;margin:0 0 20px 0;">
@@ -2119,6 +2216,238 @@ function setupControlTabEvents() {
 
 
 
+
+
+// =============================================
+// 会員様専用ページ（マイページ）処理
+// =============================================
+(function(){
+  var __mypageMember = null; // ログイン中の会員情報
+
+  function mypageShowArea(areaId) {
+    var areas = ['mypage-login-area', 'mypage-main-area', 'mypage-confirm-area', 'mypage-complete-area'];
+    areas.forEach(function(id){
+      var el = document.getElementById(id);
+      if (el) el.style.display = (id === areaId) ? 'block' : 'none';
+    });
+  }
+
+  function mypageShowLoginError(msg) {
+    var el = document.getElementById('mp-login-error');
+    if (el) {
+      el.textContent = msg;
+      el.style.display = 'block';
+    }
+  }
+
+  function mypageHideLoginError() {
+    var el = document.getElementById('mp-login-error');
+    if (el) el.style.display = 'none';
+  }
+
+  function mypagePopulateMember(member) {
+    document.getElementById('mp-member-no').textContent = member.memberNo || 'No.---';
+    document.getElementById('mp-member-name').textContent = (member.name || '―') + ' 様';
+    document.getElementById('mp-view-name').textContent = member.name || '';
+    document.getElementById('mp-view-furigana').textContent = member.furigana || '';
+    document.getElementById('mp-view-gender').textContent = member.gender || '';
+    document.getElementById('mp-edit-birthday').value = member.birthday || '';
+    document.getElementById('mp-edit-phone').value = member.phone || '';
+    document.getElementById('mp-edit-emergency').value = member.emergency || '';
+    document.getElementById('mp-edit-relation').value = member.relation || '';
+    document.getElementById('mp-edit-address').value = member.address || '';
+  }
+
+  // ログインボタン
+  function mypageLogin() {
+    mypageHideLoginError();
+    var sei = document.getElementById('mp-login-sei').value.trim();
+    var mei = document.getElementById('mp-login-mei').value.trim();
+    var emergency = document.getElementById('mp-login-emergency').value.trim();
+
+    if (!sei || !mei) {
+      mypageShowLoginError('お名前の姓と名を両方入力してください');
+      return;
+    }
+    if (!emergency) {
+      mypageShowLoginError('緊急連絡先を入力してください');
+      return;
+    }
+
+    var btn = document.getElementById('mp-login-btn');
+    btn.disabled = true;
+    btn.textContent = '認証中…';
+    showLoading('ログイン中です');
+
+    fetch(MEMBER_GAS_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'memberLogin',
+        sei: sei,
+        mei: mei,
+        emergency: emergency
+      })
+    }).then(function(r){return r.json();}).then(function(d){
+      hideLoading();
+      btn.disabled = false;
+      btn.textContent = '🔓 ログイン';
+      if (d.status === 'ok') {
+        __mypageMember = d.member;
+        mypagePopulateMember(d.member);
+        mypageShowArea('mypage-main-area');
+        // 入力欄をクリア（セキュリティ）
+        document.getElementById('mp-login-sei').value = '';
+        document.getElementById('mp-login-mei').value = '';
+        document.getElementById('mp-login-emergency').value = '';
+      } else if (d.status === 'notFound') {
+        mypageShowLoginError('ご入力情報に一致する会員様が見つかりませんでした。お名前と緊急連絡先をご確認ください。');
+      } else {
+        mypageShowLoginError('エラー：' + (d.message || '再度お試しください'));
+      }
+    }).catch(function(){
+      hideLoading();
+      btn.disabled = false;
+      btn.textContent = '🔓 ログイン';
+      mypageShowLoginError('通信エラーが発生しました。しばらく経ってからお試しください。');
+    });
+  }
+
+  // 変更内容確認
+  function mypageShowConfirm() {
+    if (!__mypageMember) return;
+    var newData = {
+      birthday: document.getElementById('mp-edit-birthday').value.trim(),
+      phone:    document.getElementById('mp-edit-phone').value.trim(),
+      emergency:document.getElementById('mp-edit-emergency').value.trim(),
+      relation: document.getElementById('mp-edit-relation').value.trim(),
+      address:  document.getElementById('mp-edit-address').value.trim()
+    };
+
+    // 差分計算
+    var fields = [
+      {key:'birthday',  label:'生年月日'},
+      {key:'phone',     label:'電話番号'},
+      {key:'emergency', label:'緊急連絡先'},
+      {key:'relation',  label:'続柄'},
+      {key:'address',   label:'住所'}
+    ];
+
+    var diffHtml = '';
+    var hasDiff = false;
+    fields.forEach(function(f){
+      var oldVal = (__mypageMember[f.key] || '').toString().trim();
+      var newVal = newData[f.key];
+      if (oldVal === newVal) {
+        diffHtml += '<div style="padding:10px;background:rgba(255,255,255,0.03);border-radius:6px;font-size:0.85rem;">' +
+          '<div style="color:var(--text-muted);font-size:0.78rem;margin-bottom:4px;">' + f.label + '</div>' +
+          '<div style="color:var(--cream);">' + (newVal || '(未入力)') + '<span style="color:var(--text-muted);font-size:0.78rem;margin-left:8px;">変更なし</span></div>' +
+          '</div>';
+      } else {
+        hasDiff = true;
+        diffHtml += '<div style="padding:10px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.3);border-radius:6px;font-size:0.85rem;">' +
+          '<div style="color:var(--gold);font-size:0.78rem;margin-bottom:6px;font-weight:bold;">' + f.label + ' ✏</div>' +
+          '<div style="color:#f87171;font-size:0.8rem;margin-bottom:2px;">変更前：' + (oldVal || '(未入力)') + '</div>' +
+          '<div style="color:var(--gold-light);font-size:0.9rem;">変更後：' + (newVal || '(未入力)') + '</div>' +
+          '</div>';
+      }
+    });
+
+    if (!hasDiff) {
+      alert('変更内容がありません');
+      return;
+    }
+
+    window.__mypagePendingData = newData;
+    document.getElementById('mp-diff-area').innerHTML = diffHtml;
+    mypageShowArea('mypage-confirm-area');
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  // 更新実行
+  function mypageExecuteUpdate() {
+    if (!__mypageMember || !window.__mypagePendingData) return;
+    var btn = document.getElementById('mp-execute-btn');
+    btn.disabled = true;
+    btn.textContent = '送信中…';
+    showLoading('変更内容を送信中です');
+
+    fetch(MEMBER_GAS_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'memberUpdate',
+        sei: (__mypageMember.name || '').split(/[ 　]/)[0],
+        mei: (__mypageMember.name || '').split(/[ 　]/)[1] || '',
+        currentEmergency: __mypageMember.emergency,
+        memberNo: __mypageMember.memberNo,
+        data: window.__mypagePendingData
+      })
+    }).then(function(r){return r.json();}).then(function(d){
+      hideLoading();
+      btn.disabled = false;
+      btn.textContent = '✅ この内容で更新する';
+      if (d.status === 'ok') {
+        // ローカルの会員情報を更新
+        Object.keys(window.__mypagePendingData).forEach(function(k){
+          __mypageMember[k] = window.__mypagePendingData[k];
+        });
+        mypageShowArea('mypage-complete-area');
+      } else {
+        alert('更新に失敗しました：' + (d.message || '再度お試しください'));
+      }
+    }).catch(function(){
+      hideLoading();
+      btn.disabled = false;
+      btn.textContent = '✅ この内容で更新する';
+      alert('通信エラーが発生しました。');
+    });
+  }
+
+  // ログアウト
+  function mypageLogout() {
+    __mypageMember = null;
+    window.__mypagePendingData = null;
+    document.getElementById('mp-login-sei').value = '';
+    document.getElementById('mp-login-mei').value = '';
+    document.getElementById('mp-login-emergency').value = '';
+    mypageHideLoginError();
+    mypageShowArea('mypage-login-area');
+  }
+
+  // イベント登録
+  document.addEventListener('DOMContentLoaded', function(){
+    var loginBtn = document.getElementById('mp-login-btn');
+    if (loginBtn) loginBtn.addEventListener('click', mypageLogin);
+
+    var confirmBtn = document.getElementById('mp-confirm-btn');
+    if (confirmBtn) confirmBtn.addEventListener('click', mypageShowConfirm);
+
+    var executeBtn = document.getElementById('mp-execute-btn');
+    if (executeBtn) executeBtn.addEventListener('click', mypageExecuteUpdate);
+
+    var backBtn = document.getElementById('mp-back-btn');
+    if (backBtn) backBtn.addEventListener('click', function(){
+      mypageShowArea('mypage-main-area');
+    });
+
+    var logoutBtn = document.getElementById('mp-logout-btn');
+    if (logoutBtn) logoutBtn.addEventListener('click', mypageLogout);
+
+    var completeBackBtn = document.getElementById('mp-complete-back-btn');
+    if (completeBackBtn) completeBackBtn.addEventListener('click', function(){
+      // 更新後のデータで再表示
+      if (__mypageMember) mypagePopulateMember(__mypageMember);
+      mypageShowArea('mypage-main-area');
+    });
+
+    // Enterキーでログイン
+    ['mp-login-sei', 'mp-login-mei', 'mp-login-emergency'].forEach(function(id){
+      var el = document.getElementById(id);
+      if (el) el.addEventListener('keypress', function(e){
+        if (e.key === 'Enter') mypageLogin();
+      });
+    });
+  });
+})();
 
 </script>
 
