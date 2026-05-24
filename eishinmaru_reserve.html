@@ -2364,7 +2364,7 @@ function setupControlTabEvents() {
         var __bd = document.getElementById('mp-login-birthday-day'); if(__bd){ __bd.value = ''; }
         if(__ev){ __ev.style.display = ''; }
       } else if (d.status === 'notFound') {
-        mypageShowLoginError('ご入力情報に一致する会員様が見つかりませんでした。お名前と緊急連絡先をご確認ください。');
+        mypageShowLoginError(d.message || 'ご入力情報に一致する会員様が見つかりませんでした。登録情報をご確認ください。');
       } else {
         mypageShowLoginError('エラー：' + (d.message || '再度お試しください'));
       }
