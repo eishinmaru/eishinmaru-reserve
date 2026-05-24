@@ -617,7 +617,7 @@ window.addEventListener('DOMContentLoaded', function(){
 
       <div class="form-group">
         <label class="form-label">緊急連絡先 <span class="member-badge">必須</span></label>
-        <input type="tel" id="mp-login-emergency" class="form-control" placeholder="例：080-0000-0000" inputmode="tel">
+        <input type="tel" id="mp-login-emergency" class="form-control" placeholder="例：08000000000" inputmode="tel">
         <p style="font-size:0.75rem;color:var(--foam);margin-top:5px;line-height:1.5;opacity:0.8;">ご登録時に入力した緊急連絡先をご入力ください</p>
       </div>
 
@@ -631,6 +631,23 @@ window.addEventListener('DOMContentLoaded', function(){
           <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.9rem;color:var(--cream);"><input type="radio" name="mp-login-extra-type" value="address" style="width:18px;height:18px;accent-color:var(--gold);cursor:pointer;"> ご住所</label>
         </div>
         <input type="text" id="mp-login-extra-value" class="form-control" placeholder="上記から選んでください" disabled>
+        <div id="mp-login-birthday-wrap" style="display:none;flex-direction:column;gap:10px;">
+          <div style="display:flex;gap:8px;align-items:center;">
+            <select id="mp-login-birthday-era" class="form-control" style="flex:2;font-size:18px;height:48px;padding:8px;">
+              <option value="昭和" selected>昭和</option>
+              <option value="平成">平成</option>
+              <option value="令和">令和</option>
+            </select>
+            <input type="number" id="mp-login-birthday-year" class="form-control" placeholder="年" min="1" max="99" style="flex:1;font-size:18px;height:48px;padding:8px;" inputmode="numeric">
+            <span style="font-size:18px;font-weight:bold;color:var(--cream);">年</span>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input type="number" id="mp-login-birthday-month" class="form-control" placeholder="月" min="1" max="12" style="flex:1;font-size:18px;height:48px;padding:8px;" inputmode="numeric">
+            <span style="font-size:18px;font-weight:bold;color:var(--cream);">月</span>
+            <input type="number" id="mp-login-birthday-day" class="form-control" placeholder="日" min="1" max="31" style="flex:1;font-size:18px;height:48px;padding:8px;" inputmode="numeric">
+            <span style="font-size:18px;font-weight:bold;color:var(--cream);">日</span>
+          </div>
+        </div>
         <p id="mp-login-extra-hint" style="font-size:0.72rem;color:var(--text-muted);margin-top:5px;line-height:1.5;display:none;"></p>
       </div>
       <div id="mp-login-error" style="display:none;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3);border-radius:8px;padding:12px;color:#f87171;font-size:0.85rem;margin-bottom:12px;"></div>
@@ -2287,14 +2304,27 @@ function setupControlTabEvents() {
     }
     var extraTypeEl = document.querySelector('input[name="mp-login-extra-type"]:checked');
     var extraType = extraTypeEl ? extraTypeEl.value : '';
-    var extraValue = document.getElementById('mp-login-extra-value').value.trim();
     if (!extraType) {
       mypageShowLoginError('追加認証項目を選んでください');
       return;
     }
-    if (!extraValue) {
-      mypageShowLoginError('追加認証の入力欄に情報をご入力ください');
-      return;
+    var extraValue = '';
+    if (extraType === 'birthday') {
+      var bEra = document.getElementById('mp-login-birthday-era').value;
+      var bYear = document.getElementById('mp-login-birthday-year').value.trim();
+      var bMonth = document.getElementById('mp-login-birthday-month').value.trim();
+      var bDay = document.getElementById('mp-login-birthday-day').value.trim();
+      if (!bYear || !bMonth || !bDay) {
+        mypageShowLoginError('生年月日をすべてご入力ください');
+        return;
+      }
+      extraValue = bEra + bYear + '年' + bMonth + '月' + bDay + '日';
+    } else {
+      extraValue = document.getElementById('mp-login-extra-value').value.trim();
+      if (!extraValue) {
+        mypageShowLoginError('追加認証の入力欄に情報をご入力ください');
+        return;
+      }
     }
 
     var btn = document.getElementById('mp-login-btn');
@@ -2327,6 +2357,12 @@ function setupControlTabEvents() {
         document.querySelectorAll('input[name="mp-login-extra-type"]').forEach(function(r){ r.checked = false; });
         var __ev = document.getElementById('mp-login-extra-value'); if(__ev){ __ev.value=''; __ev.disabled = true; __ev.placeholder = '上記から選んでください'; }
         var __eh = document.getElementById('mp-login-extra-hint'); if(__eh){ __eh.style.display = 'none'; }
+        var __bw = document.getElementById('mp-login-birthday-wrap'); if(__bw){ __bw.style.display = 'none'; }
+        var __be = document.getElementById('mp-login-birthday-era'); if(__be){ __be.value = '昭和'; }
+        var __by = document.getElementById('mp-login-birthday-year'); if(__by){ __by.value = ''; }
+        var __bm = document.getElementById('mp-login-birthday-month'); if(__bm){ __bm.value = ''; }
+        var __bd = document.getElementById('mp-login-birthday-day'); if(__bd){ __bd.value = ''; }
+        if(__ev){ __ev.style.display = ''; }
       } else if (d.status === 'notFound') {
         mypageShowLoginError('ご入力情報に一致する会員様が見つかりませんでした。お名前と緊急連絡先をご確認ください。');
       } else {
@@ -2440,6 +2476,12 @@ function setupControlTabEvents() {
     document.querySelectorAll('input[name="mp-login-extra-type"]').forEach(function(r){ r.checked = false; });
     var _ev = document.getElementById('mp-login-extra-value'); if(_ev){ _ev.value=''; _ev.disabled = true; _ev.placeholder = '上記から選んでください'; }
     var _eh = document.getElementById('mp-login-extra-hint'); if(_eh){ _eh.style.display = 'none'; }
+    var _bw = document.getElementById('mp-login-birthday-wrap'); if(_bw){ _bw.style.display = 'none'; }
+    var _be = document.getElementById('mp-login-birthday-era'); if(_be){ _be.value = '昭和'; }
+    var _by = document.getElementById('mp-login-birthday-year'); if(_by){ _by.value = ''; }
+    var _bm = document.getElementById('mp-login-birthday-month'); if(_bm){ _bm.value = ''; }
+    var _bd = document.getElementById('mp-login-birthday-day'); if(_bd){ _bd.value = ''; }
+    if(_ev){ _ev.style.display = ''; }
     mypageHideLoginError();
     mypageShowArea('mypage-login-area');
   }
@@ -2474,21 +2516,30 @@ function setupControlTabEvents() {
     var extraTypeRadios = document.querySelectorAll('input[name="mp-login-extra-type"]');
     var extraValueInput = document.getElementById('mp-login-extra-value');
     var extraHint = document.getElementById('mp-login-extra-hint');
+    var birthdayWrap = document.getElementById('mp-login-birthday-wrap');
     extraTypeRadios.forEach(function(radio){
       radio.addEventListener('change', function(){
-        if (extraValueInput) {
+        if (!extraValueInput) return;
+        if (radio.value === 'birthday') {
+          // 生年月日：通常入力欄を非表示にして専用フォームを表示
+          extraValueInput.style.display = 'none';
+          extraValueInput.value = '';
+          extraValueInput.disabled = true;
+          if (birthdayWrap) birthdayWrap.style.display = 'flex';
+          if (extraHint) { extraHint.textContent = 'ご登録時の生年月日をご入力ください'; extraHint.style.display = 'block'; }
+          var yearInput = document.getElementById('mp-login-birthday-year');
+          if (yearInput) yearInput.focus();
+        } else {
+          // 電話番号 or 住所：通常入力欄を表示
+          extraValueInput.style.display = '';
           extraValueInput.disabled = false;
           extraValueInput.value = '';
+          if (birthdayWrap) birthdayWrap.style.display = 'none';
           if (radio.value === 'phone') {
             extraValueInput.type = 'tel';
-            extraValueInput.placeholder = '例：090-0000-0000';
+            extraValueInput.placeholder = '例：09000000000';
             extraValueInput.inputMode = 'tel';
-            if (extraHint) { extraHint.textContent = 'ご登録時の電話番号をご入力ください'; extraHint.style.display = 'block'; }
-          } else if (radio.value === 'birthday') {
-            extraValueInput.type = 'text';
-            extraValueInput.placeholder = '例：昭和55年8月14日';
-            extraValueInput.inputMode = 'text';
-            if (extraHint) { extraHint.textContent = 'ご登録時と同じ形式（元号＋年月日）でご入力ください'; extraHint.style.display = 'block'; }
+            if (extraHint) { extraHint.textContent = 'ご登録時の電話番号をご入力ください（ハイフン不要）'; extraHint.style.display = 'block'; }
           } else if (radio.value === 'address') {
             extraValueInput.type = 'text';
             extraValueInput.placeholder = '例：兵庫県淡路市...';
