@@ -621,6 +621,18 @@ window.addEventListener('DOMContentLoaded', function(){
         <p style="font-size:0.75rem;color:var(--foam);margin-top:5px;line-height:1.5;opacity:0.8;">ご登録時に入力した緊急連絡先をご入力ください</p>
       </div>
 
+
+      <div class="form-group" style="background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.25);border-radius:8px;padding:12px;">
+        <label class="form-label" style="margin-bottom:8px;">追加認証 <span class="member-badge">必須</span></label>
+        <p style="font-size:0.75rem;color:var(--foam);margin-bottom:10px;line-height:1.5;opacity:0.85;">下記いずれか一つを選んで入力してください</p>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px;">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.9rem;color:var(--cream);"><input type="radio" name="mp-login-extra-type" value="phone" style="width:18px;height:18px;accent-color:var(--gold);cursor:pointer;"> 電話番号</label>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.9rem;color:var(--cream);"><input type="radio" name="mp-login-extra-type" value="birthday" style="width:18px;height:18px;accent-color:var(--gold);cursor:pointer;"> 生年月日</label>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.9rem;color:var(--cream);"><input type="radio" name="mp-login-extra-type" value="address" style="width:18px;height:18px;accent-color:var(--gold);cursor:pointer;"> ご住所</label>
+        </div>
+        <input type="text" id="mp-login-extra-value" class="form-control" placeholder="上記から選んでください" disabled>
+        <p id="mp-login-extra-hint" style="font-size:0.72rem;color:var(--text-muted);margin-top:5px;line-height:1.5;display:none;"></p>
+      </div>
       <div id="mp-login-error" style="display:none;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3);border-radius:8px;padding:12px;color:#f87171;font-size:0.85rem;margin-bottom:12px;"></div>
 
       <button type="button" id="mp-login-btn" class="submit-btn" style="width:100%;">🔓 ログイン</button>
@@ -2273,6 +2285,17 @@ function setupControlTabEvents() {
       mypageShowLoginError('緊急連絡先を入力してください');
       return;
     }
+    var extraTypeEl = document.querySelector('input[name="mp-login-extra-type"]:checked');
+    var extraType = extraTypeEl ? extraTypeEl.value : '';
+    var extraValue = document.getElementById('mp-login-extra-value').value.trim();
+    if (!extraType) {
+      mypageShowLoginError('追加認証項目を選んでください');
+      return;
+    }
+    if (!extraValue) {
+      mypageShowLoginError('追加認証の入力欄に情報をご入力ください');
+      return;
+    }
 
     var btn = document.getElementById('mp-login-btn');
     btn.disabled = true;
@@ -2285,7 +2308,9 @@ function setupControlTabEvents() {
         action: 'memberLogin',
         sei: sei,
         mei: mei,
-        emergency: emergency
+        emergency: emergency,
+        extraType: extraType,
+        extraValue: extraValue
       })
     }).then(function(r){return r.json();}).then(function(d){
       hideLoading();
@@ -2299,6 +2324,9 @@ function setupControlTabEvents() {
         document.getElementById('mp-login-sei').value = '';
         document.getElementById('mp-login-mei').value = '';
         document.getElementById('mp-login-emergency').value = '';
+        document.querySelectorAll('input[name="mp-login-extra-type"]').forEach(function(r){ r.checked = false; });
+        var __ev = document.getElementById('mp-login-extra-value'); if(__ev){ __ev.value=''; __ev.disabled = true; __ev.placeholder = '上記から選んでください'; }
+        var __eh = document.getElementById('mp-login-extra-hint'); if(__eh){ __eh.style.display = 'none'; }
       } else if (d.status === 'notFound') {
         mypageShowLoginError('ご入力情報に一致する会員様が見つかりませんでした。お名前と緊急連絡先をご確認ください。');
       } else {
@@ -2409,6 +2437,9 @@ function setupControlTabEvents() {
     document.getElementById('mp-login-sei').value = '';
     document.getElementById('mp-login-mei').value = '';
     document.getElementById('mp-login-emergency').value = '';
+    document.querySelectorAll('input[name="mp-login-extra-type"]').forEach(function(r){ r.checked = false; });
+    var _ev = document.getElementById('mp-login-extra-value'); if(_ev){ _ev.value=''; _ev.disabled = true; _ev.placeholder = '上記から選んでください'; }
+    var _eh = document.getElementById('mp-login-extra-hint'); if(_eh){ _eh.style.display = 'none'; }
     mypageHideLoginError();
     mypageShowArea('mypage-login-area');
   }
@@ -2439,7 +2470,37 @@ function setupControlTabEvents() {
       mypageShowArea('mypage-main-area');
     });
 
-    // Enterキーでログイン
+    // 追加認証ラジオボタン選択時の処理
+    var extraTypeRadios = document.querySelectorAll('input[name="mp-login-extra-type"]');
+    var extraValueInput = document.getElementById('mp-login-extra-value');
+    var extraHint = document.getElementById('mp-login-extra-hint');
+    extraTypeRadios.forEach(function(radio){
+      radio.addEventListener('change', function(){
+        if (extraValueInput) {
+          extraValueInput.disabled = false;
+          extraValueInput.value = '';
+          if (radio.value === 'phone') {
+            extraValueInput.type = 'tel';
+            extraValueInput.placeholder = '例：090-0000-0000';
+            extraValueInput.inputMode = 'tel';
+            if (extraHint) { extraHint.textContent = 'ご登録時の電話番号をご入力ください'; extraHint.style.display = 'block'; }
+          } else if (radio.value === 'birthday') {
+            extraValueInput.type = 'text';
+            extraValueInput.placeholder = '例：昭和55年8月14日';
+            extraValueInput.inputMode = 'text';
+            if (extraHint) { extraHint.textContent = 'ご登録時と同じ形式（元号＋年月日）でご入力ください'; extraHint.style.display = 'block'; }
+          } else if (radio.value === 'address') {
+            extraValueInput.type = 'text';
+            extraValueInput.placeholder = '例：兵庫県淡路市...';
+            extraValueInput.inputMode = 'text';
+            if (extraHint) { extraHint.textContent = '住所の先頭（都道府県・市区町村など）でも一致判定します'; extraHint.style.display = 'block'; }
+          }
+          extraValueInput.focus();
+        }
+      });
+    });
+
+        // Enterキーでログイン
     ['mp-login-sei', 'mp-login-mei', 'mp-login-emergency'].forEach(function(id){
       var el = document.getElementById(id);
       if (el) el.addEventListener('keypress', function(e){
