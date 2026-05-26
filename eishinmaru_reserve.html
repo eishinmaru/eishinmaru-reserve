@@ -1311,8 +1311,14 @@ window.addEventListener('DOMContentLoaded', function(){
       if (n.length <= 6) return n.substring(0,2) + '-' + n.substring(2);
       return n.substring(0,2) + '-' + n.substring(2,6) + '-' + n.substring(6,10);
     }
-    if (n.length <= 7) return n.substring(0,3) + '-' + n.substring(3);
-    return n.substring(0,3) + '-' + n.substring(3,7) + '-' + n.substring(7,11);
+    // 携帯・IP電話（090/080/070/050）→ 3-4-4 形式（11桁）
+    if (n.startsWith('090') || n.startsWith('080') || n.startsWith('070') || n.startsWith('050')) {
+      if (n.length <= 7) return n.substring(0,3) + '-' + n.substring(3);
+      return n.substring(0,3) + '-' + n.substring(3,7) + '-' + n.substring(7,11);
+    }
+    // その他の3桁市外局番固定電話（078/072/011/045 など）→ 3-3-4 形式（10桁）
+    if (n.length <= 6) return n.substring(0,3) + '-' + n.substring(3);
+    return n.substring(0,3) + '-' + n.substring(3,6) + '-' + n.substring(6,10);
   }
   function bindPhoneFormat(id) {
     var el = document.getElementById(id);
