@@ -928,7 +928,7 @@ window.addEventListener('DOMContentLoaded', function(){
         <div>
           <div style="font-weight:bold;color:#c9a84c;">予約受付</div>
           <div id="reserve-status-label" style="font-size:0.85rem;margin-top:4px;">読み込み中...</div>
-          <div style="font-size:0.75rem;color:rgba(245,240,232,0.5);margin-top:2px;">21:00、4:30は自動停止</div>
+          <div style="font-size:0.75rem;color:rgba(245,240,232,0.5);margin-top:2px;">20:00、7:00は自動停止</div>
         </div>
         <button id="reserve-toggle-btn" style="padding:10px 20px;border:none;border-radius:8px;font-size:0.9rem;font-weight:bold;cursor:pointer;background:#888;color:#fff;">読み込み中</button>
       </div>
@@ -1086,8 +1086,8 @@ window.addEventListener('DOMContentLoaded', function(){
     <div id="reserve-maint-msg" style="font-size:0.95rem;opacity:0.85;">受付を停止しています。</div>
   </div>
         <div id="reserve-hours-notice" style="max-width:600px;margin:10px auto;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(212,175,55,0.4);border-radius:8px;color:#d4af37;text-align:center;font-size:14px;line-height:1.6;">
-          <div style="font-weight:bold;margin-bottom:4px;">Web予約受付時間：4:30 〜 21:00</div>
-          <div style="font-size:12px;color:#bbb;">※ 21:00 〜 翌4:30 は自動的に受付を停止します</div>
+          <div style="font-weight:bold;margin-bottom:4px;">Web予約受付時間：7:00 〜 20:00</div>
+          <div style="font-size:12px;color:#bbb;">※ 20:00 〜 翌7:00 は自動的に受付を停止します</div>
         </div>
 
       <div class="section-title">乗船予約</div>
@@ -1335,7 +1335,7 @@ function backToReserveForm(){document.getElementById("reserve-confirm").style.di
 document.addEventListener("DOMContentLoaded",function(){var execBtn=document.getElementById("reserve-execute-btn");if(execBtn){execBtn.addEventListener("click",function(){window.__reserveConfirmed=true;submitForm();});}var backBtn=document.getElementById("reserve-confirm-back-btn");if(backBtn){backBtn.addEventListener("click",backToReserveForm);}});
 function submitForm() {
     if(typeof isReserveTimeStop === 'function' && isReserveTimeStop()) {
-      alert('現在予約受付時間外です。\nWeb予約受付時間：4:30〜21:00に再度お試しください。');
+      alert('現在予約受付時間外です。\nWeb予約受付時間：7:00〜20:00に再度お試しください。');
       return;
     }
     var name     = document.getElementById('name').value;
@@ -1950,14 +1950,14 @@ function memberGoTop(){document.getElementById('member-form').reset();document.g
 
 
 // === 受付管理関連 ===
-// 予約受付の自動停止時間判定 (21:00、4:30)
+// 予約受付の自動停止時間判定 (20:00、7:00)
 function isReserveTimeStop() {
   var now = new Date();
   var t = now.getHours() * 60 + now.getMinutes();
-  return t >= 1260 || t < 270;
+  return t >= 1200 || t < 420;
 }
 
-// 予約受付時間チェック（21:00ー4:30は自動停止表示）
+// 予約受付時間チェック（20:00ー7:00は自動停止表示）
 function checkReserveTimeStop() {
   var rMaint = document.getElementById('reserve-maintenance');
   var rForm = document.getElementById('form-area');
@@ -1968,7 +1968,7 @@ function checkReserveTimeStop() {
     if(rForm) rForm.style.display = 'none';
     if(rHours) rHours.style.display = 'none';
     var msg = document.getElementById('reserve-maint-msg');
-    if(msg) msg.textContent = '現在予約受付時間外です（21:00ー翌4:30は自動停止）。ご不便をおかけしますが、時間内に再度お試しください。';
+    if(msg) msg.textContent = '現在予約受付時間外です（20:00ー翌7:00は自動停止）。ご不便をおかけしますが、時間内に再度お試しください。';
   } else {
     rMaint.style.display = 'none';
     if(rForm) rForm.style.display = '';
@@ -2145,7 +2145,7 @@ function updateControlUI(rStop, mStop) {
     rMaint.style.display = (rStop || timeStop) ? 'block' : 'none';
     var msg = document.getElementById('reserve-maint-msg');
     if(msg) {
-      msg.textContent = rStop ? 'メンテナンス中です。受付を停止しています。' : '現在予約受付時間外です（21:00、4:30）';
+      msg.textContent = rStop ? 'メンテナンス中です。受付を停止しています。' : '現在予約受付時間外です（20:00、7:00）';
     }
   }
   // 会員登録フォームのメンテナンス表示
