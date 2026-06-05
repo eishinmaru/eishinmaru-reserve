@@ -2258,6 +2258,10 @@ function setupControlTabEvents() {
 // =============================================
 (function(){
   var __mypageMember = null; // ログイン中の会員情報
+  var MYPAGE_STORE_KEY = 'eishinmaru_mypage_member_v1';
+  function mypageSaveSession(member){ try { localStorage.setItem(MYPAGE_STORE_KEY, JSON.stringify(member)); } catch(e){} }
+  function mypageLoadSession(){ try { var s = localStorage.getItem(MYPAGE_STORE_KEY); return s ? JSON.parse(s) : null; } catch(e){ return null; } }
+  function mypageClearSession(){ try { localStorage.removeItem(MYPAGE_STORE_KEY); } catch(e){} }
 
   function mypageShowArea(areaId) {
     var areas = ['mypage-login-area', 'mypage-main-area', 'mypage-confirm-area', 'mypage-complete-area'];
@@ -2354,6 +2358,7 @@ function setupControlTabEvents() {
       btn.textContent = '🔓 ログイン';
       if (d.status === 'ok') {
         __mypageMember = d.member;
+        mypageSaveSession(d.member);
         mypagePopulateMember(d.member);
         mypageShowArea('mypage-main-area');
         // 入力欄をクリア（セキュリティ）
@@ -2460,6 +2465,7 @@ function setupControlTabEvents() {
         Object.keys(window.__mypagePendingData).forEach(function(k){
           __mypageMember[k] = window.__mypagePendingData[k];
         });
+        mypageSaveSession(__mypageMember);
         mypageShowArea('mypage-complete-area');
       } else {
         alert('更新に失敗しました：' + (d.message || '再度お試しください'));
@@ -2475,6 +2481,7 @@ function setupControlTabEvents() {
   // ログアウト
   function mypageLogout() {
     __mypageMember = null;
+    mypageClearSession();
     window.__mypagePendingData = null;
     document.getElementById('mp-login-sei').value = '';
     document.getElementById('mp-login-mei').value = '';
@@ -2494,6 +2501,13 @@ function setupControlTabEvents() {
 
   // イベント登録
   document.addEventListener('DOMContentLoaded', function(){
+    // 保存済みログイン状態の復元（ログアウトするまで維持）
+    var __savedMember = mypageLoadSession();
+    if (__savedMember && __savedMember.memberNo) {
+      __mypageMember = __savedMember;
+      try { mypagePopulateMember(__savedMember); } catch(e){}
+      mypageShowArea('mypage-main-area');
+    }
     var loginBtn = document.getElementById('mp-login-btn');
     if (loginBtn) loginBtn.addEventListener('click', mypageLogin);
 
