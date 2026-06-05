@@ -680,6 +680,8 @@ window.addEventListener('DOMContentLoaded', function(){
       <div style="font-size:1rem;color:var(--gold-light);font-weight:bold;text-align:center;margin-bottom:4px;">🎣 かんたん予約</div>
       <div style="font-size:0.75rem;color:var(--text-muted);text-align:center;margin-bottom:16px;">日にちと便を選ぶだけで予約できます</div>
 
+      <div id="mpr-closed" style="display:none;background:rgba(200,50,50,0.15);border:1px solid rgba(200,50,50,0.5);border-radius:10px;padding:16px;text-align:center;color:#f0a0a0;font-size:0.9rem;line-height:1.7;">ただいまWeb予約の受付時間外です。<br>受付時間：7:00〜20:00<br>時間内に再度お試しください。<br><span style="font-size:0.8rem;color:var(--text-muted);">お急ぎの場合はお電話ください（080-6794-2646）</span></div>
+
       <div id="mpr-form">
         <div class="form-group">
           <label class="form-label" style="font-size:0.82rem;">乗船日 <span style="color:#e87070;">*</span></label>
@@ -2669,6 +2671,19 @@ function setupControlTabEvents() {
       if(chev) chev.style.transform=open?'rotate(0deg)':'rotate(180deg)';
     }); }
   }
+  function mprApplyTimeState(){
+    var closed=(typeof isReserveTimeStop==='function') && isReserveTimeStop();
+    var notice=document.getElementById('mpr-closed');
+    if(closed){
+      if(notice) notice.style.display='block';
+      mprShowStep('none');
+    } else {
+      if(notice) notice.style.display='none';
+      var f=document.getElementById('mpr-form'), c=document.getElementById('mpr-confirm'), d=document.getElementById('mpr-complete');
+      var anyShown=(f&&f.style.display!=='none')||(c&&c.style.display!=='none')||(d&&d.style.display!=='none');
+      if(!anyShown) mprShowStep('form');
+    }
+  }
 
   // イベント登録
   document.addEventListener('DOMContentLoaded', function(){
@@ -2727,10 +2742,19 @@ function setupControlTabEvents() {
       mprHideError();
       mprShowStep('form');
     });
-    // 折りたたみ（かんたん予約・登録情報）
-    mprBindToggle('mp-toggle-reserve','mp-collapse-reserve','mp-chevron-reserve');
+    // 折りたたみ（登録情報）
     mprBindToggle('mp-toggle-info','mp-collapse-info','mp-chevron-info');
     mprBindToggle('mp-toggle-edit','mp-collapse-edit','mp-chevron-edit');
+    // かんたん予約トグル（開いたら受付時間をチェック）
+    var mprToggleR=document.getElementById('mp-toggle-reserve');
+    if(mprToggleR) mprToggleR.addEventListener('click', function(){
+      var body=document.getElementById('mp-collapse-reserve'), chev=document.getElementById('mp-chevron-reserve');
+      var open=body.style.display!=='none';
+      body.style.display=open?'none':'block';
+      if(chev) chev.style.transform=open?'rotate(0deg)':'rotate(180deg)';
+      if(!open) mprApplyTimeState();
+    });
+    mprApplyTimeState();
 
     // 追加認証ラジオボタン選択時の処理
     var extraTypeRadios = document.querySelectorAll('input[name="mp-login-extra-type"]');
