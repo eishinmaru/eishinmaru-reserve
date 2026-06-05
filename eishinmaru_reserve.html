@@ -671,7 +671,11 @@ window.addEventListener('DOMContentLoaded', function(){
       </div>
     </div>
 
-    <!-- 🎣 会員かんたん予約 -->
+    <!-- 🎣 会員かんたん予約（折りたたみ） -->
+    <button type="button" id="mp-toggle-reserve" style="width:100%;max-width:520px;margin:0 auto 10px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,#13314f 0%,#0a1628 100%);border:2px solid var(--gold);border-radius:12px;padding:16px 18px;color:var(--gold-light);font-weight:bold;font-size:0.95rem;cursor:pointer;font-family:inherit;">
+      <span>🎣 かんたん予約</span><span id="mp-chevron-reserve" style="transition:transform .2s;">▼</span>
+    </button>
+    <div id="mp-collapse-reserve" style="display:none;">
     <div style="max-width:520px;margin:0 auto 16px;background:linear-gradient(135deg,#13314f 0%,#0a1628 100%);border:2px solid var(--gold);border-radius:12px;padding:18px;">
       <div style="font-size:1rem;color:var(--gold-light);font-weight:bold;text-align:center;margin-bottom:4px;">🎣 かんたん予約</div>
       <div style="font-size:0.75rem;color:var(--text-muted);text-align:center;margin-bottom:16px;">日にちと便を選ぶだけで予約できます</div>
@@ -744,6 +748,7 @@ window.addEventListener('DOMContentLoaded', function(){
         <div id="mpr-booking-no" style="font-size:1.3rem;color:var(--cream);font-weight:bold;letter-spacing:0.05em;margin-bottom:16px;"></div>
         <button type="button" id="mpr-new-btn" style="width:100%;padding:12px;background:transparent;border:1px solid var(--gold);color:var(--gold-light);border-radius:8px;cursor:pointer;font-family:inherit;">続けて予約する</button>
       </div>
+    </div>
     </div>
 
     <!-- ご登録情報（折りたたみ） -->
@@ -2722,7 +2727,8 @@ function setupControlTabEvents() {
       mprHideError();
       mprShowStep('form');
     });
-    // 登録情報の折りたたみ
+    // 折りたたみ（かんたん予約・登録情報）
+    mprBindToggle('mp-toggle-reserve','mp-collapse-reserve','mp-chevron-reserve');
     mprBindToggle('mp-toggle-info','mp-collapse-info','mp-chevron-info');
     mprBindToggle('mp-toggle-edit','mp-collapse-edit','mp-chevron-edit');
 
