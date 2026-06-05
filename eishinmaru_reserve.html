@@ -671,9 +671,86 @@ window.addEventListener('DOMContentLoaded', function(){
       </div>
     </div>
 
-    <!-- ご登録情報（表示のみ） -->
-    <div style="max-width:520px;margin:0 auto 16px;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);border-radius:12px;padding:16px;">
-      <div style="font-size:0.88rem;color:var(--gold);font-weight:bold;margin-bottom:12px;border-left:3px solid var(--gold);padding-left:10px;">📋 ご登録情報</div>
+    <!-- 🎣 会員かんたん予約 -->
+    <div style="max-width:520px;margin:0 auto 16px;background:linear-gradient(135deg,#13314f 0%,#0a1628 100%);border:2px solid var(--gold);border-radius:12px;padding:18px;">
+      <div style="font-size:1rem;color:var(--gold-light);font-weight:bold;text-align:center;margin-bottom:4px;">🎣 かんたん予約</div>
+      <div style="font-size:0.75rem;color:var(--text-muted);text-align:center;margin-bottom:16px;">日にちと便を選ぶだけで予約できます</div>
+
+      <div id="mpr-form">
+        <div class="form-group">
+          <label class="form-label" style="font-size:0.82rem;">乗船日 <span style="color:#e87070;">*</span></label>
+          <input type="date" id="mpr-date" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="form-label" style="font-size:0.82rem;">便 <span style="color:#e87070;">*</span></label>
+          <select id="mpr-ampm" class="form-control">
+            <option value="">選択してください</option>
+            <option>午前乗合</option>
+            <option>午後乗合</option>
+            <option>乗合通し</option>
+            <option>午前貸切</option>
+            <option>午後貸切</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" style="font-size:0.82rem;">釣り物 <span style="color:#e87070;">*</span></label>
+          <select id="mpr-fishing" class="form-control">
+            <option value="">選択してください</option>
+            <option>フグ</option>
+            <option>タイラバ</option>
+            <option>タコ</option>
+            <option>ジギング</option>
+            <option>ノマセ</option>
+            <option>落とし込み</option>
+            <option>ティップラン</option>
+            <option>イカメタル</option>
+            <option>ドテリグ(ミドルゲーム)</option>
+            <option>アジ(サビキ)</option>
+            <option>キス(天秤)</option>
+            <option>カワハギ</option>
+            <option>タチウオ</option>
+            <option>五目</option>
+            <option>その他便</option>
+          </select>
+        </div>
+        <div class="form-group" id="mpr-other-wrap" style="display:none;">
+          <label class="form-label" style="font-size:0.82rem;">その他の釣り物</label>
+          <input type="text" id="mpr-fishing-other" class="form-control" placeholder="釣り物をご記入ください">
+        </div>
+        <div class="form-group">
+          <label class="form-label" style="font-size:0.82rem;">人数 <span style="color:#e87070;">*</span></label>
+          <input type="number" id="mpr-pax" class="form-control" min="1" max="99" value="1" inputmode="numeric">
+        </div>
+        <div class="form-group">
+          <label class="form-label" style="font-size:0.82rem;">メールアドレス <span style="color:#e87070;">*</span></label>
+          <input type="email" id="mpr-email" class="form-control" placeholder="example@email.com" autocomplete="email">
+          <p style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;">一度入力すると、次回から自動で入力されます。</p>
+        </div>
+        <div id="mpr-error" style="display:none;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3);border-radius:8px;padding:10px;color:#f87171;font-size:0.85rem;margin-bottom:12px;"></div>
+        <button type="button" id="mpr-confirm-btn" class="submit-btn" style="width:100%;">📋 予約内容を確認</button>
+      </div>
+
+      <div id="mpr-confirm" style="display:none;">
+        <div style="font-size:0.9rem;color:var(--gold-light);font-weight:bold;text-align:center;margin-bottom:12px;">この内容で予約します</div>
+        <div id="mpr-confirm-body" style="display:grid;gap:8px;margin-bottom:16px;"></div>
+        <button type="button" id="mpr-execute-btn" class="submit-btn" style="width:100%;margin-bottom:8px;">🎣 この内容で予約する</button>
+        <button type="button" id="mpr-back-btn" style="width:100%;padding:10px;background:transparent;border:1px solid var(--text-muted);color:var(--text-muted);border-radius:8px;cursor:pointer;font-family:inherit;">← 修正に戻る</button>
+      </div>
+
+      <div id="mpr-complete" style="display:none;text-align:center;padding:10px 0;">
+        <div style="font-size:2.2rem;margin-bottom:8px;">✅</div>
+        <div style="font-size:1rem;color:var(--gold-light);font-weight:bold;margin-bottom:8px;">予約を受け付けました</div>
+        <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:4px;">予約受付番号</div>
+        <div id="mpr-booking-no" style="font-size:1.3rem;color:var(--cream);font-weight:bold;letter-spacing:0.05em;margin-bottom:16px;"></div>
+        <button type="button" id="mpr-new-btn" style="width:100%;padding:12px;background:transparent;border:1px solid var(--gold);color:var(--gold-light);border-radius:8px;cursor:pointer;font-family:inherit;">続けて予約する</button>
+      </div>
+    </div>
+
+    <!-- ご登録情報（折りたたみ） -->
+    <button type="button" id="mp-toggle-info" style="width:100%;max-width:520px;margin:0 auto 10px;display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);border-radius:12px;padding:14px 16px;color:var(--gold);font-weight:bold;font-size:0.88rem;cursor:pointer;font-family:inherit;">
+      <span>📋 ご登録情報</span><span id="mp-chevron-info" style="transition:transform .2s;">▼</span>
+    </button>
+    <div id="mp-collapse-info" style="display:none;max-width:520px;margin:0 auto 16px;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);border-radius:12px;padding:16px;">
       <div style="display:grid;gap:8px;">
         <div style="display:flex;padding:10px;background:rgba(255,255,255,0.03);border-radius:6px;align-items:center;">
           <span style="font-size:0.78rem;color:var(--text-muted);width:90px;flex-shrink:0;">氏名</span>
@@ -690,10 +767,11 @@ window.addEventListener('DOMContentLoaded', function(){
       </div>
     </div>
 
-    <!-- ご登録情報の変更（編集） -->
-    <div style="max-width:520px;margin:0 auto 16px;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);border-radius:12px;padding:16px;">
-      <div style="font-size:0.88rem;color:var(--gold);font-weight:bold;margin-bottom:12px;border-left:3px solid var(--gold);padding-left:10px;">📝 ご登録情報の変更</div>
-
+    <!-- ご登録情報の変更（折りたたみ） -->
+    <button type="button" id="mp-toggle-edit" style="width:100%;max-width:520px;margin:0 auto 10px;display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);border-radius:12px;padding:14px 16px;color:var(--gold);font-weight:bold;font-size:0.88rem;cursor:pointer;font-family:inherit;">
+      <span>📝 ご登録情報の変更</span><span id="mp-chevron-edit" style="transition:transform .2s;">▼</span>
+    </button>
+    <div id="mp-collapse-edit" style="display:none;max-width:520px;margin:0 auto 16px;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);border-radius:12px;padding:16px;">
       <div class="form-group">
         <label class="form-label" style="font-size:0.82rem;">生年月日</label>
         <input type="text" id="mp-edit-birthday" class="form-control" placeholder="例：昭和55年8月14日">
@@ -714,7 +792,6 @@ window.addEventListener('DOMContentLoaded', function(){
         <label class="form-label" style="font-size:0.82rem;">住所</label>
         <input type="text" id="mp-edit-address" class="form-control">
       </div>
-
       <button type="button" id="mp-confirm-btn" class="submit-btn" style="width:100%;margin-top:8px;">💾 変更内容を確認</button>
     </div>
 
@@ -2499,6 +2576,95 @@ function setupControlTabEvents() {
     mypageShowArea('mypage-login-area');
   }
 
+  // ===== 会員かんたん予約 =====
+  var MPR_EMAIL_KEY = 'eishinmaru_mypage_email_v1';
+  function mprSaveEmail(v){ try { localStorage.setItem(MPR_EMAIL_KEY, v); } catch(e){} }
+  function mprLoadEmail(){ try { return localStorage.getItem(MPR_EMAIL_KEY) || ''; } catch(e){ return ''; } }
+  function mprShowError(msg){ var el=document.getElementById('mpr-error'); if(el){ el.textContent=msg; el.style.display='block'; } }
+  function mprHideError(){ var el=document.getElementById('mpr-error'); if(el) el.style.display='none'; }
+  function mprShowStep(step){
+    var f=document.getElementById('mpr-form'), c=document.getElementById('mpr-confirm'), d=document.getElementById('mpr-complete');
+    if(f) f.style.display=(step==='form')?'block':'none';
+    if(c) c.style.display=(step==='confirm')?'block':'none';
+    if(d) d.style.display=(step==='complete')?'block':'none';
+  }
+  function mprBuildParams(){
+    var dateRaw=document.getElementById('mpr-date').value;
+    var ampm=document.getElementById('mpr-ampm').value;
+    var fishing=document.getElementById('mpr-fishing').value;
+    var otherTxt=(document.getElementById('mpr-fishing-other').value||'').trim();
+    var pax=document.getElementById('mpr-pax').value;
+    var email=(document.getElementById('mpr-email').value||'').trim();
+    if(!dateRaw){ mprShowError('乗船日を選んでください'); return null; }
+    if(!ampm){ mprShowError('便を選んでください'); return null; }
+    if(!fishing){ mprShowError('釣り物を選んでください'); return null; }
+    if(fishing==='その他便' && !otherTxt){ mprShowError('その他の釣り物をご記入ください'); return null; }
+    if(!pax || parseInt(pax)<1){ mprShowError('人数をご入力ください'); return null; }
+    if(!email){ mprShowError('メールアドレスをご入力ください'); return null; }
+    if(!__mypageMember){ mprShowError('ログイン情報が見つかりません。お手数ですが再度ログインしてください'); return null; }
+    mprHideError();
+    var dp=dateRaw.split('-');
+    var dateLabel=dp[0]+'年'+parseInt(dp[1])+'月'+parseInt(dp[2])+'日';
+    var fAm='なし', fPm='なし';
+    if(ampm.indexOf('午前')>-1){ fAm=fishing; }
+    else if(ampm.indexOf('午後')>-1){ fPm=fishing; }
+    else { fAm=fishing; fPm=fishing; }
+    return {
+      name:__mypageMember.name||'', furigana:__mypageMember.furigana||'',
+      member:__mypageMember.memberNo||'なし', email:email, tel:__mypageMember.phone||'',
+      date:dateLabel, pax:pax, ampm:ampm, fishing_am:fAm, fishing_pm:fPm,
+      fishing_other:(fishing==='その他便'?otherTxt:'なし'), notes:'なし'
+    };
+  }
+  function mprConfirm(){
+    if(typeof isReserveTimeStop==='function' && isReserveTimeStop()){
+      alert('現在予約受付時間外です。\nWeb予約受付時間：7:00〜20:00に再度お試しください。'); return;
+    }
+    var p=mprBuildParams(); if(!p) return;
+    window.__mprPending=p;
+    var fishLabel=(p.fishing_other!=='なし')?p.fishing_other:((p.fishing_am!=='なし')?p.fishing_am:p.fishing_pm);
+    var rows=[['お名前',p.name+'（'+p.member+'）'],['乗船日',p.date],['便',p.ampm],['釣り物',fishLabel],['人数',p.pax+'名'],['電話番号',p.tel],['メール',p.email]];
+    var html='';
+    rows.forEach(function(r){
+      html+='<div style="display:flex;padding:8px 10px;background:rgba(255,255,255,0.03);border-radius:6px;">'+
+            '<span style="font-size:0.76rem;color:var(--text-muted);width:84px;flex-shrink:0;">'+r[0]+'</span>'+
+            '<span style="font-size:0.88rem;color:var(--cream);">'+r[1]+'</span></div>';
+    });
+    document.getElementById('mpr-confirm-body').innerHTML=html;
+    mprShowStep('confirm');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  function mprExecute(){
+    var p=window.__mprPending; if(!p) return;
+    var btn=document.getElementById('mpr-execute-btn');
+    btn.disabled=true; btn.textContent='送信中…';
+    if(typeof showLoading==='function') showLoading('予約を送信中です');
+    fetch('https://script.google.com/macros/s/AKfycbyYyQp09Z4uztbowmJfrbvn4VhJzvAtwtfOvMcz3XGFUdH88x0xu_LaK11OTHjaYU2-/exec',{
+      method:'POST', body:JSON.stringify({action:'addReservation', data:p})
+    }).catch(function(){});
+    var done=function(){
+      if(typeof hideLoading==='function') hideLoading();
+      btn.disabled=false; btn.textContent='🎣 この内容で予約する';
+      mprSaveEmail(p.email);
+      var now=new Date();
+      var num='ESM'+now.getFullYear().toString().slice(2)+String(now.getMonth()+1).padStart(2,'0')+String(now.getDate()).padStart(2,'0')+'-'+String(Math.floor(Math.random()*9000)+1000);
+      document.getElementById('mpr-booking-no').textContent=num;
+      mprShowStep('complete');
+      window.scrollTo({top:0,behavior:'smooth'});
+    };
+    if(typeof emailjs!=='undefined' && emailjs.send){
+      emailjs.send('service_rvvn75a','template_rdvbitr',p).then(done).catch(done);
+    } else { done(); }
+  }
+  function mprBindToggle(btnId, bodyId, chevId){
+    var b=document.getElementById(btnId), body=document.getElementById(bodyId), chev=document.getElementById(chevId);
+    if(b && body){ b.addEventListener('click', function(){
+      var open=body.style.display!=='none';
+      body.style.display=open?'none':'block';
+      if(chev) chev.style.transform=open?'rotate(0deg)':'rotate(180deg)';
+    }); }
+  }
+
   // イベント登録
   document.addEventListener('DOMContentLoaded', function(){
     // 保存済みログイン状態の復元（ログアウトするまで維持）
@@ -2531,6 +2697,34 @@ function setupControlTabEvents() {
       if (__mypageMember) mypagePopulateMember(__mypageMember);
       mypageShowArea('mypage-main-area');
     });
+
+    // ===== かんたん予約 イベント登録 =====
+    var mprEmailEl = document.getElementById('mpr-email');
+    if (mprEmailEl) { var __savedEmail = mprLoadEmail(); if (__savedEmail) mprEmailEl.value = __savedEmail; }
+    var mprFishingEl = document.getElementById('mpr-fishing');
+    if (mprFishingEl) mprFishingEl.addEventListener('change', function(){
+      var w=document.getElementById('mpr-other-wrap'); if(w) w.style.display=(this.value==='その他便')?'block':'none';
+    });
+    var mprConfirmBtn = document.getElementById('mpr-confirm-btn');
+    if (mprConfirmBtn) mprConfirmBtn.addEventListener('click', mprConfirm);
+    var mprExecBtn = document.getElementById('mpr-execute-btn');
+    if (mprExecBtn) mprExecBtn.addEventListener('click', mprExecute);
+    var mprBackBtn = document.getElementById('mpr-back-btn');
+    if (mprBackBtn) mprBackBtn.addEventListener('click', function(){ mprShowStep('form'); });
+    var mprNewBtn = document.getElementById('mpr-new-btn');
+    if (mprNewBtn) mprNewBtn.addEventListener('click', function(){
+      document.getElementById('mpr-date').value='';
+      document.getElementById('mpr-ampm').value='';
+      document.getElementById('mpr-fishing').value='';
+      var ow=document.getElementById('mpr-other-wrap'); if(ow) ow.style.display='none';
+      var of=document.getElementById('mpr-fishing-other'); if(of) of.value='';
+      document.getElementById('mpr-pax').value='1';
+      mprHideError();
+      mprShowStep('form');
+    });
+    // 登録情報の折りたたみ
+    mprBindToggle('mp-toggle-info','mp-collapse-info','mp-chevron-info');
+    mprBindToggle('mp-toggle-edit','mp-collapse-edit','mp-chevron-edit');
 
     // 追加認証ラジオボタン選択時の処理
     var extraTypeRadios = document.querySelectorAll('input[name="mp-login-extra-type"]');
