@@ -465,7 +465,6 @@
 .member-back-btn:hover{background:rgba(255,255,255,.05)}#member-submit-btn:disabled{opacity:.5;cursor:not-allowed;pointer-events:none}
 
     #page-admin:not(.active) #admin-tab-ui { display: none !important; }
-    #page-admin:not(.active) #admin-tab-reservation { display: none !important; }
     #page-admin:not(.active) #admin-tab-member { display: none !important; }
   
     @media print {
@@ -910,23 +909,12 @@ window.addEventListener('DOMContentLoaded', function(){
       <!-- 管理画面 -->
       <div id="admin-panel" style="display:none;">
         <div id="admin-tab-ui" style="display:flex;gap:0;margin-bottom:20px;border-bottom:2px solid rgba(201,168,76,0.3);">
-          <button id="admin-tab-btn-reservation" style="padding:10px 20px;background:rgba(201,168,76,0.2);color:var(--gold-light);border:none;border-bottom:3px solid var(--gold);cursor:pointer;font-size:0.88rem;font-family:inherit;font-weight:bold;">&#128203; 予約確認</button>
+
           <button id="admin-tab-btn-member" style="padding:10px 20px;background:transparent;color:var(--foam);border:none;border-bottom:3px solid transparent;cursor:pointer;font-size:0.88rem;font-family:inherit;">&#128101; 会員情報出力</button>
           <button id="admin-tab-btn-input" style="padding:10px 20px;background:transparent;color:var(--gold-light);border:none;border-bottom:3px solid transparent;cursor:pointer;font-size:0.88rem;font-family:inherit;font-weight:bold;">&#x270F; 会員情報入力</button>
         <button id="admin-tab-btn-control">🚦 受付管理</button>
         </div>
-        <div id="admin-tab-reservation">
-
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-          <div style="font-size:12px; color:#8aabb8;" id="admin-count">読み込み中...</div>
-          <div style="display:flex; gap:8px;">
-            <button onclick="loadReservations()" style="background:rgba(201,168,76,0.15); border:1px solid rgba(201,168,76,0.3); color:#e8c96a; border-radius:8px; padding:8px 14px; font-size:12px; cursor:pointer; font-family:'Noto Serif JP',serif;">🔄 更新</button>
-            <button onclick="adminLogout()" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.15); color:#8aabb8; border-radius:8px; padding:8px 14px; font-size:12px; cursor:pointer; font-family:'Noto Serif JP',serif;">🔒 ログアウト</button>
-          </div>
-        </div>
-        <div id="reservation-list"></div>
-        </div>
-        <div id="admin-tab-member" style="display:none;">
+<div id="admin-tab-member" style="display:none;">
           <div style="background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.3);border-radius:12px;padding:20px;margin-bottom:20px;">
             <p style="font-size:0.95rem;font-weight:bold;color:var(--gold-light);margin-bottom:12px;">&#128269; 会員番号入力</p>
             <p style="font-size:0.82rem;color:var(--foam);margin-bottom:10px;">カンマ区切りまたは改行区切りで入力。例：No.501, No.502</p>
@@ -1377,7 +1365,7 @@ window.addEventListener('DOMContentLoaded', function(){
     event.target.classList.add('active');
     if (tab === 'admin') {
       var panel = document.getElementById('admin-panel');
-      if (panel && panel.style.display === 'block') { loadReservations(); }
+     
     }
   }
 
@@ -1476,12 +1464,7 @@ function submitForm() {
     }
     window.__reserveConfirmed = false;
 
-    // スプレッドシートに記録
     showLoading('予約を送信中です');
-    fetch('https://script.google.com/macros/s/AKfycbyYyQp09Z4uztbowmJfrbvn4VhJzvAtwtfOvMcz3XGFUdH88x0xu_LaK11OTHjaYU2-/exec', {
-      method: 'POST',
-      body: JSON.stringify({action:'addReservation', data:params})
-    }).catch(function(){ hideLoading();});
 
     emailjs.send('service_rvvn75a', 'template_rdvbitr', params)
       .then(function() {
@@ -1507,159 +1490,30 @@ function submitForm() {
 
   // ===== 管理者ページ =====
   
-    var GAS_URL = 'https://script.google.com/macros/s/AKfycbyYyQp09Z4uztbowmJfrbvn4VhJzvAtwtfOvMcz3XGFUdH88x0xu_LaK11OTHjaYU2-/exec';
   var _adminToken = null;
 
+  var ADMIN_PASS = 'eishin2024';
   function adminLogout() {
     document.getElementById('admin-panel').style.display = 'none';
     document.getElementById('admin-login').style.display = 'block';
     document.getElementById('admin-password').value = '';
-    document.getElementById('reservation-list').innerHTML = '';
-    document.getElementById('admin-count').textContent = '読み込み中...';
+    _adminToken = null;
   }
 
   function adminLogin() {
     var pass = document.getElementById('admin-password').value;
-    var btn = document.querySelector('.submit-btn');
-    btn.textContent = '...';
-    btn.disabled = true;
-    fetch(GAS_URL, {method:'POST', body:JSON.stringify({action:'checkPassword', password:pass})})
-      .then(function(r){ hideLoading(); return r.json(); })
-      .then(function(d){
-        btn.textContent = 'ログイン';
-        btn.disabled = false;
-        if (d.status === 'ok') {
-          _adminToken = d.token;
-          document.getElementById('admin-login').style.display = 'none';
-          document.getElementById('admin-panel').style.display = 'block';
-          document.getElementById('admin-password').value = '';
-          document.getElementById('reservation-list').innerHTML = '';
-          document.getElementById('admin-count').textContent = '...';
-          loadReservations();
-        } else {
-          alert('パスワードが違います。');
-        }
-      })
-      .catch(function(){
-        btn.textContent = 'ログイン';
-        btn.disabled = false;
-        alert('通信エラー。もう一度お試しください。');
-      });
-  }
-
-function loadReservations() {
-    document.getElementById('admin-count').textContent = '読み込み中...';
-    document.getElementById('reservation-list').innerHTML = '<div style="text-align:center; padding:30px; color:#8aabb8;">読み込み中...</div>';
-
-    fetch(GAS_URL + '?action=get&token=' + encodeURIComponent(_adminToken))
-      .then(function(r) { return r.json(); })
-      .then(function(data) {
-        renderReservations(data.reservations);
-      })
-      .catch(function(err) {
-        document.getElementById('reservation-list').innerHTML = '<div style="text-align:center; padding:30px; color:#e87070;">読み込みに失敗しました</div>';
-      });
-  }
-
-  function renderReservations(rows) {
-    var list = document.getElementById('reservation-list');
-    var count = document.getElementById('admin-count');
-
-    if (!rows || rows.length <= 1) {
-      list.innerHTML = '<div class="card" style="text-align:center; padding:30px; color:#8aabb8;">予約データがありません</div>';
-      count.textContent = '予約 0件';
-      return;
+    var btn = document.querySelector('#admin-login .submit-btn');
+    if (pass === ADMIN_PASS) {
+      _adminToken = 'local';
+      document.getElementById('admin-login').style.display = 'none';
+      document.getElementById('admin-panel').style.display = 'block';
+      document.getElementById('admin-password').value = '';
+      setTab('member');
+    } else {
+      if(btn){btn.textContent='ログイン';btn.disabled=false;}
+      alert('パスワードが違います。');
     }
-
-    var dataRows = rows.slice(1); // ヘッダー除く
-    count.textContent = '予約 ' + dataRows.length + '件';
-
-    var html = '';
-    dataRows.reverse().forEach(function(row, i) {
-      var status = row[13] || '未処理';
-      var isDone = status === '処理済み';
-      var statusColor = status === '処理済み' ? '#4a8fbd' : status === '保留' ? '#b87cc4' : '#c9a84c';
-      var statusBg = status === '処理済み' ? 'rgba(74,143,189,0.2)' : status === '保留' ? 'rgba(184,124,196,0.2)' : 'rgba(201,168,76,0.2)';
-      var statusBorder = status === '処理済み' ? 'rgba(74,143,189,0.3)' : status === '保留' ? 'rgba(184,124,196,0.3)' : 'rgba(201,168,76,0.3)';
-      var statusLabel = status === '処理済み' ? '✅ 処理済み' : status === '保留' ? '⏸ 保留' : '⏳ 未処理';
-      var rowIdx = rows.length - i;
-      html += '<div class="card" style="margin-bottom:12px; border-left:3px solid ' + statusColor + ';">';
-      html += '<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">';
-      html += '<div>';
-      html += '<div style="font-family:Shippori Mincho,serif; font-size:16px; font-weight:600;">' + (row[7] || '') + ' 様</div>';
-      html += '<div style="font-size:11px; color:#8aabb8; margin-top:2px;">' + formatDate(row[0]) + ' 受付</div>';
-      html += '</div>';
-      html += '<button id="status-btn-' + rowIdx + '" data-status="' + status + '" onclick="cycleStatus(' + rowIdx + ', this)" style="font-size:11px; padding:4px 10px; border-radius:20px; background:' + statusBg + '; color:' + statusColor + '; border:1px solid ' + statusBorder + '; cursor:pointer; font-family:Noto Serif JP,serif;">' + statusLabel + '</button>';
-      html += '</div>';
-      html += '<div style="font-size:12px; color:#b8d9ed; line-height:2.0;">';
-      html += '🗓 ' + formatBoardingDate(row[1], row[3]) + '&nbsp;&nbsp;👥 ' + (row[2] || '') + '名&nbsp;&nbsp;🚢 ' + (row[3] || '') + '<br>';
-      html += '🎣 午前：' + (row[4] || '') + '&nbsp;&nbsp;午後：' + (row[5] || '') + '<br>';
-      html += '📞 ' + (row[11] || '') + '&nbsp;&nbsp;✉️ ' + (row[10] || '');
-      if (row[12] && row[12] !== 'なし') html += '<br>📝 ' + row[12];
-      html += '</div>';
-      html += '<button onclick="deleteReservation(' + rowIdx + ')" style="margin-top:8px; width:100%; background:rgba(232,112,112,0.1); border:1px solid rgba(232,112,112,0.25); color:#e87070; border-radius:8px; padding:10px; font-size:13px; cursor:pointer; font-family:Noto Serif JP,serif;">🗑 この予約を削除</button>';
-      html += '</div>';
-    });
-    list.innerHTML = html;
   }
-
-  function cycleStatus(rowIndex, btn) {
-    var current = btn.getAttribute('data-status') || '未処理';
-    var next = current === '未処理' ? '処理済み' : current === '処理済み' ? '保留' : '未処理';
-    var nextColor = next === '処理済み' ? '#4a8fbd' : next === '保留' ? '#b87cc4' : '#c9a84c';
-    var nextBg = next === '処理済み' ? 'rgba(74,143,189,0.2)' : next === '保留' ? 'rgba(184,124,196,0.2)' : 'rgba(201,168,76,0.2)';
-    var nextBorder = next === '処理済み' ? 'rgba(74,143,189,0.3)' : next === '保留' ? 'rgba(184,124,196,0.3)' : 'rgba(201,168,76,0.3)';
-    var nextLabel = next === '処理済み' ? '✅ 処理済み' : next === '保留' ? '⏸ 保留' : '⏳ 未処理';
-
-    // UIを即更新
-    btn.setAttribute('data-status', next);
-    btn.textContent = nextLabel;
-    btn.style.color = nextColor;
-    btn.style.background = nextBg;
-    btn.style.borderColor = nextBorder;
-
-    // カード左のボーダー色も更新
-    var card = btn.closest('.card');
-    if (card) card.style.borderLeftColor = nextColor;
-
-    // GASに保存
-    fetch(GAS_URL + '?action=setstatus&row=' + rowIndex + '&status=' + encodeURIComponent(next) + '&token=' + encodeURIComponent(_adminToken))
-      .catch(function() { alert('保存に失敗しました'); });
-  }
-
-  function deleteReservation(rowIndex) {
-    if (!confirm('この予約を削除しますか？\nスプレッドシートからも完全に削除されます。')) return;
-    fetch(GAS_URL + '?action=delete&row=' + rowIndex + '&token=' + encodeURIComponent(_adminToken))
-      .then(function(r) { return r.json(); })
-      .then(function() { loadReservations(); })
-      .catch(function() { alert('削除に失敗しました'); });
-  }
-
-  function markDone(rowIndex) {
-    fetch(GAS_URL + '?action=done&row=' + rowIndex)
-      .then(function(r) { return r.json(); })
-      .then(function() { loadReservations(); })
-      .catch(function() { alert('更新に失敗しました'); });
-  }
-
-  function formatDate(val) {
-    if (!val) return '';
-    var d = new Date(val);
-    if (isNaN(d)) return val;
-    return d.getFullYear() + '/' + (d.getMonth()+1) + '/' + d.getDate() + ' ' + d.getHours() + ':' + String(d.getMinutes()).padStart(2,'0');
-  }
-
-   function formatBoardingDate(val, kubun) {
-     if (!val) return '';
-     var s = String(val).replace('T', ' ');
-     var parts = s.split(/[-\/]/);
-     var year  = parts[0] ? parts[0].substring(0,4) : '';
-     var month = parts[1] ? String(parseInt(parts[1])).padStart(2,'0') : '';
-     var day   = parts[2] ? String(parseInt(parts[2])).padStart(2,'0') : '';
-     var ampm = (kubun && kubun.indexOf('午前') >= 0) ? 'AM' :
-                (kubun && kubun.indexOf('午後') >= 0) ? 'PM' : 'AM';
-     return year + ' ' + month + ' ' + day + ' ' + ampm;
-   }
 
   // ===== カスタムカレンダー =====
 
@@ -1808,25 +1662,21 @@ function memberGoTop(){document.getElementById('member-form').reset();document.g
 </script>
 <script>
 (function(){
-  var bR=document.getElementById('admin-tab-btn-reservation');
   var bM=document.getElementById('admin-tab-btn-member');
-  var tR=document.getElementById('admin-tab-reservation');
   var tM=document.getElementById('admin-tab-member');
   function setTab(tab){
-    if(!tR||!tM||!bR||!bM)return;
     var tI=document.getElementById('admin-tab-input');
     var bI=document.getElementById('admin-tab-btn-input');
-    tR.style.display=tab==='reservation'?'block':'none';
     tM.style.display=tab==='member'?'block':'none';
     if(tI)tI.style.display=tab==='input'?'block':'none';
-    [bR,bM,bI].forEach(function(b){
+    [bM,bI].forEach(function(b){
       if(!b)return;
       b.style.background='transparent';
       b.style.color='var(--foam)';
       b.style.borderBottom='3px solid transparent';
       b.style.fontWeight='normal';
     });
-    var activeBtn=tab==='reservation'?bR:tab==='member'?bM:bI;
+    var activeBtn=tab==='member'?bM:bI;
     if(activeBtn){
       activeBtn.style.background='rgba(201,168,76,0.2)';
       activeBtn.style.color='var(--gold-light)';
@@ -1836,7 +1686,6 @@ function memberGoTop(){document.getElementById('member-form').reset();document.g
   }
   var bI=document.getElementById('admin-tab-btn-input');
   var tI=document.getElementById('admin-tab-input');
-  if(bR)bR.addEventListener('click',function(){setTab('reservation');});
   if(bM)bM.addEventListener('click',function(){setTab('member');});
   if(bI)bI.addEventListener('click',function(){setTab('input');});
   var bS=document.getElementById('btn-search-members');
@@ -2306,7 +2155,6 @@ function toggleReception(type) {
 function setupControlTabEvents() {
   var ctrlBtn = document.getElementById('admin-tab-btn-control');
   var ctrlPanel = document.getElementById('admin-tab-control');
-  var resvPanel = document.getElementById('admin-tab-reservation');
   var memPanel = document.getElementById('admin-tab-member');
   var inputPanel = document.getElementById('admin-tab-input');
   // 受付管理タブボタンクリック
@@ -2647,9 +2495,7 @@ function setupControlTabEvents() {
     var btn=document.getElementById('mpr-execute-btn');
     btn.disabled=true; btn.textContent='送信中…';
     if(typeof showLoading==='function') showLoading('予約を送信中です');
-    fetch('https://script.google.com/macros/s/AKfycbyYyQp09Z4uztbowmJfrbvn4VhJzvAtwtfOvMcz3XGFUdH88x0xu_LaK11OTHjaYU2-/exec',{
-      method:'POST', body:JSON.stringify({action:'addReservation', data:p})
-    }).catch(function(){});
+
     var done=function(){
       if(typeof hideLoading==='function') hideLoading();
       btn.disabled=false; btn.textContent='🎣 この内容で予約する';
