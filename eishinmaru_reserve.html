@@ -1496,6 +1496,7 @@ function submitForm() {
         document.getElementById('success-screen').classList.add('show');
         window.scrollTo(0, 0);
       }, function(error) {
+        hideLoading();
         alert('送信に失敗しました。もう一度お試しください。');
         btn.textContent = '申し込む';
         btn.disabled = false;
@@ -2660,7 +2661,9 @@ function setupControlTabEvents() {
       window.scrollTo({top:0,behavior:'smooth'});
     };
     if(typeof emailjs!=='undefined' && emailjs.send){
-      emailjs.send('service_rvvn75a','template_rdvbitr',p).then(done).catch(done);
+      var _t=setTimeout(done,10000);
+      var _safe=function(){clearTimeout(_t);done();};
+      emailjs.send('service_rvvn75a','template_rdvbitr',p).then(_safe).catch(_safe);
     } else { done(); }
   }
   function mprBindToggle(btnId, bodyId, chevId){
