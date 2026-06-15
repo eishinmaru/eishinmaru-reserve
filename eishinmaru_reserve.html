@@ -1174,6 +1174,7 @@ window.addEventListener('DOMContentLoaded', function(){
                 <div style="text-align:center; font-size:11px; color:#4a8fbd; padding:4px 0;">土</div>
               </div>
               <div id="cal-days" style="display:grid; grid-template-columns:repeat(7,1fr); gap:4px;"></div>
+              <div style="margin-top:12px; padding:8px 10px; background:rgba(201,168,76,0.1); border:1px solid rgba(201,168,76,0.3); border-radius:8px; font-size:0.72rem; color:#e8c96a; text-align:center; line-height:1.6;">お急ぎのご予約（本日・翌日）は<br>お電話でお願い致します<br><span style="font-size:0.68rem; opacity:0.8;">080-6794-2646</span></div>
             </div>
           </div>
           <div class="form-row">
@@ -1533,6 +1534,8 @@ function submitForm() {
     var firstDay = new Date(calYear, calMonth, 1).getDay();
     var daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
     var today = new Date(); today.setHours(0,0,0,0);
+    var tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
+    var dayAfterTomorrow = new Date(today); dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 2);
 
     for (var i = 0; i < firstDay; i++) {
       var blank = document.createElement('div');
@@ -1541,7 +1544,7 @@ function submitForm() {
 
     for (var d = 1; d <= daysInMonth; d++) {
       var thisDate = new Date(calYear, calMonth, d);
-      var isPast = thisDate < today;
+      var isPast = thisDate < dayAfterTomorrow;
       var mm = String(calMonth + 1).padStart(2, '0');
       var dd = String(d).padStart(2, '0');
       var dateStr = calYear + '-' + mm + '-' + dd;
@@ -2426,6 +2429,10 @@ function setupControlTabEvents() {
     var pax=document.getElementById('mpr-pax').value;
     var email=(document.getElementById('mpr-email').value||'').trim();
     if(!dateRaw){ mprShowError('乗船日を選んでください'); return null; }
+    var _selDate = new Date(dateRaw); _selDate.setHours(0,0,0,0);
+    var _tod = new Date(); _tod.setHours(0,0,0,0);
+    var _tom = new Date(_tod); _tom.setDate(_tom.getDate()+1);
+    if(_selDate <= _tom){ mprShowError('お急ぎのご予約はお電話でお願い致します（080-6794-2646）'); return null; }
     if(!ampm){ mprShowError('便を選んでください'); return null; }
     if(!fishing){ mprShowError('釣り物を選んでください'); return null; }
     if(fishing==='その他便' && !otherTxt){ mprShowError('その他の釣り物をご記入ください'); return null; }
@@ -2542,6 +2549,29 @@ function setupControlTabEvents() {
     });
 
     // ===== かんたん予約 イベント登録 =====
+    // mpr-date: 明後日以降のみWeb予約可
+    var mprDateEl = document.getElementById('mpr-date');
+    if (mprDateEl) {
+      var _d = new Date(); _d.setHours(0,0,0,0);
+      _d.setDate(_d.getDate() + 2);
+      var _mm = String(_d.getMonth()+1).padStart(2,'0');
+      var _dd = String(_d.getDate()).padStart(2,'0');
+      mprDateEl.min = _d.getFullYear() + '-' + _mm + '-' + _dd;
+      mprDateEl.addEventListener('change', function(){
+        var val = this.value;
+        if (!val) { mprHideError(); return; }
+        var sel = new Date(val); sel.setHours(0,0,0,0);
+        var tod = new Date(); tod.setHours(0,0,0,0);
+        var tom = new Date(tod); tom.setDate(tom.getDate()+1);
+        if (sel <= tom) {
+          mprShowError('お急ぎのご予約はお電話でお願い致します（080-6794-2646）');
+          this.value = '';
+        } else {
+          mprHideError();
+        }
+      });
+    }
+
     var mprEmailEl = document.getElementById('mpr-email');
     if (mprEmailEl) { var __savedEmail = mprLoadEmail(); if (__savedEmail) mprEmailEl.value = __savedEmail; }
     var mprFishingEl = document.getElementById('mpr-fishing');
