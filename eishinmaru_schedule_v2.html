@@ -254,6 +254,7 @@ function switchTab(tab,btn){
   document.getElementById('tab-'+tab).classList.add('active');
   btn.classList.add('active');
   if(tab==='admin')buildAdminCalendar();
+  if(tab==='customer'){scheduleData=loadData();buildCalendar();}
 }
 function getMiniClass(st){
   if(st==='full')return 'full';
@@ -494,7 +495,7 @@ function renderEmptySlot(num,dateKey){
     +'<a href="tel:08067942646" class="slot-btn tel-btn">電話</a>'
     +'<button class="slot-btn web-btn reserve-trigger" data-date="'+dkey2+'">Web予約</button>'
     +'</div>';
-  return '<div class="slot-card empty-slot"><div class="slot-top"><div class="slot-num empty">'+num+'</div><div class="slot-info"><div class="slot-target empty-text">募集中</div><div class="slot-time"></div></div>'+btnHtml+'</div><div class="status-box" style="background:#e3f2fd;"><div class="status-main" style="color:#1565c0;font-size:14px;font-weight:700;">募集中</div></div></div>';
+  return '<div class="slot-card empty-slot"><div class="slot-top"><div class="slot-num empty">'+num+'</div><div class="slot-info"><div class="slot-target empty-text">出船未確定</div><div class="slot-time"></div></div>'+btnHtml+'</div><div class="status-box" style="background:#e3f2fd;"><div class="status-main" style="color:#1565c0;font-size:14px;font-weight:700;">受付中</div></div></div>';
 }
 function closeModal(){document.getElementById('modal-overlay').classList.remove('active');}
 function handleOverlayClick(e){if(e.target.id==='modal-overlay')closeModal();}
