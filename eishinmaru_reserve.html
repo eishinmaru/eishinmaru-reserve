@@ -539,6 +539,59 @@
       opacity: 0.9;
       text-align: center;
     }
+  /* ===== スケジュールカレンダー v2 ===== */
+  .sch-slot-card{background:rgba(255,255,255,0.07);border-radius:12px;padding:14px;margin-bottom:10px;border-left:5px solid #1c4587;}
+  .sch-slot-card.confirmed{border-left-color:#2e7d32;background:rgba(46,125,50,0.1);}
+  .sch-slot-card.full{border-left-color:#c62828;background:rgba(200,40,40,0.1);}
+  .sch-slot-card.charter{border-left-color:#e65100;background:rgba(230,100,0,0.1);}
+  .sch-slot-card.cancelled{border-left-color:#9e9e9e;opacity:.6;}
+  .sch-slot-card.empty{border-left-color:#1976d2;background:rgba(25,118,210,0.08);}
+  .sch-slot-top{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+  .sch-slot-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;flex-shrink:0;background:#1c4587;}
+  .sch-slot-num.confirmed{background:#2e7d32;}.sch-slot-num.full{background:#c62828;}
+  .sch-slot-num.charter{background:#e65100;}.sch-slot-num.cancelled,.sch-slot-num.empty-num{background:#9e9e9e;}
+  .sch-slot-num.empty-num{background:#1976d2;}
+  .sch-slot-info{flex:1;}
+  .sch-slot-target{font-size:16px;font-weight:700;color:white;}
+  .sch-slot-card.full .sch-slot-target{color:#ef9a9a;}
+  .sch-slot-card.charter .sch-slot-target{color:#ffcc80;}
+  .sch-slot-card.cancelled .sch-slot-target{color:#9e9e9e;text-decoration:line-through;}
+  .sch-slot-card.empty .sch-slot-target{color:#90caf9;}
+  .sch-slot-time{font-size:12px;color:rgba(255,255,255,0.45);margin-top:2px;}
+  .sch-badges{margin-bottom:8px;}
+  .sch-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;margin-right:4px;}
+  .sch-badge.recruiting{background:rgba(25,118,210,0.3);color:#90caf9;}
+  .sch-badge.confirmed{background:rgba(46,125,50,0.3);color:#a5d6a7;}
+  .sch-badge.full{background:rgba(198,40,40,0.3);color:#ef9a9a;}
+  .sch-badge.charter{background:rgba(230,100,0,0.3);color:#ffcc80;}
+  .sch-status-box{background:rgba(255,255,255,0.05);border-radius:8px;padding:10px 12px;}
+  .sch-status-box.confirmed{background:rgba(46,125,50,0.15);}
+  .sch-status-box.full{background:rgba(198,40,40,0.15);}
+  .sch-status-label{font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:3px;}
+  .sch-status-main{font-size:15px;font-weight:700;color:white;}
+  .sch-status-box.full .sch-status-main{color:#ef9a9a;}
+  .sch-status-box.confirmed .sch-status-main{color:#a5d6a7;}
+  .sch-progress-bar{background:rgba(255,255,255,0.1);height:7px;border-radius:4px;margin-top:8px;overflow:hidden;}
+  .sch-progress-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#1976d2,#64b5f6);}
+  .sch-progress-fill.confirmed{background:linear-gradient(90deg,#2e7d32,#66bb6a);}
+  .sch-action-btns{display:flex;flex-direction:column;gap:4px;flex-shrink:0;margin-left:6px;}
+  .sch-btn{padding:6px 10px;border-radius:6px;font-size:11px;font-weight:700;text-align:center;text-decoration:none;display:block;white-space:nowrap;border:none;cursor:pointer;}
+  .sch-tel-btn{background:#2e7d32;color:white;}
+  .sch-web-btn{background:#1c4587;color:white;}
+  .sch-period-header{font-size:15px;font-weight:800;padding:10px 16px;margin:8px 0 8px;border-radius:8px;letter-spacing:2px;color:white;}
+  .sch-period-header.am{background:#1c4587;}
+  .sch-period-header.pm{background:#e65100;}
+  .sch-holiday-body{text-align:center;padding:40px 20px;color:rgba(255,255,255,0.4);}
+  #sch-modal-overlay.active{display:flex!important;animation:schFadeIn .2s;}
+  @keyframes schFadeIn{from{opacity:0}to{opacity:1}}
+  .day-cell{border-right:1px solid rgba(255,255,255,0.07);border-bottom:1px solid rgba(255,255,255,0.07);min-height:72px;padding:4px 3px 2px;cursor:pointer;transition:background .15s;}
+  .day-cell:hover{background:rgba(255,255,255,0.06);}
+  .day-cell:nth-child(7n){border-right:none;}
+  .day-cell.other-month{opacity:0.25;cursor:default;pointer-events:none;}
+  .day-number{font-size:13px;font-weight:500;color:rgba(255,255,255,0.85);display:block;margin-bottom:2px;}
+  .day-cell.sun .day-number{color:#e05050;}.day-cell.sat .day-number{color:#5090e0;}
+  .day-cell.today .day-number{background:#c9a84c;color:#0a1628;border-radius:50%;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;}
+  .holiday-mark{font-size:14px;font-weight:700;color:#e05050;display:flex;align-items:center;justify-content:center;height:50px;}
   </style>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>emailjs.init("Km0FEUA4tiiZRKeCp");</script>
@@ -1117,18 +1170,40 @@ window.addEventListener('DOMContentLoaded', function(){
         </div>
       </div
       </div>
-      <div class="card" style="padding:0; overflow:hidden; border-radius:16px;">
-        <iframe
-          src="https://www.eishinmaru-awaji.com/%E5%87%BA%E8%88%B9%E3%82%B9%E3%82%B1%E3%82%B8%E3%83%A5%E3%83%BC%E3%83%AB/"
-          style="width:100%; height:70vh; border:none; display:block;"
-          title="出船スケジュール">
-        </iframe>
+      <!-- カレンダー -->
+      <div style="margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.05);border-radius:10px;padding:10px 16px;margin-bottom:8px;">
+          <button onclick="schChangeMonth(-1)" style="background:rgba(255,255,255,0.1);color:white;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:500;">◀ 前月</button>
+          <div id="current-month-label" style="font-size:17px;font-weight:600;color:white;"></div>
+          <button onclick="schChangeMonth(1)" style="background:rgba(255,255,255,0.1);color:white;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:500;">次月 ▶</button>
+        </div>
+        <div style="background:rgba(255,255,255,0.03);border-radius:10px;overflow:hidden;">
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);background:rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.08);">
+            <div style="text-align:center;padding:10px 0;font-size:12px;font-weight:600;color:#e05050;">日</div>
+            <div style="text-align:center;padding:10px 0;font-size:12px;font-weight:600;color:rgba(255,255,255,0.5);">月</div>
+            <div style="text-align:center;padding:10px 0;font-size:12px;font-weight:600;color:rgba(255,255,255,0.5);">火</div>
+            <div style="text-align:center;padding:10px 0;font-size:12px;font-weight:600;color:rgba(255,255,255,0.5);">水</div>
+            <div style="text-align:center;padding:10px 0;font-size:12px;font-weight:600;color:rgba(255,255,255,0.5);">木</div>
+            <div style="text-align:center;padding:10px 0;font-size:12px;font-weight:600;color:rgba(255,255,255,0.5);">金</div>
+            <div style="text-align:center;padding:10px 0;font-size:12px;font-weight:600;color:#5090e0;">土</div>
+          </div>
+          <div id="calendar-grid" style="display:grid;grid-template-columns:repeat(7,1fr);"></div>
+        </div>
       </div>
-      <p style="font-size:11px; color:#8aabb8; text-align:center; margin-top:12px; letter-spacing:0.1em;">
-        ※ 読み込めない場合は<a href="https://www.eishinmaru-awaji.com/%E5%87%BA%E8%88%B9%E3%82%B9%E3%82%B1%E3%82%B8%E3%83%A5%E3%83%BC%E3%83%AB/" target="_blank" style="color:#c9a84c;">こちら</a>をタップ
-      </p>
     </div>
 
+    <!-- スケジュールモーダル -->
+    <div id="sch-modal-overlay" onclick="schHandleOverlay(event)" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:9999;align-items:flex-end;justify-content:center;">
+      <div style="background:#0d2340;width:100%;max-width:500px;border-radius:18px 18px 0 0;max-height:85vh;overflow-y:auto;">
+        <div id="sch-modal-header" style="background:linear-gradient(135deg,#1c4587,#2a5fa0);color:white;padding:18px 20px;position:relative;border-radius:18px 18px 0 0;">
+          <span id="sch-modal-date" style="font-size:22px;font-weight:700;"></span>
+          <span id="sch-modal-weekday" style="font-size:15px;color:#c7ddfa;margin-left:6px;"></span>
+          <div id="sch-modal-count" style="font-size:11px;color:#c7ddfa;margin-top:4px;"></div>
+          <button onclick="schCloseModal()" style="position:absolute;top:14px;right:16px;background:rgba(255,255,255,.2);border:none;color:white;width:30px;height:30px;border-radius:50%;font-size:18px;cursor:pointer;">×</button>
+        </div>
+        <div id="sch-modal-body" style="padding:12px;background:#0d2340;"></div>
+      </div>
+    </div>
     <!-- ===== 予約ページ ===== -->
     <div class="page" id="page-reserve">
   <div id="reserve-maintenance" style="display:none;text-align:center;padding:40px 20px;background:rgba(200,50,50,0.15);border:2px solid rgba(200,50,50,0.5);border-radius:12px;margin:0 0 20px 0;">
