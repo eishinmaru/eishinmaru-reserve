@@ -420,12 +420,12 @@ function renderSlot(s,num,dateKey){
     const pct=s.capacity?Math.round(((s.capacity-(s.remaining||0))/s.capacity)*100):70;
     sb='<div class="status-box confirmed"><div class="status-label">予約状況</div><div class="status-main">残り '+(s.remaining||'?')+' 名</div><div class="progress-bar"><div class="progress-fill confirmed" style="width:'+pct+'%"></div></div></div>';
   }else if(st==='recruiting'){
-    badges='<span class="badge recruiting">募集中</span>';
+    badges='<span class="badge recruiting">出船未確定</span>';
     if(s.needMore){
       const pct=s.capacity?Math.round(((s.capacity-s.needMore)/s.capacity)*100):40;
       sb='<div class="status-box"><div class="status-label">出船確定まで</div><div class="status-main">あと '+s.needMore+' 名で確定</div><div class="progress-bar"><div class="progress-fill" style="width:'+pct+'%"></div></div></div>';
     }else if(s.minRequired){
-      sb='<div class="status-box"><div class="status-label">最低出船人数</div><div class="status-main">'+s.minRequired+' 名で出船確定</div></div>';
+      sb='<div class="status-box"><div class="status-label">出船確定まで</div><div class="status-main">あと '+s.minRequired+' 名で確定</div></div>';
     }else{
       sb='<div class="status-box"><div class="status-label">募集人数</div><div class="status-main">'+(s.capacity||'?')+' 名募集中</div></div>';
     }
