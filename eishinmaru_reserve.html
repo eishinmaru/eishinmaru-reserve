@@ -1170,25 +1170,12 @@ window.addEventListener('DOMContentLoaded', function(){
         </div>
       </div
       </div>
-      <!-- カレンダー -->
-      <div style="margin-bottom:8px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.05);border-radius:10px;padding:10px 16px;margin-bottom:8px;">
-          <button onclick="schChangeMonth(-1)" style="background:rgba(255,255,255,0.1);color:white;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:500;">◀ 前月</button>
-          <div id="current-month-label" style="font-size:17px;font-weight:600;color:white;"></div>
-          <button onclick="schChangeMonth(1)" style="background:rgba(255,255,255,0.1);color:white;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:500;">次月 ▶</button>
-        </div>
-        <div style="background:rgba(255,255,255,0.03);border-radius:10px;overflow:hidden;">
-          <div style="display:grid;grid-template-columns:repeat(7,1fr);background:rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.08);">
-            <div style="text-align:center;padding:10px 0;font-size:12px;font-weight:600;color:#e05050;">日</div>
-            <div style="text-align:center;padding:10px 0;font-size:12px;font-weight:600;color:rgba(255,255,255,0.5);">月</div>
-            <div style="text-align:center;padding:10px 0;font-size:12px;font-weight:600;color:rgba(255,255,255,0.5);">火</div>
-            <div style="text-align:center;padding:10px 0;font-size:12px;font-weight:600;color:rgba(255,255,255,0.5);">水</div>
-            <div style="text-align:center;padding:10px 0;font-size:12px;font-weight:600;color:rgba(255,255,255,0.5);">木</div>
-            <div style="text-align:center;padding:10px 0;font-size:12px;font-weight:600;color:rgba(255,255,255,0.5);">金</div>
-            <div style="text-align:center;padding:10px 0;font-size:12px;font-weight:600;color:#5090e0;">土</div>
-          </div>
-          <div id="calendar-grid" style="display:grid;grid-template-columns:repeat(7,1fr);"></div>
-        </div>
+      <div style="margin-top:8px; border-radius:16px; overflow:hidden;">
+        <iframe
+          src="https://eishinmaru.github.io/eishinmaru-reserve/eishinmaru_schedule_v2.html"
+          style="width:100%; height:80vh; border:none; display:block;"
+          title="出船スケジュール">
+        </iframe>
       </div>
     </div>
 
