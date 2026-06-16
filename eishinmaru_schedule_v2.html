@@ -153,6 +153,7 @@ body{font-family:'Hiragino Sans','Yu Gothic',sans-serif;background:#f5f7fa;color
   <button class="tab-btn" id="tab-btn-admin" onclick="switchTab('admin',this)">管理</button>
 </div>
 <div class="tab-content active" id="tab-customer">
+  <div style="text-align:center;color:#888;font-size:13px;padding:10px 0 4px;letter-spacing:0.05em;">ご希望の日にちをタップしてください</div>
   <div class="month-nav">
     <button onclick="changeMonth(-1)">◀ 前月</button>
     <div class="current-month" id="current-month-label"></div>
@@ -240,23 +241,8 @@ const LOGIN_KEY='eishinmaru_schedule_login_v1';
 const TARGETS=["フグ","タイラバ","タコ","ジギング","ノマセ","落とし込み","ティップラン","イカメタル","ドテリグ","アジサビキ","カワハギ","タチウオ","五目","その他便"];
 const STATUS_LIST=[{v:"recruiting",l:"出船未確定"},{v:"confirmed",l:"出船確定"},{v:"full",l:"満船"},{v:"charter",l:"貸切"},{v:"cancelled",l:"中止"}];
 const NUM_LABELS=['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩','⑪','⑫'];
-const STORAGE_KEY='eishinmaru_schedule_v2';
-const DEFAULT_DATA={
-  '2026-06-01':{type:'normal',slots:[{period:'am',gatherTime:'5:00',target:'タイラバ',status:'confirmed',remaining:3,capacity:8}]},
-  '2026-06-03':{type:'normal',slots:[{period:'am',gatherTime:'5:00',target:'タコ',status:'recruiting',needMore:2,capacity:6},{period:'pm',gatherTime:'13:30',target:'イカメタル',status:'recruiting',capacity:6}]},
-  '2026-06-05':{type:'normal',slots:[{period:'am',gatherTime:'5:00',target:'フグ',status:'confirmed',remaining:5,capacity:10}]},
-  '2026-06-06':{type:'normal',slots:[{period:'am',gatherTime:'5:00',target:'タイラバ',status:'full'},{period:'pm',gatherTime:'14:00',target:'ジギング',status:'charter'}]},
-  '2026-06-07':{type:'normal',slots:[{period:'am',gatherTime:'5:00',target:'タイラバ',status:'cancelled'}]},
-  '2026-06-09':{type:'holiday',slots:[]},
-  '2026-06-10':{type:'normal',slots:[{period:'am',gatherTime:'4:30',target:'フグ',status:'confirmed',remaining:5,capacity:10},{period:'am',gatherTime:'5:00',target:'タコ',status:'recruiting',needMore:2,capacity:6},{period:'am',gatherTime:'6:00',target:'タイラバ',status:'recruiting',capacity:8},{period:'pm',gatherTime:'13:00',target:'ドテリグ',status:'recruiting',needMore:3,capacity:6},{period:'pm',gatherTime:'14:00',target:'ジギング',status:'confirmed',remaining:2,capacity:6},{period:'pm',gatherTime:'19:30',target:'タチウオ',status:'full'}]},
-  '2026-06-12':{type:'normal',slots:[{period:'am',gatherTime:'5:00',target:'ノマセ',status:'recruiting',needMore:1,capacity:5}]},
-  '2026-06-13':{type:'normal',slots:[{period:'am',gatherTime:'5:00',target:'タイラバ',status:'confirmed',remaining:1,capacity:8},{period:'pm',gatherTime:'19:00',target:'イカメタル',status:'recruiting',capacity:6}]},
-  '2026-06-14':{type:'normal',slots:[{period:'am',gatherTime:'5:00',target:'タコ',status:'full'}]},
-  '2026-06-20':{type:'normal',slots:[{period:'am',gatherTime:'5:00',target:'落とし込み',status:'confirmed',remaining:4,capacity:10},{period:'pm',gatherTime:'14:00',target:'タイラバ',status:'recruiting',needMore:2,capacity:6}]},
-  '2026-06-23':{type:'holiday',slots:[]},
-  '2026-06-27':{type:'normal',slots:[{period:'am',gatherTime:'5:00',target:'ジギング',status:'charter'}]},
-  '2026-06-28':{type:'normal',slots:[{period:'am',gatherTime:'5:00',target:'タイラバ',status:'confirmed',remaining:2,capacity:8},{period:'am',gatherTime:'5:30',target:'タコ',status:'recruiting',needMore:1,capacity:6},{period:'pm',gatherTime:'13:00',target:'フグ',status:'confirmed',remaining:3,capacity:8},{period:'pm',gatherTime:'14:00',target:'ノマセ',status:'recruiting',capacity:6}]},
-};
+const STORAGE_KEY='eishinmaru_schedule_v3';
+const DEFAULT_DATA={}
 function loadData(){const s=localStorage.getItem(STORAGE_KEY);return s?JSON.parse(s):JSON.parse(JSON.stringify(DEFAULT_DATA));}
 function saveData(d){localStorage.setItem(STORAGE_KEY,JSON.stringify(d));}
 let scheduleData=loadData();
