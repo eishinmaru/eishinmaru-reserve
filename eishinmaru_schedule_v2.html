@@ -239,14 +239,11 @@ const ADMIN_ID='eishinmaru';
 const ADMIN_PASSWORD='eishin2024';
 const LOGIN_KEY='eishinmaru_schedule_login_v1';
 const TARGETS=["フグ","タイラバ","タコ","ジギング","ノマセ","落とし込み","ティップラン","イカメタル","ドテリグ","アジサビキ","カワハギ","タチウオ","五目","その他便"];
-const STATUS_LIST=[{v:"recruiting",l:"出船未確定"},{v:"confirmed",l:"出船確定"},{v:"full",l:"満船"},{v:"charter",l:"貸切"},{v:"cancelled",l:"中止"}];
+const STATUS_LIST=[{v:"recruiting",l:"募集中"},{v:"confirmed",l:"出船確定"},{v:"full",l:"満船"},{v:"charter",l:"貸切"},{v:"cancelled",l:"中止"}];
 const NUM_LABELS=['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩','⑪','⑫'];
-const GAS_URL='https://script.google.com/macros/s/AKfycbyNwXhJDbA-K51MC8J0D1tzVOS66IHBLRK8LoEuywWTwbGBd_ktF9cCrDLZWt2QYx68/exec';
-const STORAGE_KEY='eishinmaru_schedule_v3';
+const GAS_URL='https://script.google.com/macros/s/AKfycbx0bfoNDdkqyAo9twlOiUyNYpjxs5NzOFnvS8nmanDhZXD_kYWno_I9KUT0QsMt_py-/exec';
 const DEFAULT_DATA={}
-function loadData(){const s=localStorage.getItem(STORAGE_KEY);return s?JSON.parse(s):JSON.parse(JSON.stringify(DEFAULT_DATA));}
-function saveData(d){localStorage.setItem(STORAGE_KEY,JSON.stringify(d));}
-let scheduleData=loadData();
+let scheduleData={};
 let currentYear=2026,currentMonth=6,adminYear=2026,adminMonth=6,selectedKey=null,editingSlots=[];
 
 function switchTab(tab,btn){
@@ -255,7 +252,7 @@ function switchTab(tab,btn){
   document.getElementById('tab-'+tab).classList.add('active');
   btn.classList.add('active');
   if(tab==='admin')buildAdminCalendar();
-  if(tab==='customer'){scheduleData=loadData();buildCalendar();}
+  if(tab==='customer'){buildCalendar();}
 }
 function getMiniClass(st){
   if(st==='full')return 'full';
@@ -278,8 +275,7 @@ function buildCalendar(){
       }
     })
     .catch(function(){
-      // オフライン時のみlocalStorageを使う
-      scheduleData=loadData();
+      scheduleData={};
     })
     .finally(function(){_buildCalendarGrid();});
   return;
@@ -338,7 +334,6 @@ checkAutoLogin();
 }
 
 function openModal(key){
-  scheduleData=loadData();
   const data=scheduleData[key];
   const pts=key.split('-');
   const m=parseInt(pts[1]),d=parseInt(pts[2]);
