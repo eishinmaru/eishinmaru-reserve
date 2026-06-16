@@ -241,6 +241,7 @@ const LOGIN_KEY='eishinmaru_schedule_login_v1';
 const TARGETS=["フグ","タイラバ","タコ","ジギング","ノマセ","落とし込み","ティップラン","イカメタル","ドテリグ","アジサビキ","カワハギ","タチウオ","五目","その他便"];
 const STATUS_LIST=[{v:"recruiting",l:"出船未確定"},{v:"confirmed",l:"出船確定"},{v:"full",l:"満船"},{v:"charter",l:"貸切"},{v:"cancelled",l:"中止"}];
 const NUM_LABELS=['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩','⑪','⑫'];
+const GAS_URL='https://script.google.com/macros/s/AKfycbx0bfoNDdkqyAo9twlOiUyNYpjxs5NzOFnvS8nmanDhZXD_kYWno_I9KUT0QsMt_py-/exec';
 const STORAGE_KEY='eishinmaru_schedule_v3';
 const DEFAULT_DATA={}
 function loadData(){const s=localStorage.getItem(STORAGE_KEY);return s?JSON.parse(s):JSON.parse(JSON.stringify(DEFAULT_DATA));}
@@ -265,6 +266,23 @@ function getMiniClass(st){
 }
 function buildCalendar(){
   document.getElementById('current-month-label').textContent=currentYear+'年 '+currentMonth+'月';
+  const grid=document.getElementById('calendar-grid');
+  // GASから最新データを取得してから描画
+  var gasUrl=GAS_URL+'?action=getSchedule&year='+currentYear+'&month='+currentMonth;
+  fetch(gasUrl)
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(d.status==='ok'&&d.data){
+        var local=loadData();
+        scheduleData=Object.assign({},local,d.data);
+        saveData(scheduleData);
+      }
+    })
+    .catch(function(){})
+    .finally(function(){_buildCalendarGrid();});
+  return;
+}
+function _buildCalendarGrid(){
   const grid=document.getElementById('calendar-grid');
   const fd=new Date(currentYear,currentMonth-1,1).getDay();
   const ld=new Date(currentYear,currentMonth,0).getDate();
@@ -686,6 +704,8 @@ function addSlot(period){
 function saveDay(){
   if(!selectedKey)return;
   const isH=document.getElementById('holiday-toggle').checked;
+  const type=isH?'holiday':'normal';
+  const slots=isH?[]:[...editingSlots];
   if(isH){
     scheduleData[selectedKey]={type:'holiday',slots:[]};
   }else{
@@ -694,6 +714,12 @@ function saveDay(){
   saveData(scheduleData);
   buildCalendar();
   buildAdminCalendar();
+  fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'saveDay',date:selectedKey,type:type,slots:slots})}).catch(function(){});
+  // GASにも保存
+  fetch(GAS_URL, {
+    method:'POST',
+    body:JSON.stringify({action:'saveDay',date:selectedKey,type:type,slots:slots})
+  }).catch(function(){});
   const t=document.getElementById('save-toast');
   t.classList.add('show');
   setTimeout(function(){t.classList.remove('show');},2500);
