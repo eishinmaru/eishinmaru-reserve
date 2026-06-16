@@ -546,11 +546,15 @@
 window.addEventListener('DOMContentLoaded', function(){
   try {
     var params = new URLSearchParams(window.location.search);
-    if(params.get('tab') !== 'member') return;
+    var tabParam = params.get('tab');
+    var targetSelector = null;
+    if(tabParam === 'member') targetSelector = 'button.tab[onclick*="member"]';
+    if(tabParam === 'mypage') targetSelector = 'button.tab[onclick*="mypage"]';
+    if(!targetSelector) return;
     var attempts = 0;
     var timer = setInterval(function(){
       attempts++;
-      var btn = document.querySelector('button.tab[onclick*="member"]');
+      var btn = document.querySelector(targetSelector);
       if(btn){
         btn.click();
         clearInterval(timer);
@@ -2572,18 +2576,23 @@ function setupControlTabEvents() {
       });
     }
 
-    // スケジュール画面からの日付自動セット
-    var __scheduleDate = localStorage.getItem('eishinmaru_reserve_date');
-    if (__scheduleDate && mprDateEl) {
-      // min以降かチェック
-      var __sd = new Date(__scheduleDate); __sd.setHours(0,0,0,0);
-      var __tod = new Date(); __tod.setHours(0,0,0,0);
-      var __tom = new Date(__tod); __tom.setDate(__tom.getDate()+1);
-      if (__sd > __tom) {
-        mprDateEl.value = __scheduleDate;
+    // スケジュール画面からの日付自動セット（URLパラメータ経由）
+    (function(){
+      var params = new URLSearchParams(window.location.search);
+      var __sd = params.get('scheduleDate') || localStorage.getItem('eishinmaru_reserve_date');
+      if (__sd) {
+        localStorage.removeItem('eishinmaru_reserve_date');
+        var sdDate = new Date(__sd); sdDate.setHours(0,0,0,0);
+        var tod = new Date(); tod.setHours(0,0,0,0);
+        var tom = new Date(tod); tom.setDate(tom.getDate()+1);
+        if (sdDate > tom) {
+          setTimeout(function(){
+            var el = document.getElementById('mpr-date');
+            if (el) el.value = __sd;
+          }, 100);
+        }
       }
-      localStorage.removeItem('eishinmaru_reserve_date');
-    }
+    })();
 
     var mprEmailEl = document.getElementById('mpr-email');
     if (mprEmailEl) { var __savedEmail = mprLoadEmail(); if (__savedEmail) mprEmailEl.value = __savedEmail; }
