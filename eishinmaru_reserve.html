@@ -2572,6 +2572,19 @@ function setupControlTabEvents() {
       });
     }
 
+    // スケジュール画面からの日付自動セット
+    var __scheduleDate = localStorage.getItem('eishinmaru_reserve_date');
+    if (__scheduleDate && mprDateEl) {
+      // min以降かチェック
+      var __sd = new Date(__scheduleDate); __sd.setHours(0,0,0,0);
+      var __tod = new Date(); __tod.setHours(0,0,0,0);
+      var __tom = new Date(__tod); __tom.setDate(__tom.getDate()+1);
+      if (__sd > __tom) {
+        mprDateEl.value = __scheduleDate;
+      }
+      localStorage.removeItem('eishinmaru_reserve_date');
+    }
+
     var mprEmailEl = document.getElementById('mpr-email');
     if (mprEmailEl) { var __savedEmail = mprLoadEmail(); if (__savedEmail) mprEmailEl.value = __savedEmail; }
     var mprFishingEl = document.getElementById('mpr-fishing');
