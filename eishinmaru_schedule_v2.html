@@ -443,7 +443,7 @@ function renderSlot(s,num,dateKey){
     sb='<div class="status-box"><div class="status-label">運航状況</div><div class="status-main" style="color:#9e9e9e;">本日の便は中止となりました</div></div>';
   }
   var btnHtml='';
-  if(st!=='cancelled'&&st!=='full'){
+  if(st!=='cancelled'&&st!=='full'&&st!=='charter'){
     var dkey=dateKey||'';
     btnHtml='<div class="slot-action-btns">'
       +'<a href="tel:08067942646" class="slot-btn tel-btn">電話</a>'
@@ -590,7 +590,9 @@ function buildSlotsEditor(){
     card+='<div class="slot-edit-header"><div class="slot-edit-num">'+(NUM_LABELS[numIdx]||numIdx+1)+'</div>';
     card+='<button class="slot-remove-btn" onclick="removeSlot('+i+')">削除</button></div>';
     card+='<div class="form-row">';
-    card+='<div class="form-group"><label>釣物</label><select onchange="updateSlot('+i+',\'target\',this.value)">'+topts+'</select></div>';
+    var isOtherTarget = s.target==='その他便' || (s.target && !TARGETS.includes(s.target));
+    var targetVal = isOtherTarget && s.target!=='その他便' ? s.target : '';
+    card+='<div class="form-group"><label>釣物</label><select onchange="onTargetSelect('+i+',this.value)">'+topts+'</select>'+(isOtherTarget?'<input type="text" style="margin-top:6px;width:100%;padding:6px;border:1px solid #ccc;border-radius:4px;" value="'+targetVal+'" placeholder="釣物を入力" onchange="updateSlot('+i+',\'target\',this.value)">':'')+'</div>';
     card+='<div class="form-group"><label>状態</label><select onchange="updateSlot('+i+',\'status\',this.value)">'+sopts+'</select></div>';
     card+='</div>';
     var isAM=s.period==='am';
@@ -635,6 +637,15 @@ function buildSlotsEditor(){
   html+='<button class="add-slot-mini-btn pm-btn" onclick="addSlot(\'pm\')">＋ 午後便を追加</button>';
 
   c.innerHTML=html;
+}
+function onTargetSelect(i,v){
+  if(v==='その他便'){
+    editingSlots[i]['target']='その他便';
+  } else {
+    editingSlots[i]['target']=v;
+    editingSlots[i]['_otherTarget']=false;
+  }
+  buildSlotsEditor();
 }
 function updateSlot(i,f,v){
   editingSlots[i][f]=v;
