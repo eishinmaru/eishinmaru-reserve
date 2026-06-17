@@ -1507,8 +1507,22 @@ function submitForm() {
 
     showLoading('予約を送信中です');
 
-    emailjs.send('service_rvvn75a', 'template_rdvbitr', params)
+    if (typeof emailjs === 'undefined' || !emailjs.send) {
+      hideLoading();
+      alert('送信モジュールの読み込みに失敗しました。\nページを再読み込みして、もう一度お試しください。\nお急ぎの場合は 080-6794-2646 までお電話ください。');
+      btn.textContent = '申し込む';
+      btn.disabled = false;
+      return;
+    }
+
+    var sendPromise = emailjs.send('service_rvvn75a', 'template_rdvbitr', params);
+    var timeoutPromise = new Promise(function(_, reject){
+      setTimeout(function(){ reject(new Error('timeout')); }, 20000);
+    });
+
+    Promise.race([sendPromise, timeoutPromise])
       .then(function() {
+        hideLoading();
         var now = new Date();
         var num = 'ESM' + now.getFullYear().toString().slice(2)
           + String(now.getMonth()+1).padStart(2,'0')
@@ -1519,9 +1533,13 @@ function submitForm() {
         var rc = document.getElementById('reserve-confirm'); if(rc) rc.style.display = 'none';
         document.getElementById('success-screen').classList.add('show');
         window.scrollTo(0, 0);
-      }, function(error) {
+      })
+      .catch(function(error) {
         hideLoading();
-        alert('送信に失敗しました。もう一度お試しください。');
+        var msg = (error && error.message === 'timeout')
+          ? '通信に時間がかかっています。\n電波の良い場所で再度お試しいただくか、\n080-6794-2646 までお電話ください。'
+          : '送信に失敗しました。もう一度お試しください。\nうまくいかない場合は 080-6794-2646 までお電話ください。';
+        alert(msg);
         btn.textContent = '申し込む';
         btn.disabled = false;
       });
