@@ -1517,7 +1517,7 @@ function submitForm() {
 
     var sendPromise = emailjs.send('service_rvvn75a', 'template_rdvbitr', params);
     var timeoutPromise = new Promise(function(_, reject){
-      setTimeout(function(){ reject(new Error('timeout')); }, 20000);
+      setTimeout(function(){ reject(new Error('timeout')); }, 30000);
     });
 
     Promise.race([sendPromise, timeoutPromise])
@@ -1537,7 +1537,7 @@ function submitForm() {
       .catch(function(error) {
         hideLoading();
         var msg = (error && error.message === 'timeout')
-          ? '通信に時間がかかっています。\n電波の良い場所で再度お試しいただくか、\n080-6794-2646 までお電話ください。'
+          ? '通信に時間がかかっています。\nお手数ですが、もう一度「申し込む」ボタンを押してお試しください。\n何度も失敗する場合は 080-6794-2646 までお電話ください。'
           : '送信に失敗しました。もう一度お試しください。\nうまくいかない場合は 080-6794-2646 までお電話ください。';
         alert(msg);
         btn.textContent = '申し込む';
