@@ -2336,6 +2336,8 @@ function setupControlTabEvents() {
     btn.textContent = '認証中…';
     showLoading('ログイン中です');
 
+    var __loginCtrl = new AbortController();
+    var __loginTo = setTimeout(function(){__loginCtrl.abort();}, 30000);
     fetch(MEMBER_GAS_URL, {
       method: 'POST',
       body: JSON.stringify({
@@ -2345,8 +2347,9 @@ function setupControlTabEvents() {
         emergency: emergency,
         extraType: extraType,
         extraValue: extraValue
-      })
-    }).then(function(r){return r.json();}).then(function(d){
+      }),
+      signal: __loginCtrl.signal
+    }).then(function(r){clearTimeout(__loginTo);return r.json();}).then(function(d){
       hideLoading();
       btn.disabled = false;
       btn.textContent = '🔓 ログイン';
@@ -2373,11 +2376,15 @@ function setupControlTabEvents() {
       } else {
         mypageShowLoginError('エラー：' + (d.message || '再度お試しください'));
       }
-    }).catch(function(){
+    }).catch(function(err){
+      clearTimeout(__loginTo);
       hideLoading();
       btn.disabled = false;
       btn.textContent = '🔓 ログイン';
-      mypageShowLoginError('通信エラーが発生しました。しばらく経ってからお試しください。');
+      var msg = (err && err.name === 'AbortError')
+        ? '通信に時間がかかっています。\nお手数ですが、もう一度「ログイン」ボタンを押してお試しください。'
+        : '通信エラーが発生しました。\nもう一度「ログイン」ボタンを押してお試しください。';
+      mypageShowLoginError(msg);
     });
   }
 
@@ -2440,6 +2447,8 @@ function setupControlTabEvents() {
     btn.textContent = '送信中…';
     showLoading('変更内容を送信中です');
 
+    var __updateCtrl = new AbortController();
+    var __updateTo = setTimeout(function(){__updateCtrl.abort();}, 30000);
     fetch(MEMBER_GAS_URL, {
       method: 'POST',
       body: JSON.stringify({
@@ -2449,8 +2458,9 @@ function setupControlTabEvents() {
         currentEmergency: __mypageMember.emergency,
         memberNo: __mypageMember.memberNo,
         data: window.__mypagePendingData
-      })
-    }).then(function(r){return r.json();}).then(function(d){
+      }),
+      signal: __updateCtrl.signal
+    }).then(function(r){clearTimeout(__updateTo);return r.json();}).then(function(d){
       hideLoading();
       btn.disabled = false;
       btn.textContent = '✅ この内容で更新する';
@@ -2464,11 +2474,15 @@ function setupControlTabEvents() {
       } else {
         alert('更新に失敗しました：' + (d.message || '再度お試しください'));
       }
-    }).catch(function(){
+    }).catch(function(err){
+      clearTimeout(__updateTo);
       hideLoading();
       btn.disabled = false;
       btn.textContent = '✅ この内容で更新する';
-      alert('通信エラーが発生しました。');
+      var msg = (err && err.name === 'AbortError')
+        ? '通信に時間がかかっています。\nお手数ですが、もう一度「この内容で更新する」ボタンを押してお試しください。'
+        : '通信エラーが発生しました。\nもう一度「この内容で更新する」ボタンを押してお試しください。';
+      alert(msg);
     });
   }
 
