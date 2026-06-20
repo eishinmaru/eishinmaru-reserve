@@ -417,8 +417,10 @@ function renderSlot(s,num,dateKey){
   if(st==='confirmed'){
     cc+=' confirmed';nc+=' confirmed';
     badges='<span class="badge confirmed">出船確定</span>';
-    const pct=s.capacity?Math.round(((s.capacity-(s.remaining||0))/s.capacity)*100):70;
-    sb='<div class="status-box confirmed"><div class="status-label">予約状況</div><div class="status-main">残り '+(s.remaining||'?')+' 名</div><div class="progress-bar"><div class="progress-fill confirmed" style="width:'+pct+'%"></div></div></div>';
+    if(s.remaining){
+      const pct=s.capacity?Math.round(((s.capacity-s.remaining)/s.capacity)*100):70;
+      sb='<div class="status-box confirmed"><div class="status-label">予約状況</div><div class="status-main">残り '+s.remaining+' 名</div><div class="progress-bar"><div class="progress-fill confirmed" style="width:'+pct+'%"></div></div></div>';
+    }
   }else if(st==='recruiting'){
     badges='<span class="badge recruiting">出船未確定</span>';
     if(s.needMore){
