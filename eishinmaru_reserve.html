@@ -643,7 +643,7 @@ window.addEventListener('DOMContentLoaded', function(){
     >
   </header>
 
-  <nav class="tab-bar"><button class="tab active" onclick="switchTab('notes')">トップ</button><button class="tab" onclick="switchTab('reserve')">予約</button><button class="tab" onclick="switchTab('member')">会員登録</button><button class="tab tab-small" onclick="switchTab('schedule')">出船スケジュール</button><button class="tab" onclick="switchTab('mypage')">会員様専用</button><button class="tab" onclick="switchTab('admin')">管理</button></nav>
+  <nav class="tab-bar"><button class="tab active" onclick="switchTab('notes')">トップ</button><button class="tab" onclick="switchTab('reserve')">予約</button><button class="tab" onclick="switchTab('member')">会員登録</button><button class="tab tab-small" onclick="switchTab('schedule')">出船スケジュール</button><button class="tab" onclick="switchTab('mypage')">会員様専用</button><button class="tab tab-small" onclick="switchTab('faq')">Q&A</button><button class="tab" onclick="switchTab('admin')">管理</button></nav>
 
   <main>
 
@@ -969,6 +969,7 @@ window.addEventListener('DOMContentLoaded', function(){
 
           <button id="admin-tab-btn-member" style="padding:10px 20px;background:transparent;color:var(--foam);border:none;border-bottom:3px solid transparent;cursor:pointer;font-size:0.88rem;font-family:inherit;">&#128101; 会員情報出力</button>
           <button id="admin-tab-btn-input" style="padding:10px 20px;background:transparent;color:var(--gold-light);border:none;border-bottom:3px solid transparent;cursor:pointer;font-size:0.88rem;font-family:inherit;font-weight:bold;">&#x270F; 会員情報入力</button>
+          <button id="admin-tab-btn-faq" style="padding:10px 20px;background:transparent;color:var(--foam);border:none;border-bottom:3px solid transparent;cursor:pointer;font-size:0.88rem;font-family:inherit;">&#10067; Q&amp;A編集</button>
         </div>
 <div id="admin-tab-member" style="display:none;">
           <div style="background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.3);border-radius:12px;padding:20px;margin-bottom:20px;">
@@ -1048,6 +1049,20 @@ window.addEventListener('DOMContentLoaded', function(){
         </div>
       </div>
 
+      <!-- Q&A編集タブ -->
+      <div id="admin-tab-faq" style="display:none;padding:16px 0;">
+        <div style="max-width:720px;">
+          <div style="background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.3);border-radius:12px;padding:20px;margin-bottom:20px;">
+            <p style="font-size:0.95rem;font-weight:bold;color:var(--gold-light);margin-bottom:12px;">&#10067; Q&amp;A 編集</p>
+            <p style="font-size:0.82rem;color:var(--foam);line-height:1.7;margin-bottom:14px;">お客様向けQ&Aページに表示される質問と回答を編集できます。</p>
+            <button id="faq-add-btn" style="padding:10px 24px;background:var(--gold);color:#0a1628;border:none;border-radius:8px;font-size:0.88rem;font-weight:bold;cursor:pointer;font-family:inherit;">＋ 新しいQ&Aを追加</button>
+          </div>
+          <div id="faq-admin-loading" style="text-align:center;padding:20px;color:var(--foam);font-size:0.88rem;">読み込み中...</div>
+          <div id="faq-admin-list" style="display:none;"></div>
+          <div id="faq-admin-msg" style="display:none;margin-top:14px;padding:10px;border-radius:8px;font-size:0.85rem;"></div>
+        </div>
+      </div>
+
       </div>
     </div>
 
@@ -1110,6 +1125,22 @@ window.addEventListener('DOMContentLoaded', function(){
           </div>
 
         </div>
+      </div>
+    </div>
+
+    <!-- ===== Q&A ページ ===== -->
+    <div class="page" id="page-faq">
+      <div class="section-title">よくある質問</div>
+      <div class="section-subtitle">Q & A</div>
+      <div class="gold-line"></div>
+
+      <div id="faq-loading" style="text-align:center;padding:30px;color:var(--foam);font-size:0.9rem;">読み込み中...</div>
+      <div id="faq-empty" style="display:none;text-align:center;padding:30px;color:var(--foam);font-size:0.9rem;">まだ質問が登録されていません。</div>
+      <div id="faq-list" style="display:none;"></div>
+
+      <div style="margin-top:30px;padding:20px;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);border-radius:12px;text-align:center;">
+        <p style="font-size:0.88rem;color:var(--foam);margin-bottom:10px;">他にご不明な点がございましたら</p>
+        <p style="font-size:0.95rem;color:var(--cream);">📞 <a href="tel:08067942646" style="color:var(--gold-light);text-decoration:none;font-weight:bold;">080-6794-2646</a> までお気軽にお問い合わせください</p>
       </div>
     </div>
 
@@ -1708,7 +1739,7 @@ function submitForm() {
   }
 
 var MEMBER_GAS_URL='https://script.google.com/macros/s/AKfycbzM4OTmoptP0LcLCFcLrR4jLsiKBiuGuwTMirTMORZOBCQtF2NCLRP_47pnzn-2sTmhag/exec';
-(function(){var _o=window.switchTab;window.switchTab=function(t){_o(t);if(t==='member'){memberCheckStatus();memberSetLogo();}};})();
+(function(){var _o=window.switchTab;window.switchTab=function(t){_o(t);if(t==='member'){memberCheckStatus();memberSetLogo();}if(t==='faq'){renderFaqCustomer();}};})();
 function memberSetLogo(){var s=document.querySelector('img[alt="栄真丸"]');var c=document.getElementById('member-card-logo');if(s&&c&&!c.src){c.src=s.src;}}
 function memberCheckStatus(){fetch(MEMBER_GAS_URL).then(function(r){return r.json();}).then(function(d){if(d.available===false){document.getElementById('member-full-banner').style.display='block';document.getElementById('member-form').style.display='none';}}).catch(function(){});}
 var _mzt=null;
@@ -1794,27 +1825,33 @@ function memberGoTop(){document.getElementById('member-form').reset();document.g
   function setTab(tab){
     var tI=document.getElementById('admin-tab-input');
     var bI=document.getElementById('admin-tab-btn-input');
+    var tF=document.getElementById('admin-tab-faq');
+    var bF=document.getElementById('admin-tab-btn-faq');
     tM.style.display=tab==='member'?'block':'none';
     if(tI)tI.style.display=tab==='input'?'block':'none';
-    [bM,bI].forEach(function(b){
+    if(tF)tF.style.display=tab==='faq'?'block':'none';
+    [bM,bI,bF].forEach(function(b){
       if(!b)return;
       b.style.background='transparent';
       b.style.color='var(--foam)';
       b.style.borderBottom='3px solid transparent';
       b.style.fontWeight='normal';
     });
-    var activeBtn=tab==='member'?bM:bI;
+    var activeBtn=tab==='member'?bM:(tab==='input'?bI:bF);
     if(activeBtn){
       activeBtn.style.background='rgba(201,168,76,0.2)';
       activeBtn.style.color='var(--gold-light)';
       activeBtn.style.borderBottom='3px solid var(--gold)';
       activeBtn.style.fontWeight='bold';
     }
+    if(tab==='faq' && typeof renderFaqAdmin==='function')renderFaqAdmin();
   }
   var bI=document.getElementById('admin-tab-btn-input');
   var tI=document.getElementById('admin-tab-input');
+  var bF=document.getElementById('admin-tab-btn-faq');
   if(bM)bM.addEventListener('click',function(){setTab('member');});
   if(bI)bI.addEventListener('click',function(){setTab('input');});
+  if(bF)bF.addEventListener('click',function(){setTab('faq');});
   var bS=document.getElementById('btn-search-members');
   if(bS)bS.addEventListener('click',function(){
     var inp=document.getElementById('member-search-input').value;
@@ -2861,3 +2898,173 @@ function hideLoading() {
 }
 </script>
 <!-- deploy trigger: 2026/05/26 phone fix -->
+
+<!-- ===== Q&A 機能 ===== -->
+<script>
+(function(){
+  var FAQ_GAS_URL = MEMBER_GAS_URL;
+  var _faqCache = null;
+
+  function escHtml(s){
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function fetchFaq(cb){
+    fetch(FAQ_GAS_URL,{method:'POST',body:JSON.stringify({action:'getFAQ'})})
+      .then(function(r){return r.json();})
+      .then(function(d){
+        if(d.status==='ok'){_faqCache=d.items||[];cb(null,_faqCache);}
+        else{cb(d.message||'読み込みに失敗しました');}
+      })
+      .catch(function(err){cb('通信エラー: '+(err&&err.message?err.message:''));});
+  }
+
+  // ===== 顧客向け描画 =====
+  window.renderFaqCustomer = function(){
+    var loading = document.getElementById('faq-loading');
+    var empty = document.getElementById('faq-empty');
+    var list = document.getElementById('faq-list');
+    if(!loading||!empty||!list)return;
+    loading.style.display='block';
+    empty.style.display='none';
+    list.style.display='none';
+    list.innerHTML='';
+    fetchFaq(function(err, items){
+      loading.style.display='none';
+      if(err){
+        empty.style.display='block';
+        empty.textContent=err;
+        return;
+      }
+      if(!items||!items.length){
+        empty.style.display='block';
+        empty.textContent='まだ質問が登録されていません。';
+        return;
+      }
+      var html='';
+      items.forEach(function(item, idx){
+        var q = escHtml(item.question);
+        var a = escHtml(item.answer).replace(/\n/g,'<br>');
+        html += '<details style="margin-bottom:12px;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:10px;overflow:hidden;">'
+              + '<summary style="padding:14px 16px;cursor:pointer;color:var(--gold-light);font-weight:bold;font-size:0.95rem;list-style:none;display:flex;align-items:flex-start;gap:10px;">'
+              + '<span style="color:var(--gold);flex-shrink:0;">Q.</span><span style="flex:1;">'+q+'</span></summary>'
+              + '<div style="padding:0 16px 16px 16px;color:var(--cream);font-size:0.88rem;line-height:1.7;display:flex;align-items:flex-start;gap:10px;">'
+              + '<span style="color:var(--foam);flex-shrink:0;font-weight:bold;">A.</span><span style="flex:1;">'+a+'</span></div>'
+              + '</details>';
+      });
+      list.innerHTML=html;
+      list.style.display='block';
+    });
+  };
+
+  // ===== 管理側描画 =====
+  function showAdminMsg(text, isError){
+    var el = document.getElementById('faq-admin-msg');
+    if(!el)return;
+    el.textContent = text;
+    el.style.display='block';
+    el.style.background = isError?'rgba(248,113,113,0.15)':'rgba(80,200,120,0.15)';
+    el.style.border = '1px solid '+(isError?'rgba(248,113,113,0.4)':'rgba(80,200,120,0.4)');
+    el.style.color = isError?'#f87171':'#a0eac9';
+    setTimeout(function(){el.style.display='none';}, 4000);
+  }
+
+  window.renderFaqAdmin = function(){
+    var loading = document.getElementById('faq-admin-loading');
+    var list = document.getElementById('faq-admin-list');
+    if(!loading||!list)return;
+    loading.style.display='block';
+    list.style.display='none';
+    list.innerHTML='';
+    fetchFaq(function(err, items){
+      loading.style.display='none';
+      if(err){
+        showAdminMsg(err, true);
+        list.style.display='block';
+        list.innerHTML='<p style="text-align:center;color:var(--foam);padding:20px;">読み込みエラー</p>';
+        return;
+      }
+      if(!items||!items.length){
+        list.style.display='block';
+        list.innerHTML='<p style="text-align:center;color:var(--foam);padding:20px;">まだQ&Aが登録されていません。<br>上の「＋ 新しいQ&Aを追加」ボタンから追加してください。</p>';
+        return;
+      }
+      var html='';
+      items.forEach(function(item, idx){
+        var q = escHtml(item.question);
+        var a = escHtml(item.answer);
+        html += '<div style="margin-bottom:14px;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:10px;padding:14px;">'
+              + '<div style="font-size:0.78rem;color:var(--foam);margin-bottom:6px;">No.'+(idx+1)+'</div>'
+              + '<div style="margin-bottom:8px;"><label style="display:block;font-size:0.78rem;color:var(--gold-light);margin-bottom:4px;">質問</label>'
+              + '<input type="text" data-faq-idx="'+idx+'" data-faq-field="question" value="'+q+'" style="width:100%;padding:8px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:var(--cream);font-size:0.9rem;font-family:inherit;"></div>'
+              + '<div style="margin-bottom:10px;"><label style="display:block;font-size:0.78rem;color:var(--gold-light);margin-bottom:4px;">回答</label>'
+              + '<textarea data-faq-idx="'+idx+'" data-faq-field="answer" rows="2" style="width:100%;padding:8px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:var(--cream);font-size:0.9rem;font-family:inherit;resize:vertical;">'+a+'</textarea></div>'
+              + '<div style="display:flex;gap:8px;justify-content:flex-end;">'
+              + '<button data-faq-save="'+idx+'" style="padding:8px 16px;background:var(--gold);color:#0a1628;border:none;border-radius:6px;font-size:0.82rem;font-weight:bold;cursor:pointer;">💾 保存</button>'
+              + '<button data-faq-del="'+idx+'" style="padding:8px 16px;background:rgba(248,113,113,0.2);color:#f87171;border:1px solid rgba(248,113,113,0.4);border-radius:6px;font-size:0.82rem;cursor:pointer;">🗑 削除</button>'
+              + '</div></div>';
+      });
+      list.innerHTML=html;
+      list.style.display='block';
+      bindAdminEvents();
+    });
+  };
+
+  function bindAdminEvents(){
+    document.querySelectorAll('[data-faq-save]').forEach(function(btn){
+      btn.onclick = function(){
+        var idx = parseInt(btn.getAttribute('data-faq-save'),10);
+        var qEl = document.querySelector('[data-faq-idx="'+idx+'"][data-faq-field="question"]');
+        var aEl = document.querySelector('[data-faq-idx="'+idx+'"][data-faq-field="answer"]');
+        if(!qEl||!aEl)return;
+        var q = qEl.value.trim();
+        var a = aEl.value.trim();
+        if(!q||!a){showAdminMsg('質問と回答を両方入力してください', true);return;}
+        btn.disabled=true; btn.textContent='保存中...';
+        fetch(FAQ_GAS_URL,{method:'POST',body:JSON.stringify({action:'saveFAQ', op:'update', index:idx, question:q, answer:a, token:_adminToken})})
+          .then(function(r){return r.json();})
+          .then(function(d){
+            btn.disabled=false; btn.textContent='💾 保存';
+            if(d.status==='ok'){showAdminMsg('保存しました');_faqCache=null;}
+            else{showAdminMsg(d.message||'保存に失敗しました', true);}
+          })
+          .catch(function(err){btn.disabled=false; btn.textContent='💾 保存';showAdminMsg('通信エラー', true);});
+      };
+    });
+    document.querySelectorAll('[data-faq-del]').forEach(function(btn){
+      btn.onclick = function(){
+        var idx = parseInt(btn.getAttribute('data-faq-del'),10);
+        if(!confirm('このQ&Aを削除しますか？'))return;
+        btn.disabled=true; btn.textContent='削除中...';
+        fetch(FAQ_GAS_URL,{method:'POST',body:JSON.stringify({action:'saveFAQ', op:'delete', index:idx, token:_adminToken})})
+          .then(function(r){return r.json();})
+          .then(function(d){
+            if(d.status==='ok'){showAdminMsg('削除しました');_faqCache=null;renderFaqAdmin();}
+            else{btn.disabled=false; btn.textContent='🗑 削除';showAdminMsg(d.message||'削除に失敗しました', true);}
+          })
+          .catch(function(){btn.disabled=false; btn.textContent='🗑 削除';showAdminMsg('通信エラー', true);});
+      };
+    });
+  }
+
+  // 追加ボタン
+  var addBtn = document.getElementById('faq-add-btn');
+  if(addBtn){
+    addBtn.addEventListener('click', function(){
+      var q = prompt('質問を入力してください:');
+      if(!q||!q.trim())return;
+      var a = prompt('回答を入力してください:');
+      if(!a||!a.trim())return;
+      addBtn.disabled=true; addBtn.textContent='追加中...';
+      fetch(FAQ_GAS_URL,{method:'POST',body:JSON.stringify({action:'saveFAQ', op:'add', question:q.trim(), answer:a.trim(), token:_adminToken})})
+        .then(function(r){return r.json();})
+        .then(function(d){
+          addBtn.disabled=false; addBtn.textContent='＋ 新しいQ&Aを追加';
+          if(d.status==='ok'){showAdminMsg('追加しました');_faqCache=null;renderFaqAdmin();}
+          else{showAdminMsg(d.message||'追加に失敗しました', true);}
+        })
+        .catch(function(){addBtn.disabled=false; addBtn.textContent='＋ 新しいQ&Aを追加';showAdminMsg('通信エラー', true);});
+    });
+  }
+})();
+</script>
