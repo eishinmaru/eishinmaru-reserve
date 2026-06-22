@@ -2910,13 +2910,19 @@ function hideLoading() {
   }
 
   function fetchFaq(cb){
-    fetch(FAQ_GAS_URL,{method:'POST',body:JSON.stringify({action:'getFAQ'})})
-      .then(function(r){return r.json();})
+    var ctrl=new AbortController();
+    var tid=setTimeout(function(){ctrl.abort();},25000);
+    fetch(FAQ_GAS_URL,{method:'POST',body:JSON.stringify({action:'getFAQ'}),signal:ctrl.signal})
+      .then(function(r){clearTimeout(tid);return r.json();})
       .then(function(d){
         if(d.status==='ok'){_faqCache=d.items||[];cb(null,_faqCache);}
         else{cb(d.message||'読み込みに失敗しました');}
       })
-      .catch(function(err){cb('通信エラー: '+(err&&err.message?err.message:''));});
+      .catch(function(err){
+        clearTimeout(tid);
+        var msg=(err&&err.name==='AbortError')?'応答が遅いです。再試行してください':'通信エラー: '+(err&&err.message?err.message:'');
+        cb(msg);
+      });
   }
 
   // ===== 顧客向け描画 =====
@@ -2981,7 +2987,9 @@ function hideLoading() {
       if(err){
         showAdminMsg(err, true);
         list.style.display='block';
-        list.innerHTML='<p style="text-align:center;color:var(--foam);padding:20px;">読み込みエラー</p>';
+        list.innerHTML='<div style="text-align:center;padding:20px;"><p style="color:#f87171;margin-bottom:12px;">'+escHtml(err)+'</p><button id="faq-retry-btn" style="padding:10px 20px;background:var(--gold);color:#0a1628;border:none;border-radius:6px;font-weight:bold;cursor:pointer;">🔄 再読み込み</button></div>';
+        var rb=document.getElementById('faq-retry-btn');
+        if(rb)rb.onclick=function(){window.renderFaqAdmin();};
         return;
       }
       if(!items||!items.length){
@@ -3009,6 +3017,40 @@ function hideLoading() {
       bindAdminEvents();
     });
   };
+
+  // 楽観的更新用：_faqCacheから直接描画（fetch無し）
+  function renderFaqAdminLocal(){
+    var list = document.getElementById('faq-admin-list');
+    var loading = document.getElementById('faq-admin-loading');
+    if(!list)return;
+    if(loading)loading.style.display='none';
+    var items = _faqCache || [];
+    if(!items.length){
+      list.style.display='block';
+      list.innerHTML='<p style="text-align:center;color:var(--foam);padding:20px;">まだQ&Aが登録されていません。<br>上の「＋ 新しいQ&Aを追加」ボタンから追加してください。</p>';
+      return;
+    }
+    var html='';
+    items.forEach(function(item, idx){
+      var q = escHtml(item.question);
+      var a = escHtml(item.answer);
+      var pendStyle = item._pending ? 'opacity:0.6;' : '';
+      var pendTag = item._pending ? ' <span style="font-size:0.72rem;color:#fbbf24;margin-left:6px;">(追加中…)</span>' : '';
+      html += '<div style="margin-bottom:14px;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:10px;padding:14px;'+pendStyle+'">'
+            + '<div style="font-size:0.78rem;color:var(--foam);margin-bottom:6px;">No.'+(idx+1)+pendTag+'</div>'
+            + '<div style="margin-bottom:8px;"><label style="display:block;font-size:0.78rem;color:var(--gold-light);margin-bottom:4px;">質問</label>'
+            + '<input type="text" data-faq-idx="'+idx+'" data-faq-field="question" value="'+q+'" style="width:100%;padding:8px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:var(--cream);font-size:0.9rem;font-family:inherit;box-sizing:border-box;"></div>'
+            + '<div style="margin-bottom:10px;"><label style="display:block;font-size:0.78rem;color:var(--gold-light);margin-bottom:4px;">回答</label>'
+            + '<textarea data-faq-idx="'+idx+'" data-faq-field="answer" rows="2" style="width:100%;padding:8px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:var(--cream);font-size:0.9rem;font-family:inherit;resize:vertical;box-sizing:border-box;">'+a+'</textarea></div>'
+            + '<div style="display:flex;gap:8px;justify-content:flex-end;">'
+            + '<button data-faq-save="'+idx+'" style="padding:8px 16px;background:var(--gold);color:#0a1628;border:none;border-radius:6px;font-size:0.82rem;font-weight:bold;cursor:pointer;">💾 保存</button>'
+            + '<button data-faq-del="'+idx+'" style="padding:8px 16px;background:rgba(248,113,113,0.2);color:#f87171;border:1px solid rgba(248,113,113,0.4);border-radius:6px;font-size:0.82rem;cursor:pointer;">🗑 削除</button>'
+            + '</div></div>';
+    });
+    list.innerHTML=html;
+    list.style.display='block';
+    bindAdminEvents();
+  }
 
   function bindAdminEvents(){
     document.querySelectorAll('[data-faq-save]').forEach(function(btn){
@@ -3051,19 +3093,56 @@ function hideLoading() {
   var addBtn = document.getElementById('faq-add-btn');
   if(addBtn){
     addBtn.addEventListener('click', function(){
-      var q = prompt('質問を入力してください:');
-      if(!q||!q.trim())return;
-      var a = prompt('回答を入力してください:');
-      if(!a||!a.trim())return;
-      addBtn.disabled=true; addBtn.textContent='追加中...';
-      fetch(FAQ_GAS_URL,{method:'POST',body:JSON.stringify({action:'saveFAQ', op:'add', question:q.trim(), answer:a.trim(), token:_adminToken})})
-        .then(function(r){return r.json();})
-        .then(function(d){
-          addBtn.disabled=false; addBtn.textContent='＋ 新しいQ&Aを追加';
-          if(d.status==='ok'){showAdminMsg('追加しました');_faqCache=null;renderFaqAdmin();}
-          else{showAdminMsg(d.message||'追加に失敗しました', true);}
-        })
-        .catch(function(){addBtn.disabled=false; addBtn.textContent='＋ 新しいQ&Aを追加';showAdminMsg('通信エラー', true);});
+      if(document.getElementById('faq-add-form'))return;
+      var form = document.createElement('div');
+      form.id='faq-add-form';
+      form.style.cssText='margin-top:14px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.3);border-radius:10px;padding:14px;';
+      form.innerHTML='<div style="font-size:0.85rem;color:var(--gold-light);margin-bottom:10px;font-weight:bold;">新しいQ&Aを追加</div>'
+        +'<div style="margin-bottom:10px;"><label style="display:block;font-size:0.78rem;color:var(--gold-light);margin-bottom:4px;">質問</label>'
+        +'<input type="text" id="faq-new-q" placeholder="例：トイレはありますか？" style="width:100%;padding:9px 11px;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:var(--cream);font-size:0.92rem;font-family:inherit;box-sizing:border-box;"></div>'
+        +'<div style="margin-bottom:12px;"><label style="display:block;font-size:0.78rem;color:var(--gold-light);margin-bottom:4px;">回答</label>'
+        +'<textarea id="faq-new-a" rows="3" placeholder="例：はい、船内に完備しております。" style="width:100%;padding:9px 11px;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:var(--cream);font-size:0.92rem;resize:vertical;font-family:inherit;box-sizing:border-box;"></textarea></div>'
+        +'<div style="display:flex;gap:8px;justify-content:flex-end;">'
+        +'<button id="faq-add-cancel" type="button" style="padding:9px 18px;background:rgba(255,255,255,0.1);color:var(--cream);border:1px solid rgba(255,255,255,0.2);border-radius:6px;font-size:0.85rem;cursor:pointer;">キャンセル</button>'
+        +'<button id="faq-add-confirm" type="button" style="padding:9px 18px;background:var(--gold);color:#0a1628;border:none;border-radius:6px;font-size:0.85rem;font-weight:bold;cursor:pointer;">追加する</button>'
+        +'</div>';
+      addBtn.parentNode.insertBefore(form, addBtn.nextSibling);
+      document.getElementById('faq-new-q').focus();
+      document.getElementById('faq-add-cancel').addEventListener('click', function(){form.remove();});
+      document.getElementById('faq-add-confirm').addEventListener('click', function(){
+        var q=document.getElementById('faq-new-q').value.trim();
+        var a=document.getElementById('faq-new-a').value.trim();
+        if(!q){alert('質問を入力してください');return;}
+        if(!a){alert('回答を入力してください');return;}
+        var btn=document.getElementById('faq-add-confirm');
+        var cbtn=document.getElementById('faq-add-cancel');
+        btn.disabled=true; cbtn.disabled=true; btn.textContent='追加中...';
+        // 楽観的更新：先にローカル一覧に追加して即表示
+        if(!_faqCache)_faqCache=[];
+        var tempItem={id:'tmp_'+Date.now(),question:q,answer:a,_pending:true};
+        _faqCache.push(tempItem);
+        form.remove();
+        renderFaqAdminLocal();
+        showAdminMsg('追加中...');
+        fetch(FAQ_GAS_URL,{method:'POST',body:JSON.stringify({action:'saveFAQ', op:'add', question:q, answer:a, token:_adminToken})})
+          .then(function(r){return r.json();})
+          .then(function(d){
+            if(d.status==='ok'){
+              showAdminMsg('追加しました');
+              _faqCache=null;
+              renderFaqAdmin();
+            }else{
+              _faqCache=_faqCache.filter(function(it){return it.id!==tempItem.id;});
+              renderFaqAdminLocal();
+              showAdminMsg(d.message||'追加に失敗しました', true);
+            }
+          })
+          .catch(function(){
+            _faqCache=_faqCache.filter(function(it){return it.id!==tempItem.id;});
+            renderFaqAdminLocal();
+            showAdminMsg('通信エラー（追加失敗）', true);
+          });
+      });
     });
   }
 })();
