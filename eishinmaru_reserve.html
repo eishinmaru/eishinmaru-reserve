@@ -1139,8 +1139,36 @@ window.addEventListener('DOMContentLoaded', function(){
       <div id="faq-list" style="display:none;"></div>
 
       <div style="margin-top:30px;padding:20px;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);border-radius:12px;text-align:center;">
-        <p style="font-size:0.88rem;color:var(--foam);margin-bottom:10px;">他にご不明な点がございましたら</p>
-        <p style="font-size:0.95rem;color:var(--cream);">📞 <a href="tel:08067942646" style="color:var(--gold-light);text-decoration:none;font-weight:bold;">080-6794-2646</a> までお気軽にお問い合わせください</p>
+        <p style="font-size:0.95rem;color:var(--cream);margin-bottom:6px;font-weight:600;">他にご不明な点はこちらからお問い合わせください</p>
+        <p style="font-size:0.78rem;color:var(--foam);margin-bottom:18px;opacity:0.85;">通常2〜3営業日以内にご返信いたします</p>
+
+        <div id="inquiry-form-wrap" style="text-align:left;max-width:560px;margin:0 auto;">
+          <div class="form-group" style="margin-bottom:14px;">
+            <label class="form-label" style="display:block;font-size:0.82rem;color:var(--gold-light);margin-bottom:6px;">お名前 <span style="color:#f87171;font-size:0.75rem;">必須</span></label>
+            <input type="text" id="inq-name" class="form-control" placeholder="山田 太郎" autocomplete="name">
+          </div>
+          <div class="form-group" style="margin-bottom:14px;">
+            <label class="form-label" style="display:block;font-size:0.82rem;color:var(--gold-light);margin-bottom:6px;">メールアドレス <span style="color:#f87171;font-size:0.75rem;">必須</span></label>
+            <input type="email" id="inq-email" class="form-control" placeholder="example@email.com" autocomplete="email" inputmode="email">
+          </div>
+          <div class="form-group" style="margin-bottom:14px;">
+            <label class="form-label" style="display:block;font-size:0.82rem;color:var(--gold-light);margin-bottom:6px;">件名 <span style="color:#f87171;font-size:0.75rem;">必須</span></label>
+            <input type="text" id="inq-subject" class="form-control" placeholder="例：予約変更について">
+          </div>
+          <div class="form-group" style="margin-bottom:16px;">
+            <label class="form-label" style="display:block;font-size:0.82rem;color:var(--gold-light);margin-bottom:6px;">お問い合わせ内容 <span style="color:#f87171;font-size:0.75rem;">必須</span></label>
+            <textarea id="inq-message" class="form-control" rows="5" placeholder="お問い合わせ内容をご記入ください" style="resize:vertical;min-height:120px;"></textarea>
+          </div>
+
+          <div id="inq-status" style="display:none;margin-bottom:12px;padding:12px;border-radius:8px;font-size:0.85rem;line-height:1.6;text-align:center;"></div>
+
+          <div style="text-align:center;">
+            <button type="button" id="inq-submit-btn" onclick="submitInquiry()" style="background:linear-gradient(135deg,#c9a84c,#e8c96a);color:#1a2333;border:none;padding:12px 36px;border-radius:8px;font-weight:600;font-size:0.95rem;letter-spacing:0.05em;cursor:pointer;box-shadow:0 4px 12px rgba(201,168,76,0.3);">📨 送信する</button>
+          </div>
+          <div id="inq-retry-wrap" style="display:none;text-align:center;margin-top:10px;">
+            <button type="button" onclick="submitInquiry()" style="background:rgba(255,255,255,0.08);color:var(--cream);border:1px solid rgba(201,168,76,0.4);padding:8px 22px;border-radius:6px;font-size:0.85rem;cursor:pointer;">🔄 再送信する</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -3148,4 +3176,98 @@ function hideLoading() {
     });
   }
 })();
+</script>
+
+<script>
+/* ===== 問い合わせフォーム送信 ===== */
+function submitInquiry(){
+  var name = (document.getElementById('inq-name').value || '').trim();
+  var email = (document.getElementById('inq-email').value || '').trim();
+  var subject = (document.getElementById('inq-subject').value || '').trim();
+  var message = (document.getElementById('inq-message').value || '').trim();
+  var btn = document.getElementById('inq-submit-btn');
+  var status = document.getElementById('inq-status');
+  var retryWrap = document.getElementById('inq-retry-wrap');
+
+  function showStatus(msg, type){
+    status.style.display = 'block';
+    if(type === 'success'){
+      status.style.background = 'rgba(80,200,120,0.12)';
+      status.style.border = '1px solid rgba(80,200,120,0.4)';
+      status.style.color = '#7ee0a3';
+    } else if(type === 'error'){
+      status.style.background = 'rgba(220,80,80,0.12)';
+      status.style.border = '1px solid rgba(220,80,80,0.4)';
+      status.style.color = '#f87171';
+    } else {
+      status.style.background = 'rgba(201,168,76,0.10)';
+      status.style.border = '1px solid rgba(201,168,76,0.3)';
+      status.style.color = '#e8c96a';
+    }
+    status.textContent = msg;
+  }
+
+  // バリデーション
+  if(!name){ showStatus('お名前をご入力ください', 'error'); return; }
+  if(!email){ showStatus('メールアドレスをご入力ください', 'error'); return; }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ showStatus('メールアドレスの形式が正しくありません', 'error'); return; }
+  if(!subject){ showStatus('件名をご入力ください', 'error'); return; }
+  if(!message){ showStatus('お問い合わせ内容をご入力ください', 'error'); return; }
+
+  btn.disabled = true;
+  btn.textContent = '送信中…';
+  retryWrap.style.display = 'none';
+  showStatus('送信しております。少々お待ちください…', 'info');
+
+  if(typeof emailjs === 'undefined' || !emailjs.send){
+    btn.disabled = false;
+    btn.textContent = '📨 送信する';
+    showStatus('送信モジュールの読み込みに失敗しました。ページを再読み込みしてお試しください。', 'error');
+    retryWrap.style.display = 'block';
+    return;
+  }
+
+  // 予約テンプレート(template_rdvbitr)を流用してお問い合わせ送信
+  // 受信側に「お問い合わせ」と分かるよう各フィールドに整形して詰める
+  var params = {
+    name:          '【お問い合わせ】' + name,
+    furigana:      '-',
+    member:        '-',
+    email:         email,
+    tel:           '-',
+    date:          '(お問い合わせ)',
+    pax:           '-',
+    ampm:          '-',
+    fishing_am:    '-',
+    fishing_pm:    '-',
+    fishing_other: '【件名】' + subject,
+    notes:         '【お問い合わせ内容】\n' + message + '\n\n---\nお名前: ' + name + '\nメール: ' + email
+  };
+
+  var sendPromise = emailjs.send('service_rvvn75a', 'template_rdvbitr', params);
+  var timeoutPromise = new Promise(function(_, reject){
+    setTimeout(function(){ reject(new Error('timeout')); }, 30000);
+  });
+
+  Promise.race([sendPromise, timeoutPromise])
+    .then(function(){
+      btn.disabled = false;
+      btn.textContent = '📨 送信する';
+      showStatus('お問い合わせを送信いたしました。ご返信までしばらくお待ちください。', 'success');
+      document.getElementById('inq-name').value = '';
+      document.getElementById('inq-email').value = '';
+      document.getElementById('inq-subject').value = '';
+      document.getElementById('inq-message').value = '';
+    })
+    .catch(function(err){
+      btn.disabled = false;
+      btn.textContent = '📨 送信する';
+      if(err && err.message === 'timeout'){
+        showStatus('通信がタイムアウトしました。再度お試しください。', 'error');
+      } else {
+        showStatus('送信に失敗しました。お手数ですが再度お試しください。', 'error');
+      }
+      retryWrap.style.display = 'block';
+    });
+}
 </script>
