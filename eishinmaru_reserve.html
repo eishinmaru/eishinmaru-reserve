@@ -628,7 +628,8 @@ window.addEventListener('DOMContentLoaded', function(){
 </div>
 
 <div class="app">
-  <header style="padding: 32px 24px 20px; text-align:center;">
+  <header style="padding: 32px 24px 20px; text-align:center; position:relative;">
+    <button id="lang-toggle" onclick="toggleLanguage()" style="position:absolute; top:16px; right:16px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.25); color:#fff; padding:6px 14px; border-radius:6px; font-size:0.78rem; font-weight:600; letter-spacing:0.05em; cursor:pointer; transition:all 0.2s; z-index:10;">ENGLISH</button>
     <img src="data:image/png;base64,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"
       alt="栄真丸"
       style="
@@ -643,7 +644,7 @@ window.addEventListener('DOMContentLoaded', function(){
     >
   </header>
 
-  <nav class="tab-bar"><button class="tab active" onclick="switchTab('notes')">トップ</button><button class="tab" onclick="switchTab('reserve')">予約</button><button class="tab" onclick="switchTab('member')">会員登録</button><button class="tab tab-small" onclick="switchTab('schedule')">出船スケジュール</button><button class="tab" onclick="switchTab('mypage')">会員様専用</button><button class="tab tab-small" onclick="switchTab('faq')">Q&A</button><button class="tab" onclick="switchTab('admin')">管理</button></nav>
+  <nav class="tab-bar"><button class="tab active" onclick="switchTab('notes')" data-i18n="nav_top" data-en-show="1">トップ</button><button class="tab" onclick="switchTab('reserve')" data-i18n="nav_reserve" data-en-show="0">予約</button><button class="tab" onclick="switchTab('member')" data-i18n="nav_member" data-en-show="0">会員登録</button><button class="tab tab-small" onclick="switchTab('schedule')" data-i18n="nav_schedule" data-en-show="0">出船スケジュール</button><button class="tab" onclick="switchTab('mypage')" data-i18n="nav_mypage" data-en-show="0">会員様専用</button><button class="tab tab-small" onclick="switchTab('faq')" data-i18n="nav_faq" data-en-show="1">Q&A</button><button class="tab" onclick="switchTab('admin')" data-i18n="nav_admin" data-en-show="0">管理</button></nav>
 
   <main>
 
@@ -1068,8 +1069,8 @@ window.addEventListener('DOMContentLoaded', function(){
 
     <!-- ===== 注意事項ページ ===== -->
     <div class="page active" id="page-notes">
-      <div class="section-title">注意事項</div>
-      <div class="section-subtitle">IMPORTANT NOTES</div>
+      <div class="section-title" data-i18n="notes_title">注意事項</div>
+      <div class="section-subtitle" data-i18n="notes_subtitle">IMPORTANT NOTES</div>
       <div class="gold-line"></div>
 
       <div class="card">
@@ -1078,8 +1079,8 @@ window.addEventListener('DOMContentLoaded', function(){
           <div style="display:flex; gap:14px; align-items:flex-start;">
             <div style="min-width:36px; height:36px; background:rgba(201,168,76,0.15); border:1px solid rgba(201,168,76,0.3); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px;">📅</div>
             <div>
-              <div style="font-size:13px; font-weight:600; color:#fff; margin-bottom:4px; letter-spacing:0.05em;">出船スケジュールをご確認ください</div>
-              <div style="font-size:12px; color:#8aabb8; line-height:1.8;">ご予約前に必ず出船スケジュールをご確認の上、ご予約ください。</div>
+              <div style="font-size:13px; font-weight:600; color:#fff; margin-bottom:4px; letter-spacing:0.05em;" data-i18n="note1_title">出船スケジュールをご確認ください</div>
+              <div style="font-size:12px; color:#8aabb8; line-height:1.8;" data-i18n="note1_body">ご予約前に必ず出船スケジュールをご確認の上、ご予約ください。</div>
             </div>
           </div>
 
@@ -1088,8 +1089,8 @@ window.addEventListener('DOMContentLoaded', function(){
           <div style="display:flex; gap:14px; align-items:flex-start;">
             <div style="min-width:36px; height:36px; background:rgba(201,168,76,0.15); border:1px solid rgba(201,168,76,0.3); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px;">📞</div>
             <div>
-              <div style="font-size:13px; font-weight:600; color:#fff; margin-bottom:4px; letter-spacing:0.05em;">前日・複数日程のご予約はお電話で</div>
-              <div style="font-size:12px; color:#8aabb8; line-height:1.8;">前日のご予約や、複数日程にまたがるご予約はお電話にてお承りします。</div>
+              <div style="font-size:13px; font-weight:600; color:#fff; margin-bottom:4px; letter-spacing:0.05em;" data-i18n="note2_title">前日・複数日程のご予約はお電話で</div>
+              <div style="font-size:12px; color:#8aabb8; line-height:1.8;" data-i18n="note2_body">前日のご予約や、複数日程にまたがるご予約はお電話にてお承りします。</div>
             </div>
           </div>
 
@@ -1098,8 +1099,8 @@ window.addEventListener('DOMContentLoaded', function(){
           <div style="display:flex; gap:14px; align-items:flex-start;">
             <div style="min-width:36px; height:36px; background:rgba(201,168,76,0.15); border:1px solid rgba(201,168,76,0.3); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px;">⚠️</div>
             <div>
-              <div style="font-size:13px; font-weight:600; color:#fff; margin-bottom:4px; letter-spacing:0.05em;">予約の重複にご注意ください</div>
-              <div style="font-size:12px; color:#8aabb8; line-height:1.8;">電話・公式LINE・Webフォームのいずれか1つでご予約ください。重複予約はご遠慮いただきますようお願いします。</div>
+              <div style="font-size:13px; font-weight:600; color:#fff; margin-bottom:4px; letter-spacing:0.05em;" data-i18n="note3_title">予約の重複にご注意ください</div>
+              <div style="font-size:12px; color:#8aabb8; line-height:1.8;" data-i18n="note3_body">電話・公式LINE・Webフォームのいずれか1つでご予約ください。重複予約はご遠慮いただきますようお願いします。</div>
             </div>
           </div>
 
@@ -1108,8 +1109,8 @@ window.addEventListener('DOMContentLoaded', function(){
           <div style="display:flex; gap:14px; align-items:flex-start;">
             <div style="min-width:36px; height:36px; background:rgba(201,168,76,0.15); border:1px solid rgba(201,168,76,0.3); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px;">🪑</div>
             <div>
-              <div style="font-size:13px; font-weight:600; color:#fff; margin-bottom:4px; letter-spacing:0.05em;">座席は予約順になります</div>
-              <div style="font-size:12px; color:#8aabb8; line-height:1.8;">当日の座席はご予約いただいた順にご案内します。お早めのご予約をおすすめします。</div>
+              <div style="font-size:13px; font-weight:600; color:#fff; margin-bottom:4px; letter-spacing:0.05em;" data-i18n="note4_title">座席は予約順になります</div>
+              <div style="font-size:12px; color:#8aabb8; line-height:1.8;" data-i18n="note4_body">当日の座席はご予約いただいた順にご案内します。お早めのご予約をおすすめします。</div>
             </div>
           </div>
 
@@ -1118,8 +1119,8 @@ window.addEventListener('DOMContentLoaded', function(){
           <div style="display:flex; gap:14px; align-items:flex-start;">
             <div style="min-width:36px; height:36px; background:rgba(201,168,76,0.15); border:1px solid rgba(201,168,76,0.3); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px;">✏️</div>
             <div>
-              <div style="font-size:13px; font-weight:600; color:#fff; margin-bottom:4px; letter-spacing:0.05em;">入力内容をご確認ください</div>
-              <div style="font-size:12px; color:#8aabb8; line-height:1.8;">必須項目の入力漏れや誤入力がないよう、送信前に必ずご確認ください。特にメールアドレスの誤入力が多くなっています。<br>
+              <div style="font-size:13px; font-weight:600; color:#fff; margin-bottom:4px; letter-spacing:0.05em;" data-i18n="note5_title">入力内容をご確認ください</div>
+              <div style="font-size:12px; color:#8aabb8; line-height:1.8;" data-i18n="note5_body">必須項目の入力漏れや誤入力がないよう、送信前に必ずご確認ください。特にメールアドレスの誤入力が多くなっています。<br>
               <span style="color:#e8c96a;">24時間以内に確認メールが届かない場合は、お電話にてご確認ください。</span></div>
             </div>
           </div>
@@ -1130,42 +1131,42 @@ window.addEventListener('DOMContentLoaded', function(){
 
     <!-- ===== Q&A ページ ===== -->
     <div class="page" id="page-faq">
-      <div class="section-title">よくある質問</div>
-      <div class="section-subtitle">Q & A</div>
+      <div class="section-title" data-i18n="faq_title">よくある質問</div>
+      <div class="section-subtitle" data-i18n="faq_subtitle">Q & A</div>
       <div class="gold-line"></div>
 
-      <div id="faq-loading" style="text-align:center;padding:30px;color:var(--foam);font-size:0.9rem;">読み込み中...</div>
-      <div id="faq-empty" style="display:none;text-align:center;padding:30px;color:var(--foam);font-size:0.9rem;">まだ質問が登録されていません。</div>
-      <div id="faq-list" style="display:none;"></div>
+      <div id="faq-loading" data-en-hide="1" style="text-align:center;padding:30px;color:var(--foam);font-size:0.9rem;">読み込み中...</div>
+      <div id="faq-empty" data-en-hide="1" style="display:none;text-align:center;padding:30px;color:var(--foam);font-size:0.9rem;">まだ質問が登録されていません。</div>
+      <div id="faq-list" data-en-hide="1" style="display:none;"></div>
 
       <div style="margin-top:30px;padding:20px;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);border-radius:12px;text-align:center;">
-        <p style="font-size:0.92rem;color:var(--cream);margin-bottom:18px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">他にご不明な点はこちらからお問い合わせください</p>
+        <p style="font-size:0.92rem;color:var(--cream);margin-bottom:18px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" data-i18n="contact_lead">他にご不明な点はこちらからお問い合わせください</p>
 
         <div id="inquiry-form-wrap" style="text-align:left;max-width:560px;margin:0 auto;">
           <div class="form-group" style="margin-bottom:14px;">
-            <label class="form-label" style="display:block;font-size:0.82rem;color:var(--gold-light);margin-bottom:6px;">お名前 <span style="color:#f87171;font-size:0.75rem;">必須</span></label>
-            <input type="text" id="inq-name" class="form-control" placeholder="山田 太郎" autocomplete="name">
+            <label class="form-label" style="display:block;font-size:0.82rem;color:var(--gold-light);margin-bottom:6px;"><span data-i18n="inq_name_label">お名前</span> <span style="color:#f87171;font-size:0.75rem;" data-i18n="inq_required">必須</span></label>
+            <input type="text" id="inq-name" class="form-control" placeholder="山田 太郎" data-i18n-placeholder="inq_name_ph" autocomplete="name">
           </div>
           <div class="form-group" style="margin-bottom:14px;">
-            <label class="form-label" style="display:block;font-size:0.82rem;color:var(--gold-light);margin-bottom:6px;">メールアドレス <span style="color:#f87171;font-size:0.75rem;">必須</span></label>
+            <label class="form-label" style="display:block;font-size:0.82rem;color:var(--gold-light);margin-bottom:6px;"><span data-i18n="inq_email_label">メールアドレス</span> <span style="color:#f87171;font-size:0.75rem;" data-i18n="inq_required">必須</span></label>
             <input type="email" id="inq-email" class="form-control" placeholder="example@email.com" autocomplete="email" inputmode="email">
           </div>
           <div class="form-group" style="margin-bottom:14px;">
-            <label class="form-label" style="display:block;font-size:0.82rem;color:var(--gold-light);margin-bottom:6px;">件名 <span style="color:#f87171;font-size:0.75rem;">必須</span></label>
-            <input type="text" id="inq-subject" class="form-control" placeholder="例：予約変更について">
+            <label class="form-label" style="display:block;font-size:0.82rem;color:var(--gold-light);margin-bottom:6px;"><span data-i18n="inq_subject_label">件名</span> <span style="color:#f87171;font-size:0.75rem;" data-i18n="inq_required">必須</span></label>
+            <input type="text" id="inq-subject" class="form-control" placeholder="例：予約変更について" data-i18n-placeholder="inq_subject_ph">
           </div>
           <div class="form-group" style="margin-bottom:16px;">
-            <label class="form-label" style="display:block;font-size:0.82rem;color:var(--gold-light);margin-bottom:6px;">お問い合わせ内容 <span style="color:#f87171;font-size:0.75rem;">必須</span></label>
-            <textarea id="inq-message" class="form-control" rows="5" placeholder="お問い合わせ内容をご記入ください" style="resize:vertical;min-height:120px;"></textarea>
+            <label class="form-label" style="display:block;font-size:0.82rem;color:var(--gold-light);margin-bottom:6px;"><span data-i18n="inq_message_label">お問い合わせ内容</span> <span style="color:#f87171;font-size:0.75rem;" data-i18n="inq_required">必須</span></label>
+            <textarea id="inq-message" class="form-control" rows="5" placeholder="お問い合わせ内容をご記入ください" data-i18n-placeholder="inq_message_ph" style="resize:vertical;min-height:120px;"></textarea>
           </div>
 
           <div id="inq-status" style="display:none;margin-bottom:12px;padding:12px;border-radius:8px;font-size:0.85rem;line-height:1.6;text-align:center;"></div>
 
           <div style="text-align:center;">
-            <button type="button" id="inq-submit-btn" onclick="submitInquiry()" style="background:linear-gradient(135deg,#c9a84c,#e8c96a);color:#1a2333;border:none;padding:12px 36px;border-radius:8px;font-weight:600;font-size:0.95rem;letter-spacing:0.05em;cursor:pointer;box-shadow:0 4px 12px rgba(201,168,76,0.3);">📨 送信する</button>
+            <button type="button" id="inq-submit-btn" onclick="submitInquiry()" style="background:linear-gradient(135deg,#c9a84c,#e8c96a);color:#1a2333;border:none;padding:12px 36px;border-radius:8px;font-weight:600;font-size:0.95rem;letter-spacing:0.05em;cursor:pointer;box-shadow:0 4px 12px rgba(201,168,76,0.3);" data-i18n="inq_submit">📨 送信する</button>
           </div>
           <div id="inq-retry-wrap" style="display:none;text-align:center;margin-top:10px;">
-            <button type="button" onclick="submitInquiry()" style="background:rgba(255,255,255,0.08);color:var(--cream);border:1px solid rgba(201,168,76,0.4);padding:8px 22px;border-radius:6px;font-size:0.85rem;cursor:pointer;">🔄 再送信する</button>
+            <button type="button" onclick="submitInquiry()" style="background:rgba(255,255,255,0.08);color:var(--cream);border:1px solid rgba(201,168,76,0.4);padding:8px 22px;border-radius:6px;font-size:0.85rem;cursor:pointer;" data-i18n="inq_retry">🔄 再送信する</button>
           </div>
         </div>
       </div>
@@ -3273,4 +3274,148 @@ function submitInquiry(){
       retryWrap.style.display = 'block';
     });
 }
+</script>
+
+<!-- ===== i18n 言語切替機能（試作版・トップ画面のみ）===== -->
+<script>
+(function(){
+  var translations = {
+    ja: {
+      nav_top: 'トップ',
+      nav_reserve: '予約',
+      nav_member: '会員登録',
+      nav_schedule: '出船スケジュール',
+      nav_mypage: '会員様専用',
+      nav_faq: 'Q&A',
+      nav_admin: '管理',
+      notes_title: '注意事項',
+      notes_subtitle: 'IMPORTANT NOTES',
+      note1_title: '出船スケジュールをご確認ください',
+      note1_body: 'ご予約前に必ず出船スケジュールをご確認の上、ご予約ください。',
+      note2_title: '前日・複数日程のご予約はお電話で',
+      note2_body: '前日のご予約や、複数日程にまたがるご予約はお電話にてお承りします。',
+      note3_title: '予約の重複にご注意ください',
+      note3_body: '電話・公式LINE・Webフォームのいずれか1つでご予約ください。重複予約はご遠慮いただきますようお願いします。',
+      note4_title: '座席は予約順になります',
+      note4_body: '当日の座席はご予約いただいた順にご案内します。お早めのご予約をおすすめします。',
+      note5_title: '入力内容をご確認ください',
+      note5_body: '必須項目の入力漏れや誤入力がないよう、送信前に必ずご確認ください。特にメールアドレスの誤入力が多くなっています。<br><span style="color:#e8c96a;">24時間以内に確認メールが届かない場合は、お電話にてご確認ください。</span>',
+      faq_title: 'よくある質問',
+      faq_subtitle: 'Q & A',
+      contact_lead: '他にご不明な点はこちらからお問い合わせください',
+      inq_name_label: 'お名前',
+      inq_email_label: 'メールアドレス',
+      inq_subject_label: '件名',
+      inq_message_label: 'お問い合わせ内容',
+      inq_required: '必須',
+      inq_name_ph: '山田 太郎',
+      inq_subject_ph: '例：予約変更について',
+      inq_message_ph: 'お問い合わせ内容をご記入ください',
+      inq_submit: '📨 送信する',
+      inq_retry: '🔄 再送信する',
+      lang_button: 'ENGLISH'
+    },
+    en: {
+      nav_top: 'TOP',
+      nav_reserve: 'Reserve',
+      nav_member: 'Register',
+      nav_schedule: 'Schedule',
+      nav_mypage: 'Members',
+      nav_faq: 'Contact',
+      nav_admin: 'Admin',
+      notes_title: 'Important Notes',
+      notes_subtitle: 'PLEASE READ BEFORE BOOKING',
+      note1_title: 'Inquiries in English Only',
+      note1_body: 'All inquiries are accepted in English only. Please note that our staff\'s English ability is limited, so our responses may sound awkward. Thank you for your understanding.',
+      note2_title: 'Email Support Only',
+      note2_body: 'We can only respond via email. Phone support in English is not available.',
+      note3_title: 'Two Booking Options',
+      note3_body: 'We offer two types of bookings: Private Charter and Shared Boarding (joining other guests on the same boat).',
+      note4_title: 'Japanese Speaker Required for Private Charter',
+      note4_body: 'For safety reasons, private charter bookings require at least one member of your group to be able to communicate in Japanese. Thank you for your understanding.',
+      note5_title: 'No English-Speaking Crew Onboard',
+      note5_body: 'None of our Eishinmaru crew members speaks English. Please book only if you understand and accept this in advance.',
+      faq_title: 'Contact Us',
+      faq_subtitle: 'INQUIRY FORM',
+      contact_lead: 'Please feel free to contact us using the form below',
+      inq_name_label: 'Name',
+      inq_email_label: 'Email Address',
+      inq_subject_label: 'Subject',
+      inq_message_label: 'Message',
+      inq_required: 'Required',
+      inq_name_ph: 'John Smith',
+      inq_subject_ph: 'e.g. About reservation',
+      inq_message_ph: 'Please enter your inquiry here',
+      inq_submit: '📨 Send',
+      inq_retry: '🔄 Resend',
+      lang_button: '日本語'
+    }
+  };
+
+  function applyLanguage(lang){
+    var dict = translations[lang] || translations.ja;
+    // テキスト切替
+    document.querySelectorAll('[data-i18n]').forEach(function(el){
+      var key = el.getAttribute('data-i18n');
+      if(dict[key] !== undefined){
+        el.innerHTML = dict[key];
+      }
+    });
+    // placeholder切替
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el){
+      var key = el.getAttribute('data-i18n-placeholder');
+      if(dict[key] !== undefined){
+        el.setAttribute('placeholder', dict[key]);
+      }
+    });
+    // 英語モード時はナビを TOP と Contact だけに絞る
+    document.querySelectorAll('.tab-bar [data-en-show]').forEach(function(el){
+      if(lang === 'en' && el.getAttribute('data-en-show') === '0'){
+        el.style.display = 'none';
+      } else {
+        el.style.display = '';
+      }
+    });
+    // 英語モード時は data-en-hide="1" の要素を非表示（Contactタブ内のQ&A部分など）
+    document.querySelectorAll('[data-en-hide]').forEach(function(el){
+      if(lang === 'en' && el.getAttribute('data-en-hide') === '1'){
+        // 元のdisplayを保存（初回のみ）
+        if(!el.hasAttribute('data-original-display')){
+          el.setAttribute('data-original-display', el.style.display || '');
+        }
+        el.style.display = 'none';
+      } else {
+        // 元のdisplayに戻す
+        var original = el.getAttribute('data-original-display');
+        if(original !== null){
+          el.style.display = original;
+        }
+      }
+    });
+    // 英語モードで現在非表示タブを開いていた場合、トップに自動遷移
+    if(lang === 'en'){
+      var activePage = document.querySelector('.page.active');
+      if(activePage && activePage.id !== 'page-notes' && activePage.id !== 'page-faq'){
+        if(typeof switchTab === 'function') switchTab('notes');
+      }
+    }
+    // ボタンのラベル切替
+    var btn = document.getElementById('lang-toggle');
+    if(btn) btn.textContent = dict.lang_button;
+    document.documentElement.lang = lang;
+    try { localStorage.setItem('eishinmaru_lang', lang); } catch(e){}
+  }
+
+  window.toggleLanguage = function(){
+    var current = document.documentElement.lang || 'ja';
+    applyLanguage(current === 'ja' ? 'en' : 'ja');
+  };
+
+  // 初期化：localStorageから言語設定を復元
+  document.addEventListener('DOMContentLoaded', function(){
+    var saved = 'ja';
+    try { saved = localStorage.getItem('eishinmaru_lang') || 'ja'; } catch(e){}
+    if(saved === 'en') applyLanguage('en');
+  });
+})();
 </script>
