@@ -649,7 +649,7 @@ window.addEventListener('DOMContentLoaded', function(){
     >
   </header>
 
-  <nav class="tab-bar"><button class="tab active" onclick="switchTab('notes')" data-i18n="nav_top" data-en-show="1">トップ</button><button class="tab" onclick="switchTab('about')" data-i18n="nav_about" data-en-show="1" data-i18n-only="en">About</button><button class="tab" onclick="switchTab('reserve')" data-i18n="nav_reserve" data-en-show="0">予約</button><button class="tab" onclick="switchTab('member')" data-i18n="nav_member" data-en-show="0">会員登録</button><button class="tab tab-small" onclick="switchTab('schedule')" data-i18n="nav_schedule" data-en-show="0">出船スケジュール</button><button class="tab" onclick="switchTab('mypage')" data-i18n="nav_mypage" data-en-show="0">会員様専用</button><button class="tab tab-small" onclick="switchTab('faq')" data-i18n="nav_faq" data-en-show="1">Q&A</button><button class="tab" onclick="switchTab('admin')" data-i18n="nav_admin" data-en-show="0">管理</button></nav>
+  <nav class="tab-bar"><button class="tab active" onclick="switchTab('notes')" data-i18n="nav_top" data-en-show="1">トップ</button><button class="tab" onclick="switchTab('about')" data-i18n="nav_about" data-en-show="1" data-i18n-only="en">About</button><button class="tab" onclick="switchTab('reserve')" data-i18n="nav_reserve" data-en-show="0">予約</button><button class="tab" onclick="switchTab('member')" data-i18n="nav_member" data-en-show="0">会員登録</button><button class="tab tab-small" onclick="switchTab('schedule')" data-i18n="nav_schedule" data-en-show="0">出船スケジュール</button><button class="tab tab-small" onclick="window.open('https://www.instagram.com/eishinmaru.choka?utm_source=ig_web_button_share_sheet&amp;igsh=ZDNlZDc0MzIxNw==','_blank','noopener')" data-i18n="nav_catch" data-en-show="1">釣果情報</button><button class="tab" onclick="switchTab('mypage')" data-i18n="nav_mypage" data-en-show="0">会員様専用</button><button class="tab tab-small" onclick="switchTab('faq')" data-i18n="nav_faq" data-en-show="1">Q&A</button><button class="tab" onclick="switchTab('admin')" data-i18n="nav_admin" data-en-show="0">管理</button></nav>
 
   <main>
 
@@ -3331,6 +3331,7 @@ function submitInquiry(){
       nav_reserve: '予約',
       nav_member: '会員登録',
       nav_schedule: '出船スケジュール',
+      nav_catch: '釣果情報',
       nav_mypage: '会員様専用',
       nav_faq: 'Q&A',
       nav_admin: '管理',
@@ -3379,6 +3380,7 @@ function submitInquiry(){
       nav_reserve: 'Reserve',
       nav_member: 'Register',
       nav_schedule: 'Schedule',
+      nav_catch: 'Catch Reports',
       nav_mypage: 'Members',
       nav_faq: 'Contact',
       nav_admin: 'Admin',
