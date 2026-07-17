@@ -244,7 +244,8 @@ const NUM_LABELS=['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩','�
 const GAS_URL='https://script.google.com/macros/s/AKfycbx0bfoNDdkqyAo9twlOiUyNYpjxs5NzOFnvS8nmanDhZXD_kYWno_I9KUT0QsMt_py-/exec';
 const DEFAULT_DATA={}
 let scheduleData={};
-let currentYear=2026,currentMonth=6,adminYear=2026,adminMonth=6,selectedKey=null,editingSlots=[];
+let __today=new Date();
+let currentYear=__today.getFullYear(),currentMonth=__today.getMonth()+1,adminYear=__today.getFullYear(),adminMonth=__today.getMonth()+1,selectedKey=null,editingSlots=[];
 
 function switchTab(tab,btn){
   document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
