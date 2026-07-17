@@ -2963,10 +2963,11 @@ function setupControlTabEvents() {
       });
     }
 
-    // スケジュール画面からの日付自動セット（URLパラメータ経由）
+    // スケジュール画面からの日付・便自動セット（URLパラメータ経由）
     (function(){
       var params = new URLSearchParams(window.location.search);
       var __sd = params.get('scheduleDate') || localStorage.getItem('eishinmaru_reserve_date');
+      var __pd = params.get('period'); // 'am' | 'pm'
       if (__sd) {
         localStorage.removeItem('eishinmaru_reserve_date');
         var sdDate = new Date(__sd); sdDate.setHours(0,0,0,0);
@@ -2974,9 +2975,30 @@ function setupControlTabEvents() {
         var tom = new Date(tod); tom.setDate(tom.getDate()+1);
         if (sdDate > tom) {
           setTimeout(function(){
+            // 日付セット
             var el = document.getElementById('mpr-date');
             if (el) el.value = __sd;
-          }, 100);
+            // 午前/午後セット
+            if (__pd) {
+              var ampmEl = document.getElementById('mpr-ampm');
+              if (ampmEl) {
+                if (__pd === 'am') ampmEl.value = '午前乗合';
+                else if (__pd === 'pm') ampmEl.value = '午後乗合';
+              }
+            }
+            // かんたん予約セクションを自動展開
+            var collapse = document.getElementById('mp-collapse-reserve');
+            var chev = document.getElementById('mp-chevron-reserve');
+            if (collapse && collapse.style.display === 'none') {
+              collapse.style.display = 'block';
+              if (chev) chev.style.transform = 'rotate(180deg)';
+            }
+            // スクロールして表示
+            var toggleBtn = document.getElementById('mp-toggle-reserve');
+            if (toggleBtn && toggleBtn.scrollIntoView) {
+              toggleBtn.scrollIntoView({behavior:'smooth', block:'start'});
+            }
+          }, 300);
         }
       }
     })();

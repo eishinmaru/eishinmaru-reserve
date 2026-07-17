@@ -365,7 +365,7 @@ function openModal(key){
     if(ai<amSlots.length){
       body+=renderSlot(amSlots[ai],NUM_LABELS[ai],key);
     }else{
-      body+=renderEmptySlot(NUM_LABELS[ai],key);
+      body+=renderEmptySlot(NUM_LABELS[ai],key,'am');
     }
   }
   // 午後6枠（空き枠は募集中表示）
@@ -374,15 +374,18 @@ function openModal(key){
     if(pi<pmSlots.length){
       body+=renderSlot(pmSlots[pi],NUM_LABELS[pi],key);
     }else{
-      body+=renderEmptySlot(NUM_LABELS[pi],key);
+      body+=renderEmptySlot(NUM_LABELS[pi],key,'pm');
     }
   }
   document.getElementById('modal-body').innerHTML=body;
   document.querySelectorAll('.reserve-trigger').forEach(function(btn){
     btn.addEventListener('click',function(){
       var d=this.getAttribute('data-date');
-      if(d) localStorage.setItem('eishinmaru_reserve_date',d);
-      window.open('https://eishinmaru.github.io/eishinmaru-reserve/eishinmaru_reserve.html','_blank');
+      var p=this.getAttribute('data-period');
+      var url='https://eishinmaru.github.io/eishinmaru-reserve/eishinmaru_reserve.html?tab=mypage';
+      if(d) url+='&scheduleDate='+encodeURIComponent(d);
+      if(p) url+='&period='+encodeURIComponent(p);
+      window.open(url,'_blank');
     });
   });
   document.getElementById('modal-overlay').classList.add('active');
@@ -447,19 +450,21 @@ function renderSlot(s,num,dateKey){
   var btnHtml='';
   if(st!=='cancelled'&&st!=='full'&&st!=='charter'){
     var dkey=dateKey||'';
+    var pkey=s.period||'';
     btnHtml='<div class="slot-action-btns">'
-      +'<a href="tel:08067942646" class="slot-btn tel-btn">電話</a>'
-      +'<button class="slot-btn web-btn reserve-trigger" data-date="'+dkey+'">Web予約</button>'
+      +'<a href="tel:08067942646" target="_top" class="slot-btn tel-btn">電話</a>'
+      +'<button class="slot-btn web-btn reserve-trigger" data-date="'+dkey+'" data-period="'+pkey+'">Web予約</button>'
       +'</div>';
   }
   return '<div class="'+cc+'"><div class="slot-top"><div class="'+nc+'">'+num+'</div><div class="slot-info"><div class="slot-target">'+displayTarget+'</div><div class="slot-time">集合 '+(s.gatherTime&&s.gatherTime!=='other_mode'?s.gatherTime:'—')+'　出船 '+(s.period==='pm'?'13:30':calcDepartTime(s.gatherTime||''))+'</div></div>'+btnHtml+'</div><div class="badges">'+badges+'</div>'+sb+'</div>';
 }
 
-function renderEmptySlot(num,dateKey){
+function renderEmptySlot(num,dateKey,period){
   var dkey2=dateKey||'';
+  var pkey2=period||'';
   var btnHtml='<div class="slot-action-btns">'
-    +'<a href="tel:08067942646" class="slot-btn tel-btn">電話</a>'
-    +'<button class="slot-btn web-btn reserve-trigger" data-date="'+dkey2+'">Web予約</button>'
+    +'<a href="tel:08067942646" target="_top" class="slot-btn tel-btn">電話</a>'
+    +'<button class="slot-btn web-btn reserve-trigger" data-date="'+dkey2+'" data-period="'+pkey2+'">Web予約</button>'
     +'</div>';
   return '<div class="slot-card empty-slot"><div class="slot-top"><div class="slot-num empty">'+num+'</div><div class="slot-info"><div class="slot-target empty-text">募集中</div><div class="slot-time"></div></div>'+btnHtml+'</div><div class="status-box" style="background:#e3f2fd;"><div class="status-main" style="color:#1565c0;font-size:14px;font-weight:700;">受付中</div></div></div>';
 }
