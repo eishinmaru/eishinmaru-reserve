@@ -724,6 +724,12 @@ window.addEventListener('DOMContentLoaded', function(){
       <div id="mp-login-error" style="display:none;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3);border-radius:8px;padding:12px;color:#f87171;font-size:0.85rem;margin-bottom:12px;"></div>
 
       <button type="button" id="mp-login-btn" class="submit-btn" style="width:100%;">🔓 ログイン</button>
+
+      <!-- 会員登録がまだの方への導線 -->
+      <div style="margin-top:20px;padding-top:20px;border-top:1px solid rgba(201,168,76,0.2);text-align:center;">
+        <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:10px;line-height:1.6;">まだ会員登録がお済みでない方は<br>こちらからご登録いただけます</p>
+        <button type="button" id="mp-goto-member-btn" style="width:100%;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.4);border-radius:8px;padding:12px 16px;color:var(--gold-light);font-size:0.9rem;font-weight:bold;cursor:pointer;font-family:inherit;transition:all 0.2s;">✏️ 会員登録はこちら</button>
+      </div>
     </div>
   </div>
 
@@ -2917,6 +2923,13 @@ function setupControlTabEvents() {
     }
     var loginBtn = document.getElementById('mp-login-btn');
     if (loginBtn) loginBtn.addEventListener('click', mypageLogin);
+
+    // 会員登録がまだの方はこちら → 会員登録タブへ遷移
+    var gotoMemberBtn = document.getElementById('mp-goto-member-btn');
+    if (gotoMemberBtn) gotoMemberBtn.addEventListener('click', function(){
+      if (typeof switchTab === 'function') switchTab('member');
+      window.scrollTo({top:0, behavior:'smooth'});
+    });
 
     var confirmBtn = document.getElementById('mp-confirm-btn');
     if (confirmBtn) confirmBtn.addEventListener('click', mypageShowConfirm);
