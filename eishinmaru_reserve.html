@@ -1965,6 +1965,7 @@ fetch(MEMBER_GAS_URL,{method:'POST',body:JSON.stringify(p),signal:__memberCtrl.s
       document.getElementById('member-confirm').style.display='none';
       document.getElementById('member-complete').style.display='block';
       document.getElementById('member-complete').scrollIntoView({behavior:'smooth'});
+      try{if(typeof window.__mypageAutoLogin==='function'){window.__mypageAutoLogin({memberNo:d.memberNo,registeredAt:d.registeredAt,name:p.name,furigana:p.furigana,gender:p.gender,birthday:p.birthday,phone:p.phone,emergency:p.emergency,relation:p.relation,address:p.address});}}catch(e){}
       if(window.__memberFromMeibo){
         var bb=document.getElementById('btn-back-to-meibo');
         if(!bb){
@@ -2550,6 +2551,14 @@ function setupControlTabEvents() {
   function mypageSaveSession(member){ try { localStorage.setItem(MYPAGE_STORE_KEY, JSON.stringify(member)); } catch(e){} }
   function mypageLoadSession(){ try { var s = localStorage.getItem(MYPAGE_STORE_KEY); return s ? JSON.parse(s) : null; } catch(e){ return null; } }
   function mypageClearSession(){ try { localStorage.removeItem(MYPAGE_STORE_KEY); } catch(e){} }
+  // 新規会員登録完了時の自動ログイン（by レム）
+  window.__mypageAutoLogin = function(member){
+    if (!member || !member.memberNo) return;
+    __mypageMember = member;
+    mypageSaveSession(member);
+    try { mypagePopulateMember(member); } catch(e){}
+    mypageShowArea('mypage-main-area');
+  };
 
   function mypageShowArea(areaId) {
     var areas = ['mypage-login-area', 'mypage-main-area', 'mypage-confirm-area', 'mypage-complete-area'];
